@@ -132,8 +132,8 @@ The σίτα recruits by hacking devices **one by one**. Each hacked device give
 
 **Round 4: LOCKED.** Next: Round 5, the beat sheet (`episode-1-beat-sheet.md`).
 
-## Placeholder voice cast (ElevenLabs, `eleven_multilingual_v2`)
-These are stand-ins until real voice actors are cast. None of the stock voices on the account is a native Greek voice; they speak Greek through the multilingual model.
+## Placeholder voice cast (ElevenLabs, `eleven_v3`, `language_code: el`)
+These are stand-ins until real voice actors are cast. None of the stock voices on the account is a native Greek voice. With `eleven_v3` and `language_code: el` they speak with a Greek accent; `eleven_multilingual_v2` kept their English accent. A handful of short lines still use the older v2 take, where the v3 take came out worse. Native Greek voices from the Voice Library (and Voice Design) need a paid ElevenLabs plan for API use.
 
 | Character | Voice | Why |
 |---|---|---|
