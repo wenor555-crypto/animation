@@ -96,6 +96,7 @@ function ensureAudio() {
     amb = { cG, mG };
   }
   if (AC.state === 'suspended') AC.resume();
+  if (SCENE) loadClips();
 }
 function tone(f, dur, type = 'triangle', vol = .06, slide = 0, delay = 0) {
   if (!soundOn || !AC) return;
@@ -135,14 +136,27 @@ if ('speechSynthesis' in window) { loadVoices(); speechSynthesis.onvoiceschanged
    While a voice is still speaking, the timeline HOLDS at the end of that line,
    so pictures and subtitles never run ahead of the audio. */
 let speaking = false, speakStart = 0, curClip = null;
+/* Clips are decoded into Web Audio buffers (the AudioContext is unlocked by the ▶ click),
+   because <audio> elements with data: URLs get blocked by autoplay rules and sandboxed previews. */
+const BUFS = {};
+function loadClips() {
+  for (const [key, src] of Object.entries(window.CLIPS || {})) {
+    if (!key.startsWith(SCENE.id + '/') || key in BUFS) continue;
+    BUFS[key] = null;
+    const bin = atob(src.slice(src.indexOf(',') + 1)), bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    AC.decodeAudioData(bytes.buffer).then(b => { BUFS[key] = b; }, e => console.warn('clip decode failed', key, e));
+  }
+}
+const clipKey = idx => `${SCENE.id}/${String(idx + 1).padStart(2, '0')}`;
 function voiceLine(L, idx) {
   stopVO();
-  const key = `${SCENE.id}/${String(idx + 1).padStart(2, '0')}`, src = (window.CLIPS || {})[key];
   if (!soundOn) return;
-  if (src) {
-    curClip = new Audio(src); speaking = true; speakStart = performance.now();
-    curClip.onended = curClip.onerror = () => { speaking = false; };
-    curClip.play().catch(() => { speaking = false; });
+  const buf = AC && BUFS[clipKey(idx)];
+  if (buf) {
+    curClip = AC.createBufferSource(); curClip.buffer = buf; curClip.connect(master);
+    curClip.onended = () => { speaking = false; };
+    speaking = true; speakStart = performance.now(); curClip.start();
     return;
   }
   if (!voOn || !('speechSynthesis' in window)) return;
@@ -154,10 +168,10 @@ function voiceLine(L, idx) {
 }
 function stopVO() {
   if ('speechSynthesis' in window) speechSynthesis.cancel();
-  if (curClip) { curClip.pause(); curClip = null; }
+  if (curClip) { curClip.onended = null; try { curClip.stop(); } catch (e) {} curClip = null; }
   speaking = false;
 }
-const hasClips = () => Object.keys(window.CLIPS || {}).some(k => k.startsWith(SCENE.id + '/'));
+const hasClip = idx => !!(AC && BUFS[clipKey(idx)]);
 
 /* =========================================================
    PLAYER
@@ -218,9 +232,9 @@ function runScene(cfg) {
       if (T >= cfg.dur) { T = cfg.dur; pause(); }
       if (soundOn && AC) for (const [et, fn] of cfg.events) if (et > prev && et <= T) fn();
       cfg.lines.forEach((L, i) => { if (L.a > prev && L.a <= T) voiceLine(L, i); });
-      if (soundOn && AC && T > 0 && !hasClips()) {
-        const L = cfg.lines.find(l => T >= l.a && T < l.b);
-        if (L && (!voOn || !greekVoice) && Math.floor(T / .085) > Math.floor(prev / .085)) { const V = cfg.voices[L.who]; tone(V.babble * (.85 + Math.random() * .35), .07, 'triangle', .04, .9 + Math.random() * .3); }
+      if (soundOn && AC && T > 0) {
+        const i = cfg.lines.findIndex(l => T >= l.a && T < l.b), L = cfg.lines[i];
+        if (L && !hasClip(i) && (!voOn || !greekVoice) && Math.floor(T / .085) > Math.floor(prev / .085)) { const V = cfg.voices[L.who]; tone(V.babble * (.85 + Math.random() * .35), .07, 'triangle', .04, .9 + Math.random() * .3); }
       }
     }
     if (AC) {

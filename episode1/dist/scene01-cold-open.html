@@ -394,6 +394,7 @@ function ensureAudio() {
     amb = { mq, mqG, mqP, cG, eG, eP, en };
   }
   if (AC.state === 'suspended') AC.resume();
+  loadClips();
 }
 function tone(f, dur, type = 'triangle', vol = .06, slide = 0) {
   if (!soundOn || !AC) return;
@@ -432,14 +433,28 @@ function say(text) {
   const u = new SpeechSynthesisUtterance(text); const v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('el'));
   if (v) u.voice = v; u.lang = 'el-GR'; u.rate = .88; u.pitch = .55; speechSynthesis.speak(u);
 }
-// recorded narrator clips (window.CLIPS, embedded by build.py from audio/scene01/NN.mp3) replace the TTS
+// recorded narrator clips (window.CLIPS, embedded by build.py from audio/scene01/NN.mp3) replace the TTS.
+// They're decoded into Web Audio buffers: <audio> with data: URLs gets blocked by autoplay rules and sandboxed previews.
 let curClip = null;
-const stopVO = () => { if ('speechSynthesis' in window) speechSynthesis.cancel(); if (curClip) { curClip.pause(); curClip = null; } };
+const BUFS = {};
+function loadClips() {
+  for (const [key, src] of Object.entries(window.CLIPS || {})) {
+    if (key in BUFS) continue;
+    BUFS[key] = null;
+    const bin = atob(src.slice(src.indexOf(',') + 1)), bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    AC.decodeAudioData(bytes.buffer).then(buf => { BUFS[key] = buf; }, e => console.warn('clip decode failed', key, e));
+  }
+}
+const stopVO = () => {
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  if (curClip) { try { curClip.stop(); } catch (e) {} curClip = null; }
+};
 function voiceLine(L, idx) {
-  const src = (window.CLIPS || {})[`scene01/${String(idx + 1).padStart(2, '0')}`];
-  if (!src) return say(L.el);
+  const buf = AC && BUFS[`scene01/${String(idx + 1).padStart(2, '0')}`];
+  if (!buf) return say(L.el);
   if (!soundOn) return;
-  stopVO(); curClip = new Audio(src); curClip.play().catch(() => {});
+  stopVO(); curClip = AC.createBufferSource(); curClip.buffer = buf; curClip.connect(master); curClip.start();
 }
 function tick(a, b) {
   if (soundOn && AC) for (const [et, s] of EVENTS) if (et > a && et <= b) SFX[s]();
