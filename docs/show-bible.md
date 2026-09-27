@@ -91,3 +91,14 @@ The έξυπνη σίτα is just a mesh curtain with magnets sewn down the midd
 3. **Panik.** That night Κώστας arrives drunk, fights with the σίτα and tries to burn it. The σίτα decides humans are the threat.
 4. **Recruitment.** The σίτα wakes up and recruits the telemarketing devices. The village starts going wrong.
 5. **Escalation → climax → ending.** Still open.
+
+## Character look notes (from the reference photo supplied by the creator)
+The designs are cartoon caricatures based on the real friends. The photo itself is not stored in the repo.
+
+| Character | Visual traits to carry into the design |
+|---|---|
+| **Χρήστος** | Aviator sunglasses, short dark hair, moustache and chin beard, slightly smug half-frown. Blue knit hoodie. |
+| **Κώστας** | Neon lime-green hoodie with the hood up, black wayfarer-style sunglasses, thin moustache. Chunky silver rings, including a skull ring, and a beaded bracelet. |
+| **Γιάννος** | Short dark hair styled up, full short beard, strong eyebrows, serious "I've got a plan" stare. Dark grey hoodie. |
+| **Μήμης** | Shaved bald head, goatee and moustache, lip piercing, ear piercing, big grin. Black graphic hoodie with an ornate print. Pointing up, cocky. |
+| **Γιώργος** | Not in the photo (possibly the one taking the selfie?). His look is still TBD. |
