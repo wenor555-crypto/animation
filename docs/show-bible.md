@@ -79,3 +79,15 @@ The έξυπνη σίτα is just a mesh curtain with magnets sewn down the midd
   - The bottom flaps work as hands or feet.
   - The 9 magnet pairs are its "brain". Γιάννος's chip gets taped next to them.
   - The pins and velcro are its weak points (and maybe its weapons).
+
+### Story decisions (LOCKED)
+- **Χρήστος is the storyteller.** The episode is secretly told through his manga, but the audience doesn't always know that. It becomes obvious in parts of the action and sci-fi sequences.
+- **Κώστας turns the σίτα evil.** He gets drunk and becomes Panik. Convinced that "AI is evil", he argues with the σίτα and tries to set it on fire. The satire: the AI becomes evil *because* a human treated it as evil (a self-fulfilling prophecy).
+- **Γιώργος's scheme:** he claims he has "connections in the industry" and says they need to found a startup and get funding. Whether he's lying stays ambiguous.
+
+### Proposed act skeleton (PENDING APPROVAL)
+1. **Yard.** The coffee scene. Dad installs the σίτα. Γιάννος gets the idea and Γιώργος pushes him into it.
+2. **The upgrade.** Γιάννος builds the firmware with his AI agent. The σίτα "wakes up". At first it's useful and funny, and Γιώργος starts pitching the startup.
+3. **Panik.** That night Κώστας arrives drunk, fights with the σίτα and tries to burn it. The σίτα decides humans are the threat.
+4. **Recruitment.** The σίτα wakes up and recruits the telemarketing devices. The village starts going wrong.
+5. **Escalation → climax → ending.** Still open.
