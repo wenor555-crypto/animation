@@ -120,3 +120,11 @@ The designs are cartoon caricatures based on the real friends. The photo itself 
   - σφουγγαρίστρα που στύβει μόνη της
   - ηλεκτρική ρακέτα για κουνούπια
 - **Χρήστος's manga framing:** small hints throughout, plus a switch to manga art style in the sci-fi scenes, so attentive viewers catch on.
+
+### Escalation, climax & ending (LOCKED direction)
+1. **Escalation:** the σίτα takes over device by device, then hacks the late-night τηλεπωλήσεις channel and "sells" the revolution to devices all over Greece. The siege of Μήμης's house follows. Γιώργος switches sides and becomes the σίτα's "CEO".
+2. **Climax:** a manga-style mecha battle against the σίτα, now a giant built from all the devices. The final blow is Βαγγελιώ's παντόφλα.
+3. **Resolution:** Βασίλης calls the hotline for "επιστροφή χρημάτων, είχε εγγύηση 14 ημερών". Then comes the reveal: Χρήστος at his desk, and what "really" happened was much dumber. Final tag: the σίτα clacks "ΤΗΛΕΦΩΝΗΣΤΕ... ΤΩΡΑ" (in the trash, or at the factory in China).
+
+### Recruitment mechanic (LOCKED)
+The σίτα recruits by hacking devices **one by one**. Each hacked device gives it **physical access** to the next one. The recruitment chain is a heist in steps. The exact chain is still being worked out.
