@@ -52,7 +52,7 @@ All five grew up there, but none of them lives there permanently now. Episode 1 
 - **Κώστας** lives there, in his parents' house.
 - **Γιώργος** is stationed nearby for his mandatory army service.
 - **Μήμης** is staying there temporarily. His family's house is traditional, with a yard, a περιβόλι and a κοτέτσι. At home: his mom and dad (both in their 70s) and 2 of his 3 sisters (mid-30s). **His dad bought the έξυπνη σίτα from telemarketing.**
-- **Γιάννος** works as an engineer in Denmark and is home on summer vacation.
+- **Γιάννος** has worked as an engineer in Denmark for 2 years and is home on summer vacation.
 - **Χρήστος** is home on summer vacation.
 
 ## Round 4: Episode 1, "Η Έξυπνη Σίτα" (IN PROGRESS)
@@ -106,7 +106,7 @@ The designs are cartoon caricatures based on the real friends. The photo itself 
 ### More decisions (LOCKED)
 - **The σίτα's voice:** a hyper TV-shop presenter ("ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!").
 - **Μήμης's family:** dad **Βασίλης**, mom **Βαγγελιώ** (both in their 70s), sisters **Μαρία** and **Μυρσίνη** (mid-30s). Personalities:
-  - **Βασίλης:** a proud collector of telemarketing junk who believes every ad. He gives zero fucks about anything and stays chill even as the universe collapses, asking for the occasional τράκα τσιγάρο at the most random moments.
+  - **Βασίλης:** a proud collector of telemarketing junk who believes every ad. He gives zero fucks about anything and stays chill even as the universe collapses, asking for the occasional τράκα τσιγάρο at the most random moments. He calls his son «Δημητράκι», never «Μήμη».
   - **Βαγγελιώ:** does everything and runs the house with an iron hand and a παντόφλα. She's the only one the σίτα fears.
   - **Μαρία:** a sarcastic mid-30s sister, constantly asking Μήμης when he's going to "settle down".
   - **Μυρσίνη:** the only normal person in the family. Always a nice hostess, but sometimes unnecessarily sarcastic.
@@ -132,8 +132,8 @@ The σίτα recruits by hacking devices **one by one**. Each hacked device give
 
 **Round 4: LOCKED.** Next: Round 5, the beat sheet (`episode-1-beat-sheet.md`).
 
-## Placeholder voice cast (ElevenLabs, `eleven_multilingual_v2`)
-These are stand-ins until real voice actors are cast. None of the stock voices on the account is a native Greek voice; they speak Greek through the multilingual model.
+## Placeholder voice cast (ElevenLabs, `eleven_v3`, `language_code: el`)
+These are stand-ins until real voice actors are cast. None of the stock voices on the account is a native Greek voice. With `eleven_v3` and `language_code: el` they speak with a Greek accent; `eleven_multilingual_v2` kept their English accent. A handful of short lines still use the older v2 take, where the v3 take came out worse. Native Greek voices from the Voice Library (and Voice Design) need a paid ElevenLabs plan for API use.
 
 | Character | Voice | Why |
 |---|---|---|

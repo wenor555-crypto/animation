@@ -15,7 +15,8 @@ import json, os, pathlib, re, sys, urllib.request
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 API = 'https://api.elevenlabs.io/v1'
-MODEL = 'eleven_multilingual_v2'   # speaks Greek
+MODEL = 'eleven_v3'   # speaks Greek with a Greek accent (multilingual_v2 kept the voices' English accent)
+LANGUAGE = 'el'
 
 # character -> ElevenLabs voice_id. Fill these in after `--list` (or after designing voices).
 VOICES = {
@@ -32,11 +33,11 @@ VOICES = {
     'myrsini': 'hpp4J3VqNfWAUOO0d1Us',   # Bella: bright, warm (the nice hostess)
     'sita': 'EXAVITQu4vr4xnSDxMaL',      # Sarah: entertainment/TV (hyper TV-shop presenter)
 }
-# per-character delivery: lower stability = more expressive
-SETTINGS = {'default': {'stability': .4, 'similarity_boost': .8, 'style': .35},
-            'sita': {'stability': .25, 'similarity_boost': .8, 'style': .8},
-            'panik': {'stability': .3, 'similarity_boost': .8, 'style': .7},
-            'narrator': {'stability': .55, 'similarity_boost': .8, 'style': .4}}
+# per-character delivery. eleven_v3 only takes stability 0 (creative), .5 (natural) or 1 (robust).
+SETTINGS = {'default': {'stability': .5, 'similarity_boost': .8},
+            'sita': {'stability': 0, 'similarity_boost': .8},
+            'panik': {'stability': 0, 'similarity_boost': .8},
+            'narrator': {'stability': .5, 'similarity_boost': .8}}
 FORMAT = 'mp3_44100_64'   # small files: the whole episode is embedded in one HTML page
 
 
@@ -112,7 +113,7 @@ def main():
             print(f'skip {sid}/{i:02d} ({who}): no voice_id set'); continue
         f.parent.mkdir(parents=True, exist_ok=True)
         audio = req(f'/text-to-speech/{vid}?output_format={FORMAT}',
-                    {'text': clean(text), 'model_id': MODEL, 'voice_settings': SETTINGS.get(who, SETTINGS['default'])}, 'audio/mpeg')
+                    {'text': clean(text), 'model_id': MODEL, 'language_code': LANGUAGE, 'voice_settings': SETTINGS.get(who, SETTINGS['default'])}, 'audio/mpeg')
         f.write_bytes(audio)
         print('wrote', f.relative_to(HERE))
 
