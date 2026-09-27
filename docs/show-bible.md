@@ -131,3 +131,20 @@ The σίτα recruits by hacking devices **one by one**. Each hacked device give
 - **Κώστας:** he notices first that the σίτα is really alive, right after he sets it on fire. Being drunk, he passes out and misses half the episode, after making the σίτα furious and starting the spiral. He comes back the next day when he wakes up, and remembers nothing.
 
 **Round 4: LOCKED.** Next: Round 5, the beat sheet (`episode-1-beat-sheet.md`).
+
+## Placeholder voice cast (ElevenLabs, `eleven_multilingual_v2`)
+These are stand-ins until real voice actors are cast. None of the stock voices on the account is a native Greek voice; they speak Greek through the multilingual model.
+
+| Character | Voice | Why |
+|---|---|---|
+| Αφηγητής | Brian (`nPczCjzI2devNBz1zQrb`) | deep, resonant trailer voice |
+| Γιάννος | Chris (`iP95p4xoKVk53GoZ742B`) | down-to-earth, the plan-maker |
+| Μήμης | Callum (`N2lVS1w4EtoT3dr4eOWO`) | husky trickster, deadpan |
+| Γιώργος | Eric (`cjVigY5qzO86Huf0OWal`) | smooth, classy charmer |
+| Χρήστος | Will (`bIHbv24MWmeRgasZH58o`) | relaxed, chill |
+| Κώστας / Panik | Harry (`SOYHLrjzK2X1ezoPC6cr`) | rough; Panik uses more expressive settings |
+| Βασίλης | Bill (`pqHfZKP75CvOlQylNhV4`) | old, calm, unbothered |
+| Βαγγελιώ | Lily (`pFZP5JQG7iQjIQuC4Bku`) | velvety, commanding |
+| Μαρία | Laura (`FGY2WhTYpPnrIDTdsKH5`) | quirky, sassy |
+| Μυρσίνη | Bella (`hpp4J3VqNfWAUOO0d1Us`) | bright, warm hostess |
+| Η σίτα | Sarah (`EXAVITQu4vr4xnSDxMaL`) | TV presenter at 200% (low stability, high style) |

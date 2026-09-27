@@ -93,10 +93,16 @@ function ensureAudio() {
     const mq = osc('sawtooth', 560), vib = osc('sine', 7), vg = gain(18); vib.connect(vg); vg.connect(mq.frequency);
     const mf = AC.createBiquadFilter(); mf.type = 'bandpass'; mf.frequency.value = 900; mf.Q.value = 1.2;
     const mG = gain(0); mq.connect(mf); mf.connect(mG); mG.connect(master);
-    amb = { cG, mG };
+    // crickets: high sine chirps gated by a slow square
+    const cr = osc('sine', 4400), crAM = gain(0), crL = osc('square', 3.2), crLg = gain(.5); crL.connect(crLg); crLg.connect(crAM.gain);
+    const krG = gain(0); cr.connect(crAM); crAM.connect(krG); krG.connect(master);
+    // mains hum (evil devices)
+    const hm = osc('sawtooth', 50), hf = AC.createBiquadFilter(); hf.type = 'lowpass'; hf.frequency.value = 180;
+    const hG = gain(0); hm.connect(hf); hf.connect(hG); hG.connect(master);
+    amb = { cG, mG, krG, hG };
   }
   if (AC.state === 'suspended') AC.resume();
-  if (SCENE) loadClips();
+  queueClips();
 }
 function tone(f, dur, type = 'triangle', vol = .06, slide = 0, delay = 0) {
   if (!soundOn || !AC) return;
@@ -123,67 +129,167 @@ const SFX = {
   door: () => { noise(.25, .5, 700); tone(90, .25, 'sine', .2, .6); },
   choir: () => [0, 4, 7, 12].forEach(s => { tone(261.6 * 2 ** (s / 12), 2.2, 'sine', .05); tone(261.6 * 2 ** (s / 12) * 1.005, 2.2, 'triangle', .025); }),
   flies: () => { tone(200, 1.6, 'sawtooth', .025, 1.1); tone(230, 1.6, 'sawtooth', .02, .95); },
+  clack: () => { tone(2400, .05, 'square', .1, .4); tone(900, .08, 'square', .08, .5); },
+  clacks: (n = 3) => { for (let i = 0; i < n; i++) { tone(2400, .05, 'square', .08, .4, i * .13); tone(900, .07, 'square', .06, .5, i * .13); } },
+  jingle: () => [0, 4, 7, 12, 16].forEach((s, i) => tone(523.25 * 2 ** (s / 12), .25, 'square', .045, 0, i * .09)),
+  jingleMinor: () => [0, 3, 7, 12, 15].forEach((s, i) => tone(261.6 * 2 ** (s / 12), .5, 'square', .04, 0, i * .22)),
+  ding: () => { tone(1568, .5, 'sine', .08); tone(2093, .6, 'sine', .05, 0, .08); },
+  whoosh: () => noise(.5, .35, 900, .6, 'bandpass'),
+  fire: () => { noise(1.2, .4, 600); noise(1.2, .2, 2000, .5, 'bandpass', .1); },
+  spark: () => { noise(.12, .3, 5000, 1, 'highpass'); tone(3000, .08, 'square', .04, .3); },
+  zap: () => { for (let i = 0; i < 5; i++) { noise(.05, .3, 6000, 1, 'highpass', i * .06); tone(180, .05, 'sawtooth', .06, 1, i * .06); } },
+  buzz: (d = .8) => { tone(110, d, 'sawtooth', .05, 1.02); tone(113, d, 'square', .03, .98); },
+  boot: () => [0, 7, 12, 16].forEach((s, i) => tone(392 * 2 ** (s / 12), .7, 'sine', .06, 0, i * .18)),
+  drums: () => { for (let i = 0; i < 12; i++) { noise(.12, .3 + i * .03, 300, 1, 'lowpass', i * .08); tone(90, .1, 'sine', .15, .6, i * .08); } },
+  applause: () => { for (let i = 0; i < 40; i++) noise(.05, .12, 2500, .8, 'bandpass', Math.random() * 1.6); },
+  boom: () => { noise(1, .7, 300); tone(55, .9, 'sine', .35, .4); },
+  thud: () => { noise(.2, .5, 250); tone(80, .2, 'sine', .25, .5); },
+  pop: () => tone(600, .08, 'sine', .08, 2),
+  cluck: () => { for (let i = 0; i < 3; i++) tone(700 + Math.random() * 300, .06, 'square', .04, .7, i * .1); },
+  snore: () => { noise(1, .12, 300, 2, 'bandpass'); tone(80, 1, 'sawtooth', .02, 1.2); },
+  engine: () => { tone(60, 1.6, 'sawtooth', .07, 1.8); noise(1.6, .15, 400); },
+  honk: () => { tone(415, .4, 'square', .06); tone(523, .4, 'square', .05); },
+  phone: () => { for (let i = 0; i < 2; i++) { tone(1200, .12, 'square', .04, 1, i * .2); tone(900, .12, 'square', .04, 1, i * .2 + .1); } },
+  splash: () => noise(.5, .35, 1200, .5, 'bandpass'),
+  hiss: () => noise(.9, .3, 3000, .4, 'highpass'),
+  rev: () => { tone(70, 1.2, 'sawtooth', .08, 4); noise(1.2, .2, 800); },
+  swell: () => [0, 7, 12].forEach(s => tone(110 * 2 ** (s / 12), 2.5, 'sawtooth', .03, 1.01)),
+  gong: () => { tone(98, 3, 'sine', .2, .98); tone(147, 3, 'sine', .08, .99); noise(.4, .3, 400) },
+  windows: () => [[622, 0], [932, .15], [831, .3], [1244, .45]].forEach(([f, d]) => tone(f, .9, 'sine', .06, 1, d)),
+  fanfare: () => [0, 4, 7, 12, 7, 12].forEach((s, i) => tone(392 * 2 ** (s / 12), .3, 'sawtooth', .04, 0, i * .14)),
 };
 
 /* =========================================================
-   VOICES: babble + placeholder TTS
+   VOICES: recorded clips (Web Audio) or placeholder TTS/babble
    ========================================================= */
 let greekVoice = null;
 const loadVoices = () => { greekVoice = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith('el')) || null; };
 if ('speechSynthesis' in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
-/* A line's voice either comes from a recorded clip (window.CLIPS, embedded by build.py
-   from audio/<scene>/<NN>.mp3) or, as a placeholder, from the browser's Greek TTS.
-   While a voice is still speaking, the timeline HOLDS at the end of that line,
-   so pictures and subtitles never run ahead of the audio. */
-let speaking = false, speakStart = 0, curClip = null;
-/* Clips are decoded into Web Audio buffers (the AudioContext is unlocked by the ▶ click),
-   because <audio> elements with data: URLs get blocked by autoplay rules and sandboxed previews. */
-const BUFS = {};
-function loadClips() {
+/* Clips come from window.CLIPS (embedded by build.py from audio/<scene>/<NN>.mp3) and are decoded
+   into Web Audio buffers: <audio> elements with data: URLs get blocked by autoplay rules and
+   sandboxed previews. Only the scenes around the playhead are kept decoded (memory).
+   While a voice is speaking the timeline HOLDS at the end of that line. */
+const BUFS = {}, DECODED_SCENES = new Set();
+let speaking = false, speakStart = 0, speakMax = 6, curClip = null, pendingKey = null;
+function decodeScene(id) {
+  if (!AC || DECODED_SCENES.has(id)) return;
+  DECODED_SCENES.add(id);
   for (const [key, src] of Object.entries(window.CLIPS || {})) {
-    if (!key.startsWith(SCENE.id + '/') || key in BUFS) continue;
+    if (!key.startsWith(id + '/') || key in BUFS) continue;
     BUFS[key] = null;
     const bin = atob(src.slice(src.indexOf(',') + 1)), bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    AC.decodeAudioData(bytes.buffer).then(b => { BUFS[key] = b; }, e => console.warn('clip decode failed', key, e));
+    AC.decodeAudioData(bytes.buffer).then(b => {
+      if (!DECODED_SCENES.has(id)) { delete BUFS[key]; return; }
+      BUFS[key] = b; if (pendingKey === key) startClip(key);
+    }, e => { console.warn('clip decode failed', key, e); delete BUFS[key]; if (pendingKey === key) { pendingKey = null; speaking = false; } });
   }
 }
-const clipKey = idx => `${SCENE.id}/${String(idx + 1).padStart(2, '0')}`;
-function voiceLine(L, idx) {
+function queueClips() {
+  if (!AC || !EP) return;
+  const i = EP.cur, keep = new Set([i - 1, i, i + 1, i + 2].filter(k => k >= 0 && k < EP.scenes.length).map(k => EP.scenes[k].id));
+  for (const id of [...DECODED_SCENES]) if (!keep.has(id)) { DECODED_SCENES.delete(id); for (const k in BUFS) if (k.startsWith(id + '/')) delete BUFS[k]; }
+  for (const id of keep) decodeScene(id);
+}
+const clipKey = (sc, idx) => `${sc.id}/${String(idx + 1).padStart(2, '0')}`;
+function startClip(key) {
+  pendingKey = null;
+  curClip = AC.createBufferSource(); curClip.buffer = BUFS[key]; curClip.connect(master);
+  curClip.onended = () => { speaking = false; };
+  speaking = true; speakStart = performance.now(); speakMax = BUFS[key].duration + 1.5; curClip.start();
+}
+function voiceLine(sc, L, idx) {
   stopVO();
   if (!soundOn) return;
-  const buf = AC && BUFS[clipKey(idx)];
-  if (buf) {
-    curClip = AC.createBufferSource(); curClip.buffer = buf; curClip.connect(master);
-    curClip.onended = () => { speaking = false; };
-    speaking = true; speakStart = performance.now(); curClip.start();
-    return;
-  }
+  const key = clipKey(sc, idx);
+  if (AC && BUFS[key]) return startClip(key);
+  if (AC && BUFS[key] === null) { pendingKey = key; speaking = true; speakStart = performance.now(); speakMax = 3; return; }   // still decoding: wait for it
   if (!voOn || !('speechSynthesis' in window)) return;
-  const v = SCENE.voices[L.who], u = new SpeechSynthesisUtterance(L.el.replace(/[«»*]/g, ''));
+  const v = voiceInfo(sc, L.who), u = new SpeechSynthesisUtterance(L.el.replace(/[«»*]/g, ''));
   if (greekVoice) u.voice = greekVoice; u.lang = 'el-GR'; u.rate = v.rate || 1; u.pitch = v.pitch || 1;
   u.onend = u.onerror = () => { speaking = false; };
-  speaking = true; speakStart = performance.now();
+  speaking = true; speakStart = performance.now(); speakMax = 8;
   speechSynthesis.speak(u);
 }
 function stopVO() {
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   if (curClip) { curClip.onended = null; try { curClip.stop(); } catch (e) {} curClip = null; }
-  speaking = false;
+  speaking = false; pendingKey = null;
 }
-const hasClip = idx => !!(AC && BUFS[clipKey(idx)]);
+const hasClip = (sc, idx) => !!(AC && BUFS[clipKey(sc, idx)]);
+
+/* default speaker labels / placeholder voice params (a scene may override with cfg.voices) */
+const VOICE_INFO = {
+  narrator: { el: 'ΑΦΗΓΗΤΗΣ', en: 'NARRATOR', col: '#e8e0c8', pitch: .55, rate: .88, babble: 150 },
+  giannos:  { el: 'ΓΙΑΝΝΟΣ', en: 'GIANNOS', col: '#8cc4ff', pitch: .95, rate: 1.05, babble: 300 },
+  mimis:    { el: 'ΜΗΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
+  giorgos:  { el: 'ΓΙΩΡΓΟΣ', en: 'GIORGOS', col: '#9be08a', pitch: 1.1, rate: 1.1, babble: 340 },
+  christos: { el: 'ΧΡΗΣΤΟΣ', en: 'CHRISTOS', col: '#7fa6ff', pitch: .85, rate: .9, babble: 260 },
+  kostas:   { el: 'ΚΩΣΤΑΣ', en: 'KOSTAS', col: '#c8f04a', pitch: .9, rate: 1, babble: 280 },
+  panik:    { el: 'PANIK', en: 'PANIK', col: '#c8f04a', pitch: .5, rate: .85, babble: 190 },
+  maria:    { el: 'ΜΑΡΙΑ', en: 'MARIA', col: '#ff9ac6', pitch: 1.5, rate: 1.12, babble: 480 },
+  myrsini:  { el: 'ΜΥΡΣΙΝΗ', en: 'MYRSINI', col: '#ffc37a', pitch: 1.3, rate: 1, babble: 420 },
+  vangelio: { el: 'ΒΑΓΓΕΛΙΩ', en: 'VANGELIO', col: '#e05a4a', pitch: .9, rate: .9, babble: 360 },
+  vasilis:  { el: 'ΒΑΣΙΛΗΣ', en: 'VASILIS', col: '#ffd23f', pitch: .5, rate: .82, babble: 170 },
+  sita:     { el: 'ΣΙΤΑ', en: 'SITA', col: '#5dff8a', pitch: 1.6, rate: 1.2, babble: 520 },
+};
+const voiceInfo = (sc, who) => (sc.voices && sc.voices[who]) || VOICE_INFO[who] || VOICE_INFO.narrator;
 
 /* =========================================================
-   PLAYER
+   SCENES
+   A scene is { id, dur, lines:[{a,b,who,el,en}], render(t, M), events, ambience }.
+   Instead of fixed times it can give `steps`: spoken lines { who, el, en, gap, cam, mark }
+   and silent actions { act: 'name', d: seconds, cam }. Timing is then laid out from the
+   real clip durations (window.CLIP_DUR, from build.py) or a reading-speed estimate, and
+   M['name'] = {a, b} (M.L[i] for the i-th line) lets the drawing code key off story beats.
    ========================================================= */
-let T = 0, started = false, lang = 'el', SCENE = null;
+const SCENES = [];
+function estDur(el) { return Math.max(.7, el.replace(/[^\p{L}\p{N}]/gu, '').length / 13 + .25 * (el.match(/[.,;!?…]/g) || []).length); }
+function compileScene(cfg) {
+  const sc = { events: [], fade: true, ...cfg, M: { L: [] } };
+  if (cfg.steps) {
+    let cur = cfg.start ?? .6, n = 0; sc.lines = []; sc.shots = [];
+    for (const st of cfg.steps) {
+      if (st.who) {
+        const a = cur + (st.gap ?? .3), key = `${sc.id}/${String(++n).padStart(2, '0')}`;
+        const d = (window.CLIP_DUR || {})[key] ?? estDur(st.el), b = a + d + .12;
+        const L = { ...st, a, b }; sc.lines.push(L); sc.M.L.push(L);
+        if (st.mark) sc.M[st.mark] = L;
+        const cam = st.cam ?? (cfg.autoCam ? cfg.autoCam(st.who, st) : null);
+        if (cam) sc.shots.push([st.cam ? cur : a - .15, cam]);
+        cur = b + (st.after || 0);
+      } else {
+        const a = cur + (st.gap || 0), b = a + st.d;
+        sc.M[st.act] = { a, b };
+        if (st.cam) sc.shots.push([a, st.cam]);
+        cur = b;
+      }
+    }
+    sc.dur = cur + (cfg.tail ?? .8);
+    if (cfg.events) sc.events = cfg.events(sc.M);
+  }
+  return sc;
+}
+function defineScene(cfg) { SCENES.push(cfg); }
+/* current shot for step-based scenes: returns [name, startTime] */
+function shotAt(sc, t) {
+  let s = sc.shots[0] || [0, null];
+  for (const sh of sc.shots) if (sh[0] <= t) s = sh; else break;
+  return s;
+}
+
+/* =========================================================
+   PLAYER (one timeline for all scenes of the episode)
+   ========================================================= */
+let T = 0, started = false, lang = 'el', EP = null, SCENE = null, FLAP = 0;
 function talk(who, t) {
-  for (const L of SCENE.lines) if (L.who === who && t >= L.a && t < L.b) return .3 + .7 * Math.abs(Math.sin(t * 13 + who.length));
+  for (const L of SCENE.lines) if (L.who === who && t >= L.a && t < L.b) return .3 + .7 * Math.abs(Math.sin(FLAP * 13 + who.length));
   return 0;
 }
+const speakingNow = (t) => SCENE.lines.find(l => t >= l.a && t < l.b);
 function drawSubs(t) {
-  const L = SCENE.lines.find(l => t >= l.a && t < l.b); if (!L) return;
-  const V = SCENE.voices[L.who], s = lang === 'el' ? L.el : L.en, name = lang === 'el' ? V.el : V.en;
+  const L = SCENE.lines.find(l => t >= l.a && t < l.b); if (!L || L.nosub) return;
+  const V = voiceInfo(SCENE, L.who), s = lang === 'el' ? L.el : L.en, name = L.label ? L.label[lang === 'el' ? 0 : 1] : (lang === 'el' ? V.el : V.en);
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.font = '700 29px "Noto Sans", sans-serif';
   const words = s.split(' '), rows = []; let cur = '';
@@ -191,16 +297,50 @@ function drawSubs(t) {
   rows.push(cur);
   const lh = 38, bw = Math.max(...rows.map(r => ctx.measureText(r).width)) + 56, bh = rows.length * lh + 24, bx = 640 - bw / 2, by = 696 - bh;
   ctx.fillStyle = 'rgba(18,14,20,.8)'; ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 12); ctx.fill();
-  ctx.font = '700 17px "Noto Sans", sans-serif'; const nw = ctx.measureText(name).width + 24;
-  ctx.fillStyle = V.col; ctx.beginPath(); ctx.roundRect(bx + 18, by - 14, nw, 28, 8); ctx.fill();
-  txt(name, bx + 18 + nw / 2, by, 17, INK, { font: TVFONT });
+  if (name) {
+    ctx.font = '700 17px "Noto Sans", sans-serif'; const nw = ctx.measureText(name).width + 24;
+    ctx.fillStyle = V.col; ctx.beginPath(); ctx.roundRect(bx + 18, by - 14, nw, 28, 8); ctx.fill();
+    txt(name, bx + 18 + nw / 2, by, 17, INK, { font: TVFONT });
+  }
   rows.forEach((r, i) => txt(r, 640, by + 12 + lh / 2 + i * lh, 29, '#fffaf0', { font: TVFONT }));
 }
-function runScene(cfg) {
-  SCENE = cfg;
+/* manga post-process: grayscale + contrast + halftone + panel border, k = 0..1 */
+let _buf = null;
+function mangaize(k = 1, border = true) {
+  if (k <= 0) return;
+  if (!_buf) { _buf = document.createElement('canvas'); _buf.width = W; _buf.height = H; }
+  const b = _buf.getContext('2d'); b.setTransform(1, 0, 0, 1, 0, 0); b.clearRect(0, 0, W, H); b.drawImage(cv, 0, 0);
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = k;
+  ctx.filter = 'grayscale(1) contrast(2.2) brightness(1.1)'; ctx.drawImage(_buf, 0, 0); ctx.filter = 'none';
+  ctx.globalAlpha = k * .35; ctx.fillStyle = INK;
+  for (let y = 0; y < H; y += 10) for (let x = (y / 10) % 2 ? 5 : 0; x < W; x += 10) { const r = .6 + Math.hypot(x - 640, y - 360) / 520; ctx.fillRect(x, y, r, r); }
+  ctx.globalAlpha = k;
+  if (border) { ctx.lineWidth = 16; ctx.strokeStyle = '#111'; ctx.strokeRect(8, 8, W - 16, H - 16); }
+  ctx.restore();
+}
+function speedLines(cx = 640, cy = 360, n = 60, r0 = 220, col = '#111', seed = 0) {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.strokeStyle = col;
+  for (let i = 0; i < n; i++) { const a = hash(i + seed + BOIL) * TAU, r = r0 + hash(i + 9 + BOIL) * 120; ctx.lineWidth = 1 + hash(i + 3) * 5; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r); ctx.lineTo(cx + Math.cos(a) * 1500, cy + Math.sin(a) * 1500); ctx.stroke(); }
+  ctx.restore();
+}
+function sfxText(s, x, y, size, rot = -.1, col = '#fff', sc = INK) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); txt(s, 0, 0, size, col, { font: TVFONT, style: 'italic', weight: 900, stroke: size / 6, sc }); ctx.restore();
+}
+function runEpisode(list, opts = {}) {
+  const scenes = list.map(compileScene);
+  let off = 0; for (const sc of scenes) { sc.off = off; off += sc.dur; }
+  EP = { scenes, dur: off, cur: 0 }; SCENE = scenes[0];
   const $ = id => document.getElementById(id);
   const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
-  $('scrub').max = cfg.dur;
+  const idxAt = t => { let i = 0; while (i < scenes.length - 1 && t >= scenes[i + 1].off) i++; return i; };
+  $('scrub').max = EP.dur;
+  const chap = $('chap');
+  if (chap) {
+    chap.innerHTML = scenes.map((s, i) => `<option value="${i}">${s.title || s.id}</option>`).join('');
+    chap.onchange = () => { stopVO(); T = scenes[+chap.value].off + .001; started = true; setScene(); updateUI(); };
+    if (scenes.length < 2) chap.hidden = true;
+  }
+  const setScene = () => { const i = idxAt(T); if (i !== EP.cur || SCENE !== scenes[i]) { EP.cur = i; SCENE = scenes[i]; queueClips(); if (chap) chap.value = i; } };
   const updateUI = () => {
     $('play').textContent = playing ? '❚❚ Pause' : '▶ Play';
     $('big').hidden = playing || started;
@@ -208,46 +348,64 @@ function runScene(cfg) {
     $('snd').textContent = soundOn ? '🔊' : '🔇';
     $('vo').style.opacity = voOn ? 1 : .45;
   };
-  const play = () => { ensureAudio(); if (T >= cfg.dur) T = 0; playing = true; started = true; updateUI(); };
+  const play = () => { if (T >= EP.dur) T = 0; setScene(); ensureAudio(); playing = true; started = true; updateUI(); };
   const pause = () => { playing = false; stopVO(); updateUI(); };
   $('big').onclick = play;
   $('play').onclick = () => playing ? pause() : play();
   $('restart').onclick = () => { stopVO(); T = 0; play(); };
-  $('scrub').oninput = e => { stopVO(); T = +e.target.value; started = true; updateUI(); };
+  $('scrub').oninput = e => { stopVO(); T = +e.target.value; started = true; setScene(); updateUI(); };
   $('lang').onclick = () => { lang = lang === 'el' ? 'en' : 'el'; updateUI(); };
   $('snd').onclick = () => { soundOn = !soundOn; if (soundOn) ensureAudio(); else stopVO(); updateUI(); };
   $('vo').onclick = () => { voOn = !voOn; if (!voOn) stopVO(); updateUI(); };
   $('fs').onclick = () => { document.fullscreenElement ? document.exitFullscreen() : $('stage').requestFullscreen?.(); };
-  window.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); } });
+  window.addEventListener('keydown', e => {
+    if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); }
+    if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') { stopVO(); T = clamp(T + (e.code === 'ArrowRight' ? 5 : -5), 0, EP.dur); started = true; setScene(); updateUI(); }
+  });
+  const draw = (t) => {
+    const sc = SCENE, lt = t - sc.off;
+    SEED = 0; BOIL = Math.floor(lt * 8);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.filter = 'none';
+    sc.render(lt, sc.M, sc);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1;
+    if (sc.fade) {
+      const f = Math.max(sc.fadeIn === false ? 0 : 1 - prog(lt, 0, .35), sc.fadeOut === false ? 0 : prog(lt, sc.dur - .35, sc.dur));
+      if (f > 0) { ctx.fillStyle = `rgba(0,0,0,${f})`; ctx.fillRect(0, 0, W, H); }
+    }
+    drawSubs(lt);
+  };
   let last = null;
   const frame = now => {
     if (last == null) last = now;
-    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    const dt = Math.min(.05, (now - last) / 1000); last = now; FLAP = now / 1000;
     if (playing) {
-      const prev = T;
-      // hold at the end of the current line while its voice is still going (max 6s safety)
-      const cur = cfg.lines.find(l => T >= l.a && T < l.b);
-      const hold = speaking && cur && T + dt >= cur.b - .02 && performance.now() - speakStart < 6000;
+      const sc = SCENE, prev = T - sc.off;
+      // hold at the end of the current line while its voice is still going
+      const cur = sc.lines.find(l => prev >= l.a && prev < l.b);
+      const hold = speaking && cur && prev + dt >= cur.b - .02 && performance.now() - speakStart < speakMax * 1000;
       if (!hold) T += dt;
-      if (T >= cfg.dur) { T = cfg.dur; pause(); }
-      if (soundOn && AC) for (const [et, fn] of cfg.events) if (et > prev && et <= T) fn();
-      cfg.lines.forEach((L, i) => { if (L.a > prev && L.a <= T) voiceLine(L, i); });
-      if (soundOn && AC && T > 0) {
-        const i = cfg.lines.findIndex(l => T >= l.a && T < l.b), L = cfg.lines[i];
-        if (L && !hasClip(i) && (!voOn || !greekVoice) && Math.floor(T / .085) > Math.floor(prev / .085)) { const V = cfg.voices[L.who]; tone(V.babble * (.85 + Math.random() * .35), .07, 'triangle', .04, .9 + Math.random() * .3); }
+      if (T >= sc.off + sc.dur && EP.cur < scenes.length - 1) { T = sc.off + sc.dur; }
+      const lt = Math.min(T - sc.off, sc.dur);
+      if (soundOn && AC) for (const [et, fn] of sc.events) if (et > prev && et <= lt) fn();
+      sc.lines.forEach((L, i) => { if (L.a > prev && L.a <= lt) voiceLine(sc, L, i); });
+      if (soundOn && AC && lt > 0) {
+        const i = sc.lines.findIndex(l => lt >= l.a && lt < l.b), L = sc.lines[i];
+        if (L && !hasClip(sc, i) && !pendingKey && (!voOn || !greekVoice) && Math.floor(lt / .085) > Math.floor(prev / .085)) tone(voiceInfo(sc, L.who).babble * (.85 + Math.random() * .35), .07, 'triangle', .04, .9 + Math.random() * .3);
       }
+      if (T >= EP.dur) { T = EP.dur; pause(); }
+      setScene();
     }
     if (AC) {
-      const a = cfg.ambience ? cfg.ambience(T) : { cicada: 0, mosq: 0 }, n = AC.currentTime, on = soundOn && playing;
-      amb.cG.gain.setTargetAtTime(on ? a.cicada : 0, n, .08); amb.mG.gain.setTargetAtTime(on ? a.mosq : 0, n, .08);
+      const lt = T - SCENE.off, a = SCENE.ambience ? SCENE.ambience(lt, SCENE.M) : {}, n = AC.currentTime, on = soundOn && playing;
+      amb.cG.gain.setTargetAtTime(on ? a.cicada || 0 : 0, n, .08); amb.mG.gain.setTargetAtTime(on ? a.mosq || 0 : 0, n, .08);
+      amb.krG.gain.setTargetAtTime(on ? a.cricket || 0 : 0, n, .08); amb.hG.gain.setTargetAtTime(on ? a.hum || 0 : 0, n, .08);
     }
-    SEED = 0; BOIL = Math.floor((started ? T : cfg.poster) * 8);
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    cfg.render(started ? T : cfg.poster);
-    drawSubs(started ? T : -1);
-    $('scrub').value = T; $('time').textContent = `${fmt(T)} / ${fmt(cfg.dur)}`;
+    draw(started ? T : (opts.poster ?? scenes[0].poster ?? 0));
+    $('scrub').value = T; $('time').textContent = `${fmt(T)} / ${fmt(EP.dur)}`;
     requestAnimationFrame(frame);
   };
-  window.renderAt = t => { started = true; T = t; updateUI(); SEED = 0; BOIL = Math.floor(t * 8); ctx.setTransform(1, 0, 0, 1, 0, 0); cfg.render(t); drawSubs(t); };
+  window.renderAt = t => { started = true; T = t; setScene(); updateUI(); draw(t); return { scene: SCENE.id, local: t - SCENE.off }; };
+  window.EPISODE = EP;
   updateUI(); requestAnimationFrame(frame);
 }
+function runScene(cfg) { runEpisode([cfg], { poster: cfg.poster }); }
