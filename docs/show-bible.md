@@ -102,3 +102,13 @@ The designs are cartoon caricatures based on the real friends. The photo itself 
 | **Γιάννος** | Short dark hair styled up, full short beard, strong eyebrows, serious "I've got a plan" stare. Dark grey hoodie. |
 | **Μήμης** | Shaved bald head, goatee and moustache, lip piercing, ear piercing, big grin. Black graphic hoodie with an ornate print. Pointing up, cocky. |
 | **Γιώργος** | Not in the photo (possibly the one taking the selfie?). His look is still TBD. |
+
+### More decisions (LOCKED)
+- **The σίτα's voice:** a hyper TV-shop presenter ("ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!").
+- **Μήμης's family:** dad **Βασίλης**, mom **Βαγγελιώ** (both in their 70s), sisters **Μαρία** and **Μυρσίνη** (mid-30s). Their personalities are TBD.
+- **The army:** the low-quality "smart" telemarketing junk that **Βασίλης has bought over the years**. Confirmed members:
+  - το έξυπνο λάστιχο που μεγαλώνει μόνο του (the self-expanding garden hose)
+  - η ηλεκτρική κουβέρτα
+  - οι έξυπνες λάμπες
+  - more to pick from the same kind of junk
+- **Χρήστος's manga framing:** small hints throughout, plus a switch to manga art style in the sci-fi scenes, so attentive viewers catch on.
