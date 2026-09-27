@@ -283,7 +283,7 @@ function render(t) {
 }
 
 runScene({
-  dur: 59, poster: 52.8, lines: LINES, voices: VOICES, render,
+  id: 'scene02', dur: 59, poster: 52.8, lines: LINES, voices: VOICES, render,
   events: [[1.2, SFX.slap], [2.2, SFX.slap], [4.0, SFX.slap], [6.3, SFX.slap], [1.5, SFX.sip], [14.7, SFX.sip],
     [33.0, SFX.creak], [43.45, SFX.slam], [43.95, SFX.crash], [48.6, SFX.door], [48.8, SFX.flies], [49.2, SFX.choir]],
   ambience: t => ({ cicada: t > 33.4 && t < 43.2 ? .012 : .03, mosq: .004 }),

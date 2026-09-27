@@ -130,14 +130,34 @@ const SFX = {
 let greekVoice = null;
 const loadVoices = () => { greekVoice = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith('el')) || null; };
 if ('speechSynthesis' in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
-function say(text, v) {
-  if (!voOn || !soundOn || !('speechSynthesis' in window)) return;
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text.replace(/[«»*]/g, ''));
+/* A line's voice either comes from a recorded clip (window.CLIPS, embedded by build.py
+   from audio/<scene>/<NN>.mp3) or, as a placeholder, from the browser's Greek TTS.
+   While a voice is still speaking, the timeline HOLDS at the end of that line,
+   so pictures and subtitles never run ahead of the audio. */
+let speaking = false, speakStart = 0, curClip = null;
+function voiceLine(L, idx) {
+  stopVO();
+  const key = `${SCENE.id}/${String(idx + 1).padStart(2, '0')}`, src = (window.CLIPS || {})[key];
+  if (!soundOn) return;
+  if (src) {
+    curClip = new Audio(src); speaking = true; speakStart = performance.now();
+    curClip.onended = curClip.onerror = () => { speaking = false; };
+    curClip.play().catch(() => { speaking = false; });
+    return;
+  }
+  if (!voOn || !('speechSynthesis' in window)) return;
+  const v = SCENE.voices[L.who], u = new SpeechSynthesisUtterance(L.el.replace(/[«»*]/g, ''));
   if (greekVoice) u.voice = greekVoice; u.lang = 'el-GR'; u.rate = v.rate || 1; u.pitch = v.pitch || 1;
+  u.onend = u.onerror = () => { speaking = false; };
+  speaking = true; speakStart = performance.now();
   speechSynthesis.speak(u);
 }
-const stopVO = () => { if ('speechSynthesis' in window) speechSynthesis.cancel(); };
+function stopVO() {
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  if (curClip) { curClip.pause(); curClip = null; }
+  speaking = false;
+}
+const hasClips = () => Object.keys(window.CLIPS || {}).some(k => k.startsWith(SCENE.id + '/'));
 
 /* =========================================================
    PLAYER
@@ -190,10 +210,15 @@ function runScene(cfg) {
     if (last == null) last = now;
     const dt = Math.min(.05, (now - last) / 1000); last = now;
     if (playing) {
-      const prev = T; T += dt; if (T >= cfg.dur) { T = cfg.dur; pause(); }
+      const prev = T;
+      // hold at the end of the current line while its voice is still going (max 6s safety)
+      const cur = cfg.lines.find(l => T >= l.a && T < l.b);
+      const hold = speaking && cur && T + dt >= cur.b - .02 && performance.now() - speakStart < 6000;
+      if (!hold) T += dt;
+      if (T >= cfg.dur) { T = cfg.dur; pause(); }
       if (soundOn && AC) for (const [et, fn] of cfg.events) if (et > prev && et <= T) fn();
-      for (const L of cfg.lines) if (L.a > prev && L.a <= T) say(L.el, cfg.voices[L.who]);
-      if (soundOn && AC && T > 0) {
+      cfg.lines.forEach((L, i) => { if (L.a > prev && L.a <= T) voiceLine(L, i); });
+      if (soundOn && AC && T > 0 && !hasClips()) {
         const L = cfg.lines.find(l => T >= l.a && T < l.b);
         if (L && (!voOn || !greekVoice) && Math.floor(T / .085) > Math.floor(prev / .085)) { const V = cfg.voices[L.who]; tone(V.babble * (.85 + Math.random() * .35), .07, 'triangle', .04, .9 + Math.random() * .3); }
       }
