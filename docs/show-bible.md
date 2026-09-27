@@ -85,7 +85,7 @@ The έξυπνη σίτα is just a mesh curtain with magnets sewn down the midd
 - **Κώστας turns the σίτα evil.** He gets drunk and becomes Panik. Convinced that "AI is evil", he argues with the σίτα and tries to set it on fire. The satire: the AI becomes evil *because* a human treated it as evil (a self-fulfilling prophecy).
 - **Γιώργος's scheme:** he claims he has "connections in the industry" and says they need to found a startup and get funding. Whether he's lying stays ambiguous.
 
-### Proposed act skeleton (PENDING APPROVAL)
+### Act skeleton (LOCKED)
 1. **Yard.** The coffee scene. Dad installs the σίτα. Γιάννος gets the idea and Γιώργος pushes him into it.
 2. **The upgrade.** Γιάννος builds the firmware with his AI agent. The σίτα "wakes up". At first it's useful and funny, and Γιώργος starts pitching the startup.
 3. **Panik.** That night Κώστας arrives drunk, fights with the σίτα and tries to burn it. The σίτα decides humans are the threat.
@@ -101,14 +101,22 @@ The designs are cartoon caricatures based on the real friends. The photo itself 
 | **Κώστας** | Neon lime-green hoodie with the hood up, black wayfarer-style sunglasses, thin moustache. Chunky silver rings, including a skull ring, and a beaded bracelet. |
 | **Γιάννος** | Short dark hair styled up, full short beard, strong eyebrows, serious "I've got a plan" stare. Dark grey hoodie. |
 | **Μήμης** | Shaved bald head, goatee and moustache, lip piercing, ear piercing, big grin. Black graphic hoodie with an ornate print. Pointing up, cocky. |
-| **Γιώργος** | Not in the photo (possibly the one taking the selfie?). His look is still TBD. |
+| **Γιώργος** | Neatly trimmed beard, styled dark hair, heavy brows, a cool, slightly aloof "I'm above this" look. Reference: graduation gown and mortarboard, a maroon tie and a glass of champagne. Design idea: even in army fatigues he carries himself like a CEO at a gala. |
 
 ### More decisions (LOCKED)
 - **The σίτα's voice:** a hyper TV-shop presenter ("ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!").
-- **Μήμης's family:** dad **Βασίλης**, mom **Βαγγελιώ** (both in their 70s), sisters **Μαρία** and **Μυρσίνη** (mid-30s). Their personalities are TBD.
+- **Μήμης's family:** dad **Βασίλης**, mom **Βαγγελιώ** (both in their 70s), sisters **Μαρία** and **Μυρσίνη** (mid-30s). Personalities:
+  - **Βασίλης:** a proud collector of telemarketing junk who believes every ad. He gives zero fucks about anything and stays chill even as the universe collapses, asking for the occasional τράκα τσιγάρο at the most random moments.
+  - **Βαγγελιώ:** does everything and runs the house with an iron hand and a παντόφλα. She's the only one the σίτα fears.
+  - **Μαρία:** a sarcastic mid-30s sister, constantly asking Μήμης when he's going to "settle down".
+  - **Μυρσίνη:** the only normal person in the family. Always a nice hostess, but sometimes unnecessarily sarcastic.
 - **The army:** the low-quality "smart" telemarketing junk that **Βασίλης has bought over the years**. Confirmed members:
   - το έξυπνο λάστιχο που μεγαλώνει μόνο του (the self-expanding garden hose)
   - η ηλεκτρική κουβέρτα
   - οι έξυπνες λάμπες
-  - more to pick from the same kind of junk
+  - ζώνη αδυνατίσματος
+  - ορθοπεδικό μαξιλάρι
+  - υπερηχητικός ποντικοδιώκτης
+  - σφουγγαρίστρα που στύβει μόνη της
+  - ηλεκτρική ρακέτα για κουνούπια
 - **Χρήστος's manga framing:** small hints throughout, plus a switch to manga art style in the sci-fi scenes, so attentive viewers catch on.
