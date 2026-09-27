@@ -1,4 +1,4 @@
-/* Ep.1, Scene 9 – «Panik» (script beat 9): Κώστας walks home drunk, becomes Panik and kicks a bin over for no reason. Opens Act 2. */
+/* Ep.1, Scene 9 – «Panik» (script beat 9): Κώστας walks home drunk, becomes Panik, stares at a bin, says «Σκουπίδια.» and kicks it over. Opens Act 2. */
 defineScene((() => {
 const CAMS = { card: [640, 360, 1], street: [640, 380, 1], kos: [0, 330, 2.2], pole: [640, 330, 1.9], poleC: [640, 300, 2.8], bin: [790, 470, 1.7], two: [800, 440, 1.6], kick: [850, 500, 1.5], house: [1100, 420, 1.5] };
 const steps = [
@@ -12,8 +12,8 @@ const steps = [
   { act: 'flash', d: .45, cam: 'poleC' },
   { who: 'panik', cam: 'poleC', el: 'Η πόλη κοιμάται.', en: 'The city sleeps.' },
   { who: 'panik', cam: 'poleC', el: 'Εγώ όχι.', en: 'I do not.', gap: .9 },
-  { act: 'stare', d: 2.4, cam: 'bin' },
-  { who: 'panik', cam: 'bin', mark: 'glare', el: 'Κι εσύ τι κοιτάς; Είσαι στειρωμένος; ΔΕΝ ΝΟΜΙΖΩ.', en: "And what are you looking at? Are you neutered? I DON'T THINK SO.", gap: .5 },
+  { act: 'stare', d: 2, cam: 'bin' },
+  { who: 'panik', cam: 'bin', mark: 'trash', el: 'Σκουπίδια.', en: 'Trash.', gap: .3 },
   { act: 'kick', d: 2.2, cam: 'kick' },
   { act: 'turn', d: 3.2, cam: 'house' },
 ];
