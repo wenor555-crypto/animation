@@ -16,3 +16,12 @@ Built round by round through the interview. Nothing here is final until marked *
 - **Platform:** TBD.
 - **Language:** Greek dialogue. Characters mostly use a standard accent; dialects appear only when the plot calls for them.
 - **Known episode idea:** the "έξυπνη σίτα" (a magnetic insect-screen door curtain from TV-shop ads and Jumbo) becomes too smart and tries to take over the world.
+
+## Round 2: The world (LOCKED)
+
+- **Episode 1 setting:** a small Greek town/village. Whether the whole series stays there is still open (see Round 3).
+- **Time:** present day.
+- **Sci-fi source:** it just happens and mostly nobody questions it (the Regular Show approach). Characters occasionally tap the 4th wall about how absurd it is.
+- **Locations:** chosen per episode. The whole everyday toolkit is available: περίπτερο, λαϊκή, καφενείο, ΚΕΠ/εφορία, μπαλκόνι, jobs, family Sunday lunch.
+- **Structure note:** episodes start grounded in everyday Greek life and escalate into the sci-fi side. In Ep. 1 that turn happens once the σίτα becomes too smart.
+- **Satire limits:** none. No topic is off-limits; the show is meant to be edgy.
