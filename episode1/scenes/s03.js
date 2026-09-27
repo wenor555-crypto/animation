@@ -17,7 +17,7 @@ const steps = [
   { act: 'm3', d: 1.6, cam: 'thumb' },        // pin into the thumb
   { who: 'vasilis', cam: 'thumb', el: 'Άου.', en: 'Ow.', gap: .5 },
   { act: 'looks', d: 1.2, cam: 'vclose' },
-  { who: 'vasilis', cam: 'vclose', el: 'Μήμη. Έχεις ένα τσιγάρο;', en: 'Mimis. Got a cigarette?' },
+  { who: 'vasilis', cam: 'vclose', el: 'Δημητράκι. Έχεις ένα τσιγάρο;', en: 'Dimitraki. Got a cigarette?' },
   { act: 'throw', d: 3.4, cam: 'two' },
   { who: 'vasilis', cam: 'door', el: 'Άντε. Πολιτισμός.', en: 'There we go. Civilization.', gap: .2 },
   { act: 'through', d: 3.2, cam: 'door' },

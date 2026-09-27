@@ -106,7 +106,7 @@ The designs are cartoon caricatures based on the real friends. The photo itself 
 ### More decisions (LOCKED)
 - **The σίτα's voice:** a hyper TV-shop presenter ("ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!").
 - **Μήμης's family:** dad **Βασίλης**, mom **Βαγγελιώ** (both in their 70s), sisters **Μαρία** and **Μυρσίνη** (mid-30s). Personalities:
-  - **Βασίλης:** a proud collector of telemarketing junk who believes every ad. He gives zero fucks about anything and stays chill even as the universe collapses, asking for the occasional τράκα τσιγάρο at the most random moments.
+  - **Βασίλης:** a proud collector of telemarketing junk who believes every ad. He gives zero fucks about anything and stays chill even as the universe collapses, asking for the occasional τράκα τσιγάρο at the most random moments. He calls his son «Δημητράκι», never «Μήμη».
   - **Βαγγελιώ:** does everything and runs the house with an iron hand and a παντόφλα. She's the only one the σίτα fears.
   - **Μαρία:** a sarcastic mid-30s sister, constantly asking Μήμης when he's going to "settle down".
   - **Μυρσίνη:** the only normal person in the family. Always a nice hostess, but sometimes unnecessarily sarcastic.
