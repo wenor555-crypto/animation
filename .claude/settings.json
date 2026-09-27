@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 episode1/tools/compute_client.py:*)"
+    ]
+  }
+}
