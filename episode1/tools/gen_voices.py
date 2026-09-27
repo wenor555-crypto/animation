@@ -18,8 +18,15 @@ MODEL = 'eleven_multilingual_v2'   # speaks Greek
 
 # character -> ElevenLabs voice_id. Fill these in after `--list` (or after designing voices).
 VOICES = {
-    'narrator': '', 'giannos': '', 'mimis': '', 'giorgos': '', 'christos': '', 'kostas': '',
-    'vasilis': '', 'vangelio': '', 'maria': '', 'myrsini': '', 'sita': '',
+    'narrator': 'nPczCjzI2devNBz1zQrb',  # Brian: deep, resonant (trailer V.O.)
+    'giannos': 'iP95p4xoKVk53GoZ742B',   # Chris: charming, down-to-earth (the plan-maker)
+    'mimis': 'N2lVS1w4EtoT3dr4eOWO',     # Callum: husky trickster (deadpan kamikaze)
+    'giorgos': 'cjVigY5qzO86Huf0OWal',   # Eric: smooth, trustworthy, classy (the charmer)
+    'christos': '', 'kostas': '',
+    'vasilis': 'pqHfZKP75CvOlQylNhV4',   # Bill: old, wise, balanced (zero-fucks calm)
+    'vangelio': '',
+    'maria': 'FGY2WhTYpPnrIDTdsKH5',     # Laura: quirky, sassy
+    'myrsini': '', 'sita': '',
 }
 # per-character delivery: lower stability = more expressive
 SETTINGS = {'default': {'stability': .4, 'similarity_boost': .8, 'style': .35},

@@ -271,9 +271,9 @@ function landscape(t) {
    TIMELINE
    ========================================================= */
 const LINES = [
-  { a: 4.6, b: 9.2, el: 'Λέχαιο. Αύγουστος. Τριάντα οχτώ βαθμοί υπό σκιά.', en: 'Lechaio. August. Thirty-eight degrees in the shade.' },
-  { a: 10.6, b: 15.4, el: 'Η ανθρωπότητα δεν ήξερε ότι το τέλος της πλησίαζε…', en: 'Humanity had no idea its end was near…' },
-  { a: 18.6, b: 22.4, el: '…και ότι θα ερχόταν σε έκπτωση.', en: '…or that it would arrive on sale.' },
+  { a: 4.6, b: 9.2, who: 'narrator', el: 'Λέχαιο. Αύγουστος. Τριάντα οχτώ βαθμοί υπό σκιά.', en: 'Lechaio. August. Thirty-eight degrees in the shade.' },
+  { a: 10.6, b: 15.4, who: 'narrator', el: 'Η ανθρωπότητα δεν ήξερε ότι το τέλος της πλησίαζε…', en: 'Humanity had no idea its end was near…' },
+  { a: 18.6, b: 22.4, who: 'narrator', el: '…και ότι θα ερχόταν σε έκπτωση.', en: '…or that it would arrive on sale.' },
 ];
 const CAMK = [[0, 640, 380, 1.05], [4, 640, 380, 1.05], [9.8, 640, 400, 1], [15.8, 610, 575, 1.9], [16.8, 600, 530, 1.5], [22.6, 560, 470, 1.2], [40, 560, 470, 1.2]];
 function cam(t) {
@@ -431,10 +431,18 @@ function say(text) {
   const u = new SpeechSynthesisUtterance(text); const v = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('el'));
   if (v) u.voice = v; u.lang = 'el-GR'; u.rate = .88; u.pitch = .55; speechSynthesis.speak(u);
 }
-const stopVO = () => { if ('speechSynthesis' in window) speechSynthesis.cancel(); };
+// recorded narrator clips (window.CLIPS, embedded by build.py from audio/scene01/NN.mp3) replace the TTS
+let curClip = null;
+const stopVO = () => { if ('speechSynthesis' in window) speechSynthesis.cancel(); if (curClip) { curClip.pause(); curClip = null; } };
+function voiceLine(L, idx) {
+  const src = (window.CLIPS || {})[`scene01/${String(idx + 1).padStart(2, '0')}`];
+  if (!src) return say(L.el);
+  if (!soundOn) return;
+  stopVO(); curClip = new Audio(src); curClip.play().catch(() => {});
+}
 function tick(a, b) {
   if (soundOn && AC) for (const [et, s] of EVENTS) if (et > a && et <= b) SFX[s]();
-  for (const L of LINES) if (L.a > a && L.a <= b) say(L.el);
+  LINES.forEach((L, i) => { if (L.a > a && L.a <= b) voiceLine(L, i); });
 }
 
 /* =========================================================
