@@ -135,9 +135,11 @@ The σίτα recruits by hacking devices **one by one**. Each hacked device give
 ## Placeholder voice cast (ElevenLabs, `eleven_v3`, `language_code: el`)
 These are stand-ins until real voice actors are cast. Every voice is a **native Greek** voice from the ElevenLabs Voice Library (`language: el`, 39 of them at casting time). They were chosen by audition: 6 candidates per role, 2 contrasting lines each, and every take transcribed with ElevenLabs speech-to-text to catch wrong words and wrong stress. Settings: stability .5 and similarity .8. Panik uses stability 0. The σίτα uses 0 on shouted lines (with `!` or CAPS) and .5 on the cold, quiet ones.
 
-Two things the audition showed, both handled in `episode1/tools/gen_voices.py`:
-- **CAPS lose their accent.** Greek capitals are written without tonos, so the model guesses the stress: «ΕΞΥΠΝΗ» came out as «εξυπνή» in almost every take. The text sent to TTS gets the accent back («ΈΞΥΠΝΗ»), so the line is still shouted but stressed right. The script and subtitles are unchanged.
-- **v3 sometimes invents words.** Every clip is transcribed and compared with the script. A take that doesn't match is redone (up to 4 takes, best kept). Results are in `episode1/audio/stt_report.json`.
+What the audition and production taught us, all handled in `episode1/tools/gen_voices.py` (only the text sent to TTS changes; the script and subtitles stay as written):
+- **CAPS lose their accent.** Greek capitals are written without tonos, so the model guesses the stress: «ΕΞΥΠΝΗ» came out as «εξυπνή» in almost every take. The text sent to TTS gets the accent back («ΈΞΥΠΝΗ»). A few words still get the wrong stress in CAPS («ΠΙΝΑΚΊΔΕΣ» → «πινάκιδες») and come out right in lowercase, so the 3rd take of a failing clip sends its CAPS in lowercase.
+- **«οι» inside a word gets split** into two vowels («ανο-ι-χτή»). The speech-to-text check can't hear this (it writes the word correctly anyway), so it was caught by ear. Inside words it is sent as «ι» («ανιχτή», «κιτάς»). The article «οι» stays: a lone «ι» is read as the letter name «γιώτα». Spelling ει/αι phonetically as well didn't help (49/60 takes passed against 52/60), so that is only the 4th-take fallback.
+- **v3 sometimes invents words** («γεμίσουν gambling με μύγες»). Every clip is transcribed with ElevenLabs speech-to-text and compared with the script (wrong words, wrong stress, invented foreign words, hallucinated tails). A take that fails is redone with the next strategy, up to 4 takes (8 for stubborn lines), and the best one is kept. Results are in `episode1/audio/stt_report.json`. All 216 clips pass.
+- Small spoken-form fixes live in `SAY` (numbers spelled out, «ΣίταAI» → «Σίτα Έι Άι», «Ωραία… σίτα» so the two words don't run together).
 
 | Character | Voice | Why |
 |---|---|---|

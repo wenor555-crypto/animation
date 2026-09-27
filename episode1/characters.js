@@ -197,6 +197,12 @@ function personArms(c, st) {
     if (item === 'souvlaki') { limb([[h[0], h[1]], [h[0] + side * 4, h[1] - 50]], 2, '#d9b889', { w: .2 }); for (let i = 0; i < 4; i++) blob(h[0] + side * 3, h[1] - 16 - i * 10, 8, 6, i % 2 ? '#8a4a2a' : '#a55a30', { lw: 2 }); }
     if (item === 'shirt') poly([[h[0] - 4, h[1] - 10], [h[0] + 60, h[1] - 30 + Math.sin(t * 8) * 8], [h[0] + 64, h[1] + 20 + Math.sin(t * 8 + 1) * 8], [h[0], h[1] + 10]], '#f6f5f0', { lw: 3, w: .6 });
     if (item === 'cup2') freddo(h[0], h[1] - 4);
+    if (item === 'weedbag') {        // a small clear zip bag, pinched at the top, green buds inside
+      const bx = h[0] + side * 2, by = h[1] - 12;
+      poly([[bx - 17, by - 6], [bx + 17, by - 6], [bx + 19, by + 34], [bx - 19, by + 34]], 'rgba(235,245,240,.55)', { lw: 2.5, w: .4 });
+      curve([[bx - 17, by - 1], [bx + 17, by - 1]], 2.5, '#c0392b', { w: .2 });
+      for (let i = 0; i < 6; i++) blob(bx - 10 + (i % 3) * 10 + hash(i) * 3, by + 14 + Math.floor(i / 3) * 10, 6, 5, i % 2 ? '#5f8a3a' : '#7aa84a', { lw: 1.8 });
+    }
   };
   arm([-52, -118], L, -1, st.itemL); arm([52, -118], R, 1, st.itemR);
 }

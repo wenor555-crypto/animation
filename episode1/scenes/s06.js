@@ -1,4 +1,4 @@
-/* Ep.1, Scene 6 – «Η αναβάθμιση» (script beat 6): dusk, soldering iron, the agent, Χρήστος arrives. */
+/* Ep.1, Scene 6 – «Η αναβάθμιση» (script beat 6): dusk, soldering iron, the agent, Χρήστος arrives (and shows Γιάννος the bag of weed he brought). */
 defineScene((() => {
 const X = { giannos: 905, giorgos: 720, christos: 520 };
 const CAMS = {
@@ -87,8 +87,11 @@ function render(t, _M, sc) {
   if (t > M.arrive.a) {
     const [cx, walking] = path(t, [[M.arrive.a, -80], [M.arrive.b - .3, 520]]);
     const sketching = t > M.L[10].a;
+    // «Έφερες;» — he pulls a little bag of weed out of his pocket and holds it up for Γιάννος to see
+    const bagA = M.L[8].a + .5, showBag = t > bagA && t < M.joint.b, bagUp = ease(prog(t, bagA, bagA + .6)) * (1 - ease(prog(t, M.joint.b - .5, M.joint.b)));
     stand(cx, 'christos', 1.05, { t, talk: talk('christos', t), legs: walking ? 'walk' : 'stand', look: t > M.look.a && t < M.look.b ? [Math.sin(t * 2), -.2] : lookAtSpeaker(t, 'christos', X, [1, 0]),
-      mouth: 'flat', L: sketching ? [-30, -110] : [-44, -24], R: sketching ? [30 + Math.sin(t * 12) * 8, -100] : t > M.joint.a && t < M.joint.a + 1.4 ? [120, -120] : [44, -24], itemL: 'sketch' });
+      mouth: 'flat', L: sketching ? [-30, -110] : [-44, -24], R: sketching ? [30 + Math.sin(t * 12) * 8, -100] : showBag ? [lerp(44, 96, bagUp), lerp(-24, -178, bagUp) + Math.sin(t * 7) * 4 * bagUp] : [44, -24],
+      itemL: 'sketch', itemR: showBag ? 'weedbag' : null });
   }
   ctx.restore();
   // torch light cone + dusk

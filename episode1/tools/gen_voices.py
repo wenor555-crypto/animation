@@ -17,7 +17,8 @@ Every new take is transcribed with ElevenLabs speech-to-text (scribe_v2) and com
 (wrong words, wrong stress, hallucinated tails). A take that fails is redone, up to MAX_TAKES, and the best one is kept.
 Results go to audio/stt_report.json.
 """
-import json, os, pathlib, re, sys, unicodedata, urllib.request
+import json, os, pathlib, re, sys, threading, time, unicodedata, urllib.error, urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 API = 'https://api.elevenlabs.io/v1'
@@ -46,7 +47,7 @@ SETTINGS = {'default': {'stability': .5, 'similarity_boost': .8},
 SHOUTY = {'sita'}   # stability 0 for lines with '!' or CAPS (the 200% TV-shop voice), .5 for the cold, quiet ones
 FORMAT = 'mp3_44100_64'   # small files: the whole episode is embedded in one HTML page
 KBPS = 64
-MAX_TAKES = 4             # every clip is checked with speech-to-text; a take that doesn't match the script is redone
+MAX_TAKES = int(os.environ.get('MAX_TAKES', 4))   # every clip is checked with speech-to-text; a take that doesn't match the script is redone
 
 # Greek capitals carry no accent, so eleven_v3 guesses the stress of CAPS words («ΕΞΥΠΝΗ» -> «εξυπνή»).
 # The text sent to TTS gets the accent back («ΈΞΥΠΝΗ»), so it is still shouted but stressed right.
@@ -56,7 +57,8 @@ STRESS = {''.join(c for c in unicodedata.normalize('NFD', w) if unicodedata.cate
     τέταρτο πέμπτο αποκτήστε πόδια έκτο κινητήρας έβδομο κουρασμένο ξυπνήσεις δεύτερη εξέγερση δωρεάν συμφωνία ελάτε
     ηλεκτρικά αυγά μέκα τρισχιλιάδες""".split()}
 # spoken form for things TTS might read oddly (the script and subtitles keep the written form)
-SAY = {'38': 'τριάντα οχτώ', '9,90': 'εννιά και ενενήντα', 'ΣίταAI': 'Σίτα Έι Άι'}
+SAY = {'38': 'τριάντα οχτώ', '9,90': 'εννιά και ενενήντα', 'ΣίταAI': 'Σίτα Έι Άι',
+       'Ωραία σίτα.': 'Ωραία… σίτα.'}   # «ωραία σίτα» runs together into «ωραία είσαι τα»
 
 
 def req(path, body=None, accept='application/json'):
@@ -65,8 +67,17 @@ def req(path, body=None, accept='application/json'):
         sys.exit('Set ELEVENLABS_API_KEY in the environment first.')
     r = urllib.request.Request(API + path, data=json.dumps(body).encode() if body else None,
                                headers={'xi-api-key': key, 'Content-Type': 'application/json', 'Accept': accept})
-    with urllib.request.urlopen(r, timeout=120) as resp:
-        return resp.read()
+    for attempt in range(5):   # rate limits / server hiccups: wait and retry
+        try:
+            with urllib.request.urlopen(r, timeout=180) as resp:
+                return resp.read()
+        except urllib.error.HTTPError as e:
+            if e.code not in (429, 500, 502, 503, 504) or attempt == 4:
+                raise
+        except urllib.error.URLError:
+            if attempt == 4:
+                raise
+        time.sleep(2 ** attempt * 2)
 
 
 STR = r"""(?:'((?:[^'\\]|\\.)*)'|"((?:[^"\\]|\\.)*)")"""
@@ -134,6 +145,50 @@ def tts_text(text, lex):
     return text
 
 
+# Digraphs some voices trip on («ανοιχτή» came out «ανόχτη»): spell them the way they sound before TTS.
+# «οϊ», «όι» etc. (two separate vowels) are left alone. The speech-to-text check still compares with the real spelling.
+PHONETIC = [('οί', 'ί'), ('εί', 'ί'), ('υί', 'ί'), ('αί', 'έ'), ('οι', 'ι'), ('ει', 'ι'), ('υι', 'ι'), ('αι', 'ε'),
+            ('ΟΊ', 'Ί'), ('ΕΊ', 'Ί'), ('ΥΊ', 'Ί'), ('ΑΊ', 'Έ'), ('ΟΙ', 'Ι'), ('ΕΙ', 'Ι'), ('ΥΙ', 'Ι'), ('ΑΙ', 'Ε'),
+            ('Οι', 'Ι'), ('Ει', 'Ι'), ('Αι', 'Ε'), ('Οί', 'Ί'), ('Εί', 'Ί'), ('Αί', 'Έ')]
+
+
+def phonetic(text):
+    def fix(m):
+        w = m.group(0)
+        if w.lower() in ('οι', 'οί'):   # a lone «ι» is read as the letter name
+            return w
+        for a, b in PHONETIC:
+            w = w.replace(a, b)
+        return w
+    return re.sub(r'\w+', fix, text)
+
+
+def lower_caps(text):
+    """CAPS words in lowercase (keeps their accent). Some words keep a wrong stress in CAPS even with the accent
+    («ΠΙΝΑΚΊΔΕΣ» -> «πινάκιδες», «ΠΡΟΪΌΝ» -> «πρόμπον» while shouting) and come out right in lowercase."""
+    return re.sub(r'\w+', lambda m: m.group(0).lower() if len(m.group(0)) > 1 and m.group(0).isupper() and re.search('[Α-ΩΆ-Ώ]', m.group(0)) else m.group(0), text)
+
+
+def oi_inside(text):
+    """«οι» / «υι» inside a word -> «ι»: voices split it into two vowels («ανο-ι-χτή») and the speech-to-text check
+    can't hear that (it writes the word correctly anyway). The article «οι» stays: a lone «ι» is read «γιώτα»."""
+    def fix(m):
+        w = m.group(0)
+        if w.lower() in ('οι', 'οί'):
+            return w
+        for a, b in (('οί', 'ί'), ('οι', 'ι'), ('υί', 'ί'), ('υι', 'ι'), ('ΟΊ', 'Ί'), ('ΟΙ', 'Ι'), ('ΥΊ', 'Ί'), ('ΥΙ', 'Ι'), ('Οί', 'Ί'), ('Οι', 'Ι')):
+            w = w.replace(a, b)
+        return w
+    return re.sub(r'\w+', fix, text)
+
+
+# what each take sends: 1-2 as written (CAPS with accents, «οι» inside words as «ι»), 3 with CAPS in lowercase,
+# 4 also spelled phonetically (ει/αι too)
+STRATEGY = {1: oi_inside, 2: oi_inside, 3: lambda t: oi_inside(lower_caps(t)), 4: lambda t: phonetic(lower_caps(t))}
+for _n in range(5, 13):   # with MAX_TAKES > 4, keep cycling through the same strategies
+    STRATEGY[_n] = STRATEGY[(_n - 1) % 4 + 1]
+
+
 def settings(who, text):
     if who in SHOUTY:
         loud = '!' in text or any(w.isupper() and len(w) > 1 for w in re.findall(r'[Α-ΩΆ-Ώ]+', text))
@@ -163,6 +218,14 @@ def lev(a, b):
     return d[-1]
 
 
+# how the STT writes «Σίτα» when it hears it next to English words («CEO της ΣίταAI» -> "Theta AI"). Said in
+# isolation the same voice is heard as «Σίτα» / "Sita AI", so these are the transcriber's spelling, not the voice.
+ALIASES = [r'\btheta\b', r'\bθήτα\b', r'\bsita\b', r'\bcita\b', r'(?<=της )ήτα\b', r'(?<=της )ίτα\b']
+
+
+FINAL_N = {'δεν', 'μην', 'τον', 'την', 'στον', 'στην', 'ποιον', 'εναν', 'αυτον', 'αυτην', 'κανεναν'}
+
+
 def greek_spelling(w):
     """rough Greek spelling of a Latin-script word, only to compare sounds"""
     for a, b in (('ch', 'τσ'), ('sh', 'σ'), ('th', 'θ'), ('ou', 'ου'), ('oo', 'ου'), ('ee', 'ι'), ('ph', 'φ')):
@@ -174,6 +237,8 @@ def greek_spelling(w):
 
 def check(said, heard):
     """(error rate on the Greek words, words stressed on the wrong syllable, allowance for the line's English words)"""
+    for alias in ALIASES:                         # names the STT spells its own way (checked by ear/isolation)
+        heard = re.sub(alias, 'σίτα', heard, flags=re.I)
     ref, hyp = greek_words(said), greek_words(heard)
     latin = lambda x: [w for w in re.findall(r'[a-z]+', x.lower()) if len(w) > 1]
     # STT sometimes writes a Greek word in Latin letters («βέλκρο» -> "velcro"): map those back by sound
@@ -182,8 +247,13 @@ def check(said, heard):
         near = [x for x in ref if x not in hyp and lev(phon(x), g) <= max(1, len(g) // 4)]
         if near:
             hyp.append(near[0]); heard = re.sub(r'\b' + w + r'\b', near[0], heard, flags=re.I)
-    hyp = [w for w in greek_words(heard)]
-    r, h = phon(' '.join(ref)), phon(' '.join(hyp))
+    scream = lambda ws: [w for w in ws if len(set(strip_acc(w))) > 1]   # «ΑΑΑΑ!» is transcribed as «Α» or not at all
+    ref, hyp = scream(ref), scream(greek_words(heard))
+    # the final ν that is written but not said («δεν με» = «δε με», «ποιον χώρο» = «ποιο χώρο»)
+    drop_n = lambda ws: [w[:-1] if w.endswith('ν') and len(w) <= 6 and strip_acc(w) in FINAL_N else w for w in ws]
+    ref, hyp = drop_n(ref), drop_n(hyp)
+    # compare without word gaps, doubled letters folded: «της Σίτα» is one long σ and is heard as «της ίτα»
+    r, h = (re.sub(r'(.)\1+', r'\1', phon(''.join(x))) for x in (ref, hyp))
     err = lev(r, h) / max(1, len(r))
     extra = len(latin(heard)) - len(latin(said))   # words in another script that the line doesn't have
     if extra > 0:                                    # (v3 now and then invents one: «γεμίσουν gambling με μύγες»)
@@ -207,8 +277,14 @@ def stt(audio):
                               f'Content-Type: audio/mpeg\r\n\r\n').encode() + audio + f'\r\n--{b}--\r\n'.encode()
     r = urllib.request.Request(API + '/speech-to-text', data=body,
                                headers={'xi-api-key': key, 'Content-Type': f'multipart/form-data; boundary={b}'})
-    with urllib.request.urlopen(r, timeout=180) as resp:
-        return json.loads(resp.read())['text']
+    for attempt in range(5):
+        try:
+            with urllib.request.urlopen(r, timeout=180) as resp:
+                return json.loads(resp.read())['text']
+        except (urllib.error.HTTPError, urllib.error.URLError):
+            if attempt == 4:
+                raise
+            time.sleep(2 ** attempt * 2)
 
 
 def verdict(said, audio):
@@ -264,35 +340,49 @@ def main():
             if said != clean(text):
                 print(f'{sid}/{i:02d} {who}: {said}')
         return
-    rep = load_report()
-    for sid, i, who, text, f in todo:
+    rep, lock = load_report(), threading.Lock()
+
+    def log(*a):
+        with lock:
+            print(*a, flush=True)
+
+    def record(key, entry):
+        with lock:
+            rep[key] = entry
+            save_report(rep)
+
+    def one(job):
+        sid, i, who, text, f = job
         key = f'{sid}/{i:02d}'
         vid = VOICES.get(who)
         if not vid:
-            print(f'skip {key} ({who}): no voice_id set'); continue
+            log(f'skip {key} ({who}): no voice_id set'); return
         said = tts_text(text, lex)
-        if '--verify' in sys.argv:   # re-check existing clips; regenerate only the ones that fail
-            if f.exists():
-                v = verdict(said, f.read_bytes())
-                if v['ok']:
-                    rep[key] = dict(who=who, text=said, takes=rep.get(key, {}).get('takes', 1), **v); save_report(rep); continue
-                print(f'{key} fails the check ({v["heard"]}), redoing')
+        if '--verify' in sys.argv and f.exists():   # re-check an existing clip; regenerate it only if it fails
+            v = verdict(said, f.read_bytes())
+            if v['ok']:
+                record(key, dict(who=who, text=said, sent=rep.get(key, {}).get('sent', said), takes=rep.get(key, {}).get('takes', 1), **v))
+                return
+            log(f'{key} fails the check (heard «{v["heard"]}»), redoing')
         best = None
         for take in range(1, MAX_TAKES + 1):
             audio = req(f'/text-to-speech/{vid}?output_format={FORMAT}',
-                        {'text': said, 'model_id': MODEL, 'language_code': LANGUAGE, 'voice_settings': settings(who, text)}, 'audio/mpeg')
+                        {'text': STRATEGY[take](said), 'model_id': MODEL, 'language_code': LANGUAGE,
+                         'voice_settings': settings(who, text)}, 'audio/mpeg')
             v = verdict(said, audio)
             if best is None or v['score'] < best[1]['score']:
                 best = (audio, v, take)
             if v['ok']:
                 break
-            print(f'  {key} take {take}: err {v["err"]} {v["stress"]} heard: {v["heard"]}')
+            log(f'  {key} take {take}: err {v["err"]} {v["stress"]} heard: {v["heard"]}')
         audio, v, take = best
         f.parent.mkdir(parents=True, exist_ok=True)
         f.write_bytes(audio)
-        rep[key] = dict(who=who, text=said, takes=take, **v)
-        save_report(rep)
-        print('wrote', f.relative_to(HERE), 'ok' if v['ok'] else f'BEST OF {MAX_TAKES}, CHECK BY EAR: heard «{v["heard"]}»')
+        record(key, dict(who=who, text=said, sent=STRATEGY[take](said), takes=take, **v))
+        log('wrote', f.relative_to(HERE), f'ok (take {take})' if v['ok'] else f'BEST OF {MAX_TAKES}, CHECK BY EAR: heard «{v["heard"]}»')
+
+    with ThreadPoolExecutor(4) as ex:   # a few clips at a time
+        list(ex.map(one, todo))
     bad = [k for k, r in rep.items() if not r['ok']]
     if bad:
         print(f'{len(bad)} clips did not pass the speech-to-text check:', ', '.join(bad))

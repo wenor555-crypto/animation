@@ -13,6 +13,7 @@ const steps = [
   { who: 'panik', cam: 'poleC', el: 'Η πόλη κοιμάται.', en: 'The city sleeps.' },
   { who: 'panik', cam: 'poleC', el: 'Εγώ όχι.', en: 'I do not.', gap: .9 },
   { act: 'stare', d: 2.4, cam: 'bin' },
+  { who: 'panik', cam: 'bin', mark: 'glare', el: 'Κι εσύ τι κοιτάς; Είσαι στειρωμένος; ΔΕΝ ΝΟΜΙΖΩ.', en: "And what are you looking at? Are you neutered? I DON'T THINK SO.", gap: .5 },
   { act: 'kick', d: 2.2, cam: 'kick' },
   { act: 'turn', d: 3.2, cam: 'house' },
 ];
