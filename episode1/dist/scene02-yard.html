@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Η Έξυπνη Σίτα · Σκηνή 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Noto+Sans:ital,wght@0,700;1,900&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#f4efe4; --panel:#fffaf0; --ink:#231a2e; --muted:#6b5f76; --accent:#d8453a; --btn:#231a2e; --btn-ink:#fffaf0; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg:#16111d; --panel:#221a2c; --ink:#f4efe4; --muted:#a99cb6; --accent:#ff6a5c; --btn:#f4efe4; --btn-ink:#16111d; }
+}
+:root[data-theme="dark"] { --bg:#16111d; --panel:#221a2c; --ink:#f4efe4; --muted:#a99cb6; --accent:#ff6a5c; --btn:#f4efe4; --btn-ink:#16111d; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:Comfortaa, system-ui, sans-serif; }
+main { max-width:1120px; margin:0 auto; padding:20px 16px 40px; }
+h1 { font:italic 900 clamp(24px,4.5vw,40px) "Noto Sans", sans-serif; margin:0; }
+header p { margin:4px 0 16px; color:var(--muted); font-size:14px; }
+.stage { position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:14px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,.25); }
+canvas { display:block; width:100%; height:100%; }
+#big { position:absolute; inset:0; margin:auto; width:96px; height:96px; border-radius:50%; border:5px solid #231a2e; background:#ffd23f; color:#231a2e; font-size:40px; cursor:pointer; box-shadow:0 6px 0 #231a2e; }
+#big[hidden] { display:none; }
+.bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:12px; background:var(--panel); padding:10px; border-radius:12px; }
+.bar button { font:inherit; font-size:14px; border:0; border-radius:8px; padding:8px 12px; background:var(--btn); color:var(--btn-ink); cursor:pointer; min-width:44px; }
+.bar input[type=range] { flex:1 1 200px; accent-color:var(--accent); min-width:0; }
+#time { font-variant-numeric:tabular-nums; font-size:13px; color:var(--muted); min-width:84px; text-align:right; }
+#note { font-size:12px; color:var(--muted); margin-top:8px; }
+.stage:fullscreen { border-radius:0; }
+
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Η Έξυπνη Σίτα</h1>
+    <p>Επεισόδιο 1 · Σκηνή 2: Η αυλή · space = play/pause</p>
+  </header>
+  <div class="stage" id="stage">
+    <canvas id="c" width="1280" height="720"></canvas>
+    <button id="big" aria-label="Play">▶</button>
+  </div>
+  <div class="bar">
+    <button id="play">▶ Play</button>
+    <button id="restart" title="Restart">⟲</button>
+    <input type="range" id="scrub" min="0" max="60" step="0.01" value="0" aria-label="Timeline">
+    <span id="time">0:00</span>
+    <button id="vo" title="Placeholder voices (browser text-to-speech)">🗣 Φωνές</button>
+    <button id="lang" title="Subtitle language">EN</button>
+    <button id="snd" title="Sound">🔊</button>
+    <button id="fs" title="Fullscreen">⛶</button>
+  </div>
+  <div id="note">The voices are placeholders from your browser's Greek text-to-speech (if your system has one). Turn them off with 🗣 to hear gibberish babble instead, until we record real voice actors.</div>
+</main>
+<script>
+/* =========================================================
+   «Η Έξυπνη Σίτα» – shared engine
+   Canvas primitives with line boil, synth audio, placeholder
+   narrator/voices (speechSynthesis), subtitles and the player.
+   ========================================================= */
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const W = 1280, H = 720, TAU = Math.PI * 2, INK = '#241d22';
+const TVFONT = '"Noto Sans", sans-serif';
+
+/* ---------- math ---------- */
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, k) => a + (b - a) * k;
+const ease = k => k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const back = k => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); };
+const bump = (t, a, b) => Math.sin(prog(t, a, b) * Math.PI);          // 0→1→0 over [a,b]
+function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+
+/* ---------- wobbly primitives (line boil at 8fps) ---------- */
+let SEED = 0, BOIL = 0;
+const jit = (sd, i, k) => (hash(sd * 12.9898 + i * 78.233 + BOIL * 37.719 + k * 3.3) - .5) * 2;
+function finish(fill, o) {
+  ctx.save();
+  if (o.alpha != null) ctx.globalAlpha *= o.alpha;
+  if (o.glow) { ctx.shadowColor = o.glow; ctx.shadowBlur = o.gb || 20; }
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (o.lw !== 0) { ctx.lineWidth = o.lw || 4; ctx.strokeStyle = o.sc || INK; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(); }
+  ctx.restore();
+}
+function blob(x, y, rx, ry, fill, o = {}) {
+  const sd = ++SEED, n = o.n || 24, w = o.w ?? 1.2, rot = o.rot || 0, cr = Math.cos(rot), sr = Math.sin(rot);
+  ctx.beginPath();
+  for (let i = 0; i < n; i++) {
+    const a = i / n * TAU, j = jit(sd, i, 0) * w, px = Math.cos(a) * (rx + j), py = Math.sin(a) * (ry + j);
+    const X = x + px * cr - py * sr, Y = y + px * sr + py * cr; i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y);
+  }
+  ctx.closePath(); finish(fill, o);
+}
+const wp = (pts, sd, w) => pts.map((p, i) => [p[0] + jit(sd, i, 1) * w, p[1] + jit(sd, i, 2) * w]);
+function poly(pts, fill, o = {}) {
+  const sd = ++SEED, P = wp(pts, sd, o.w ?? 1), L = P.length;
+  ctx.beginPath();
+  if (o.smooth) {
+    const m = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], s = m(P[L - 1], P[0]); ctx.moveTo(s[0], s[1]);
+    for (let i = 0; i < L; i++) { const mm = m(P[i], P[(i + 1) % L]); ctx.quadraticCurveTo(P[i][0], P[i][1], mm[0], mm[1]); }
+  } else P.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
+  ctx.closePath(); finish(fill, o);
+}
+function curve(pts, lw = 4, col = INK, o = {}) {
+  const sd = ++SEED, P = wp(pts, sd, o.w ?? .9), L = P.length;
+  ctx.beginPath(); ctx.moveTo(P[0][0], P[0][1]);
+  if (L === 2) ctx.lineTo(P[1][0], P[1][1]);
+  else for (let i = 1; i < L - 1; i++) { const e = i === L - 2; ctx.quadraticCurveTo(P[i][0], P[i][1], e ? P[i + 1][0] : (P[i][0] + P[i + 1][0]) / 2, e ? P[i + 1][1] : (P[i][1] + P[i + 1][1]) / 2); }
+  finish(null, { ...o, lw, sc: col });
+}
+function limb(pts, lw, col, o = {}) { curve(pts, lw + 6, INK, o); SEED--; curve(pts, lw, col, o); }
+function rect(x, y, w, h, fill, o = {}) { poly([[x, y], [x + w, y], [x + w, y + h], [x, y + h]], fill, o); }
+function txt(s, x, y, size, col, o = {}) {
+  ctx.font = `${o.style || ''} ${o.weight || 700} ${size}px ${o.font || 'Comfortaa, sans-serif'}`;
+  ctx.textAlign = o.align || 'center'; ctx.textBaseline = 'middle';
+  if (o.stroke) { ctx.lineWidth = o.stroke; ctx.strokeStyle = o.sc || INK; ctx.lineJoin = 'round'; ctx.strokeText(s, x, y); }
+  ctx.fillStyle = col; ctx.fillText(s, x, y);
+}
+function eye(x, y, r, lx, ly, bl, o = {}) {        // big whites, tiny dot pupils
+  if (bl) { curve([[x - r, y + 1], [x, y + r * .35], [x + r, y + 1]], 3); SEED++; return; }
+  blob(x, y, r, r * (o.sq || 1.08), '#fff', { lw: 3, w: .5 });
+  blob(x + lx * r * .45, y + ly * r * .45, o.pr || 2.8, o.pr || 2.8, INK, { lw: 0, w: .15, n: 10 });
+  if (o.lid) curve([[x - r, y - r * .2], [x + r, y - r * .2]], 3);      // half-lidded, bored
+}
+const blinkAt = (t, off) => ((t + off) % 3.7) < .12;
+function mosquito(x, y, s, t) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  ctx.globalAlpha *= .5; blob(0, -4 + Math.sin(t * 90) * 2, 4, 2, '#dfe9f2', { lw: 0 }); ctx.globalAlpha /= .5;
+  blob(0, 0, 4, 1.6, '#3b302c', { lw: 0 }); curve([[-2, 1], [-4, 5]], 1, INK, { w: 0 }); curve([[2, 1], [4, 5]], 1, INK, { w: 0 });
+  ctx.restore();
+}
+
+/* =========================================================
+   AUDIO: synth SFX + ambience
+   ========================================================= */
+let AC = null, master = null, amb = null, soundOn = true, voOn = true, playing = false;
+function ensureAudio() {
+  if (!AC) {
+    AC = new (window.AudioContext || window.webkitAudioContext)(); master = AC.createGain(); master.connect(AC.destination);
+    const osc = (type, f) => { const o = AC.createOscillator(); o.type = type; o.frequency.value = f; o.start(); return o; };
+    const gain = v => { const g = AC.createGain(); g.gain.value = v; return g; };
+    const nb = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate), d = nb.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const ns = AC.createBufferSource(); ns.buffer = nb; ns.loop = true; ns.start();
+    const cf = AC.createBiquadFilter(); cf.type = 'bandpass'; cf.frequency.value = 5200; cf.Q.value = 6;
+    const cAM = gain(0), lfo = osc('square', 34), lg = gain(.5); lfo.connect(lg); lg.connect(cAM.gain);
+    const cG = gain(0); ns.connect(cf); cf.connect(cAM); cAM.connect(cG); cG.connect(master);
+    const mq = osc('sawtooth', 560), vib = osc('sine', 7), vg = gain(18); vib.connect(vg); vg.connect(mq.frequency);
+    const mf = AC.createBiquadFilter(); mf.type = 'bandpass'; mf.frequency.value = 900; mf.Q.value = 1.2;
+    const mG = gain(0); mq.connect(mf); mf.connect(mG); mG.connect(master);
+    amb = { cG, mG };
+  }
+  if (AC.state === 'suspended') AC.resume();
+}
+function tone(f, dur, type = 'triangle', vol = .06, slide = 0, delay = 0) {
+  if (!soundOn || !AC) return;
+  const o = AC.createOscillator(), g = AC.createGain(), n = AC.currentTime + delay;
+  o.type = type; o.frequency.setValueAtTime(f, n); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(20, f * slide), n + dur);
+  g.gain.setValueAtTime(0, n); g.gain.linearRampToValueAtTime(vol, n + .008); g.gain.exponentialRampToValueAtTime(.0001, n + dur);
+  o.connect(g); g.connect(master); o.start(n); o.stop(n + dur + .02);
+}
+function noise(dur, vol = .2, freq = 800, q = .7, type = 'lowpass', delay = 0) {
+  if (!soundOn || !AC) return;
+  const n = AC.currentTime + delay, len = Math.floor(AC.sampleRate * dur), buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  const s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+  s.buffer = buf; f.type = type; f.frequency.value = freq; f.Q.value = q;
+  g.gain.setValueAtTime(vol, n); g.gain.exponentialRampToValueAtTime(.0001, n + dur);
+  s.connect(f); f.connect(g); g.connect(master); s.start(n);
+}
+const SFX = {
+  slap: () => { noise(.09, .5, 2400, .8, 'bandpass'); tone(180, .06, 'sine', .08, .5); },
+  sip: () => noise(.7, .12, 1400, 3, 'bandpass'),
+  creak: () => { tone(320, .5, 'sawtooth', .025, 1.6); tone(410, .4, 'sawtooth', .02, 1.4, .1); },
+  slam: () => { noise(.35, .6, 500); tone(70, .3, 'sine', .25, .5); },
+  crash: () => { noise(.5, .25, 4000, .5, 'highpass', .25); for (let i = 0; i < 6; i++) tone(2000 + Math.random() * 3000, .15, 'sine', .04, 1, .25 + i * .05); },
+  door: () => { noise(.25, .5, 700); tone(90, .25, 'sine', .2, .6); },
+  choir: () => [0, 4, 7, 12].forEach(s => { tone(261.6 * 2 ** (s / 12), 2.2, 'sine', .05); tone(261.6 * 2 ** (s / 12) * 1.005, 2.2, 'triangle', .025); }),
+  flies: () => { tone(200, 1.6, 'sawtooth', .025, 1.1); tone(230, 1.6, 'sawtooth', .02, .95); },
+};
+
+/* =========================================================
+   VOICES: babble + placeholder TTS
+   ========================================================= */
+let greekVoice = null;
+const loadVoices = () => { greekVoice = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith('el')) || null; };
+if ('speechSynthesis' in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+function say(text, v) {
+  if (!voOn || !soundOn || !('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text.replace(/[«»*]/g, ''));
+  if (greekVoice) u.voice = greekVoice; u.lang = 'el-GR'; u.rate = v.rate || 1; u.pitch = v.pitch || 1;
+  speechSynthesis.speak(u);
+}
+const stopVO = () => { if ('speechSynthesis' in window) speechSynthesis.cancel(); };
+
+/* =========================================================
+   PLAYER
+   ========================================================= */
+let T = 0, started = false, lang = 'el', SCENE = null;
+function talk(who, t) {
+  for (const L of SCENE.lines) if (L.who === who && t >= L.a && t < L.b) return .3 + .7 * Math.abs(Math.sin(t * 13 + who.length));
+  return 0;
+}
+function drawSubs(t) {
+  const L = SCENE.lines.find(l => t >= l.a && t < l.b); if (!L) return;
+  const V = SCENE.voices[L.who], s = lang === 'el' ? L.el : L.en, name = lang === 'el' ? V.el : V.en;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.font = '700 29px "Noto Sans", sans-serif';
+  const words = s.split(' '), rows = []; let cur = '';
+  for (const w of words) { const c = cur ? cur + ' ' + w : w; if (ctx.measureText(c).width > 1000 && cur) { rows.push(cur); cur = w; } else cur = c; }
+  rows.push(cur);
+  const lh = 38, bw = Math.max(...rows.map(r => ctx.measureText(r).width)) + 56, bh = rows.length * lh + 24, bx = 640 - bw / 2, by = 696 - bh;
+  ctx.fillStyle = 'rgba(18,14,20,.8)'; ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 12); ctx.fill();
+  ctx.font = '700 17px "Noto Sans", sans-serif'; const nw = ctx.measureText(name).width + 24;
+  ctx.fillStyle = V.col; ctx.beginPath(); ctx.roundRect(bx + 18, by - 14, nw, 28, 8); ctx.fill();
+  txt(name, bx + 18 + nw / 2, by, 17, INK, { font: TVFONT });
+  rows.forEach((r, i) => txt(r, 640, by + 12 + lh / 2 + i * lh, 29, '#fffaf0', { font: TVFONT }));
+}
+function runScene(cfg) {
+  SCENE = cfg;
+  const $ = id => document.getElementById(id);
+  const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  $('scrub').max = cfg.dur;
+  const updateUI = () => {
+    $('play').textContent = playing ? '❚❚ Pause' : '▶ Play';
+    $('big').hidden = playing || started;
+    $('lang').textContent = lang === 'el' ? 'EN' : 'ΕΛ';
+    $('snd').textContent = soundOn ? '🔊' : '🔇';
+    $('vo').style.opacity = voOn ? 1 : .45;
+  };
+  const play = () => { ensureAudio(); if (T >= cfg.dur) T = 0; playing = true; started = true; updateUI(); };
+  const pause = () => { playing = false; stopVO(); updateUI(); };
+  $('big').onclick = play;
+  $('play').onclick = () => playing ? pause() : play();
+  $('restart').onclick = () => { stopVO(); T = 0; play(); };
+  $('scrub').oninput = e => { stopVO(); T = +e.target.value; started = true; updateUI(); };
+  $('lang').onclick = () => { lang = lang === 'el' ? 'en' : 'el'; updateUI(); };
+  $('snd').onclick = () => { soundOn = !soundOn; if (soundOn) ensureAudio(); else stopVO(); updateUI(); };
+  $('vo').onclick = () => { voOn = !voOn; if (!voOn) stopVO(); updateUI(); };
+  $('fs').onclick = () => { document.fullscreenElement ? document.exitFullscreen() : $('stage').requestFullscreen?.(); };
+  window.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); } });
+  let last = null;
+  const frame = now => {
+    if (last == null) last = now;
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (playing) {
+      const prev = T; T += dt; if (T >= cfg.dur) { T = cfg.dur; pause(); }
+      if (soundOn && AC) for (const [et, fn] of cfg.events) if (et > prev && et <= T) fn();
+      for (const L of cfg.lines) if (L.a > prev && L.a <= T) say(L.el, cfg.voices[L.who]);
+      if (soundOn && AC && T > 0) {
+        const L = cfg.lines.find(l => T >= l.a && T < l.b);
+        if (L && (!voOn || !greekVoice) && Math.floor(T / .085) > Math.floor(prev / .085)) { const V = cfg.voices[L.who]; tone(V.babble * (.85 + Math.random() * .35), .07, 'triangle', .04, .9 + Math.random() * .3); }
+      }
+    }
+    if (AC) {
+      const a = cfg.ambience ? cfg.ambience(T) : { cicada: 0, mosq: 0 }, n = AC.currentTime, on = soundOn && playing;
+      amb.cG.gain.setTargetAtTime(on ? a.cicada : 0, n, .08); amb.mG.gain.setTargetAtTime(on ? a.mosq : 0, n, .08);
+    }
+    SEED = 0; BOIL = Math.floor((started ? T : cfg.poster) * 8);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    cfg.render(started ? T : cfg.poster);
+    drawSubs(started ? T : -1);
+    $('scrub').value = T; $('time').textContent = `${fmt(T)} / ${fmt(cfg.dur)}`;
+    requestAnimationFrame(frame);
+  };
+  window.renderAt = t => { started = true; T = t; updateUI(); SEED = 0; BOIL = Math.floor(t * 8); ctx.setTransform(1, 0, 0, 1, 0, 0); cfg.render(t); drawSubs(t); };
+  updateUI(); requestAnimationFrame(frame);
+}
+
+</script>
+<script>
+/* =========================================================
+   «Η Έξυπνη Σίτα» – character rig
+   Local coords: hips at (0,0), up is -y. Shoulders ≈ -120, head ≈ -200.
+   person(x, y, scale, design, state)
+   state.part: 'legs' | 'body' | 'arms' | 'all' (lets a table sit between body and arms)
+   ========================================================= */
+const CAST = {
+  mimis:   { skin: '#efc9a6', hair: 'bald', beard: 'goatee', beardCol: '#4a3a30', top: 'hoodie', topCol: '#29272d', print: true, lipRing: true, earRing: true, brow: '#4a3a30', rx: 50, ry: 58, legs: '#2c2c33', shoes: '#f2f2f2' },
+  giorgos: { skin: '#d8a47c', hair: 'swoop', hairCol: '#211a17', beard: 'trim', beardCol: '#231a16', top: 'tee', topCol: '#f4f3ee', shades: true, brow: '#1b1411', browW: 6, rx: 46, ry: 55, legs: '#6b7048', shoes: '#2d2a26' },
+  giannos: { skin: '#dcaa84', hair: 'quiff', hairCol: '#1d1613', beard: 'full', beardCol: '#221914', top: 'tee', topCol: '#34425c', brow: '#1d1613', browW: 6, rx: 46, ry: 55, legs: '#3e4a5e', shoes: '#9aa0a8' },
+  vasilis: { skin: '#d39a70', hair: 'old', hairCol: '#ebe7df', beard: 'stubble', mustache: '#e8e4dc', top: 'tank', topCol: '#f6f4ee', belly: true, brow: '#d9d4c8', rx: 48, ry: 54, legs: '#3d5f8f', shoes: '#2b6fb3' },
+  maria:   { skin: '#e7b994', hair: 'bun', hairCol: '#3b2a22', top: 'tank', topCol: '#b9477a', earrings: true, lips: '#b5475a', brow: '#3b2a22', rx: 44, ry: 52, legs: '#333', shoes: '#333' },
+};
+
+function freddo(x, y, s = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  curve([[4, -34], [10, -58], [16, -62]], 3.5, '#d8392b', { w: .3 });
+  poly([[-12, -36], [12, -36], [9, 10], [-9, 10]], 'rgba(226,238,242,.75)', { lw: 3, w: .4 });
+  poly([[-10.5, -18], [10.5, -18], [9, 9], [-9, 9]], '#6b3e1f', { lw: 0, w: .3 });
+  poly([[-11, -26], [11, -26], [10.5, -18], [-10.5, -18]], '#d9b48a', { lw: 0, w: .3 });
+  for (const [a, b] of [[-4, -8], [3, 0], [-2, 4]]) rect(a - 3, b - 3, 6, 6, 'rgba(255,255,255,.7)', { lw: 0 });
+  ctx.restore();
+}
+function cigarette(x, y, rot, t, seed = 0) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  rect(0, -2.5, 22, 5, '#f7f5ef', { lw: 2, w: .2 }); rect(0, -2.5, 6, 5, '#d9914a', { lw: 0 });
+  blob(23, 0, 2.5, 2.5, '#ff6a2a', { lw: 0, glow: '#ff6a2a', gb: 8 });
+  ctx.restore();
+  for (let i = 0; i < 3; i++) { const p = (t * .45 + i / 3 + seed) % 1; blob(x + Math.cos(rot) * 24 + Math.sin(p * 6 + seed) * 6, y + Math.sin(rot) * 24 - p * 70, 3 + p * 9, 3 + p * 9, `rgba(215,215,215,${.45 * (1 - p)})`, { lw: 0 }); }
+}
+function phone(x, y) { ctx.save(); ctx.translate(x, y); ctx.rotate(-.2); rect(-9, -16, 18, 32, '#1b1b1f', { lw: 2.5, w: .2 }); rect(-7, -13, 14, 24, '#5b87c4', { lw: 0 }); ctx.restore(); }
+
+function person(x, y, s, c, st = {}) {
+  const t = st.t || 0, tk = st.talk || 0, part = st.part || 'all', has = p => part === 'all' || part === p;
+  ctx.save(); ctx.translate(x, y); ctx.scale(s * (st.dir || 1), s);
+  if (has('legs')) personLegs(c, st);
+  if (has('body')) { personBody(c, st); personHead(c, st); }
+  if (has('arms')) personArms(c, st);
+  ctx.restore();
+}
+function personLegs(c, st) {
+  const t = st.t || 0;
+  if (st.legs === 'stand' || st.legs === 'walk') {
+    const sw = st.legs === 'walk' ? Math.sin(t * 9) * 16 : 0;
+    for (const [side, ph] of [[-1, 1], [1, -1]]) {
+      const fx = side * 22 + sw * ph;
+      limb([[side * 24, 40], [side * 24 + sw * ph * .5, 90], [fx, 146]], 13, c.skin, { w: .4 });
+      blob(fx + 8, 150, 20, 6, c.shoes, { lw: 3, w: .4 });
+      curve([[fx - 4, 146], [fx + 6, 140], [fx + 14, 147]], 3, c.shoes, { w: .2 });
+    }
+    poly([[-54, -6], [54, -6], [58, 60], [4, 60], [0, 30], [-4, 60], [-58, 60]], c.legs, { lw: 4, w: .6 });
+  } else {                                  // seated: only the shins show under a table
+    for (const side of [-1, 1]) {
+      limb([[side * 30, 60], [side * 34, 128]], 16, c.legs, { w: .4 });
+      blob(side * 36 + 8, 132, 20, 8, c.shoes, { lw: 3, w: .4 });
+    }
+  }
+}
+function personBody(c, st) {
+  if (c.hair === 'bun') blob(0, -262, 20, 16, c.hairCol, { lw: 3.5 });
+  const torso = [[-40, -134], [40, -134], [58, -116], [54, 0], [-54, 0], [-58, -116]];
+  if (c.top === 'tank') {
+    poly(torso, c.skin, { smooth: true, lw: 4, w: .6 });
+    poly([[-32, -132], [-20, -132], [-14, -102], [14, -102], [20, -132], [32, -132], [50, -98], [52, 0], [-52, 0], [-50, -98]], c.topCol, { lw: 3.5, w: .6 });
+    if (c.belly) { blob(0, -34, 62, 50, c.topCol, { lw: 3.5, w: .8 }); curve([[-6, -20], [0, -16], [6, -20]], 2, '#c9c3b6'); }
+  } else {
+    poly(torso, c.topCol, { smooth: true, lw: 4, w: .6 });
+    if (c.top === 'hoodie') {
+      poly([[-34, -134], [34, -134], [22, -116], [0, -110], [-22, -116]], '#1f1e22', { lw: 3, w: .4 });
+      curve([[-10, -118], [-12, -86]], 2.5, '#cfcfd4'); curve([[10, -118], [12, -86]], 2.5, '#cfcfd4');
+      if (c.print) {
+        ctx.save(); ctx.globalAlpha = .75;
+        curve([[-34, -70], [-20, -86], [-6, -72], [8, -88], [24, -72], [36, -82]], 3, '#8e8d96', { w: .6 });
+        curve([[-30, -52], [-14, -62], [0, -50], [16, -62], [32, -50]], 3, '#8e8d96', { w: .6 });
+        curve([[-22, -40], [0, -34], [22, -40]], 2.5, '#8e8d96', { w: .6 });
+        ctx.restore();
+      }
+    } else curve([[-16, -132], [0, -120], [16, -132]], 3);
+  }
+  blob(0, -142, 15, 12, c.skin, { lw: 3.5, w: .4 });
+}
+function personHead(c, st) {
+  const t = st.t || 0, tk = st.talk || 0, rx = c.rx, ry = c.ry, lk = st.look || [0, 0];
+  ctx.save(); ctx.translate(0, -202 + (st.bob || 0)); ctx.rotate(st.tilt || 0);
+  blob(-rx + 1, 4, 9, 13, c.skin, { lw: 3.5, w: .4 }); blob(rx - 1, 4, 9, 13, c.skin, { lw: 3.5, w: .4 });
+  blob(0, 0, rx, ry, c.skin, { lw: 4, w: .7 });
+  // hair
+  if (c.hair === 'bald') blob(-16, -36, 13, 6, 'rgba(255,255,255,.5)', { lw: 0, rot: -.3 });
+  if (c.hair === 'swoop') {   // styled, side part, volume swept to one side
+    poly([[-rx + 1, -2], [-rx - 3, -30], [-32, -ry - 5], [-6, -ry - 13], [22, -ry - 11], [rx + 3, -ry + 12], [rx + 4, -30], [rx, -6], [rx - 7, -24], [26, -36], [-2, -33], [-24, -25], [-rx + 8, -10]], c.hairCol, { lw: 3.5, w: .5 });
+    curve([[-18, -ry - 4], [-10, -ry + 12]], 2.5, '#4a3a33', { w: .3 });
+  }
+  if (c.hair === 'quiff') {   // messy, pushed up, spiky top
+    poly([[-rx + 1, -4], [-rx, -30], [-rx + 10, -48], [-26, -ry - 7], [-14, -ry - 2], [-5, -ry - 18], [7, -ry - 6], [19, -ry - 16], [28, -ry - 2], [40, -ry + 2], [rx - 2, -32], [rx, -4], [rx - 8, -22], [rx - 16, -30], [8, -36], [-16, -34], [-rx + 14, -28], [-rx + 8, -12]], c.hairCol, { lw: 3.5, w: .5 });
+  }
+  if (c.hair === 'old') { for (const sd of [-1, 1]) poly([[sd * (rx - 2), -24], [sd * (rx + 5), -16], [sd * (rx - 1), -10], [sd * (rx + 4), -2], [sd * (rx - 3), 2], [sd * (rx - 9), -14]], c.hairCol, { lw: 2.5, w: .4 }); blob(-14, -34, 12, 5, 'rgba(255,255,255,.35)', { lw: 0, rot: -.3 }); }
+  if (c.hair === 'bun') poly([[-rx + 1, -2], [-rx + 3, -30], [-20, -ry], [20, -ry], [rx - 3, -30], [rx - 1, -2], [rx - 9, -24], [0, -34], [-rx + 9, -24]], c.hairCol, { lw: 3.5, w: .6 });
+  if (c.shades) { for (const sx of [-16, 16]) { blob(sx, -ry + 4, 11, 7, '#1c1c22', { lw: 2.5, w: .3 }); blob(sx - 4, -ry + 2, 3, 1.5, 'rgba(255,255,255,.6)', { lw: 0 }); } curve([[-5, -ry + 4], [5, -ry + 4]], 2.5); }
+  // beard
+  if (c.beard === 'full') poly([[-rx, -4], [-rx + 3, 24], [-26, ry - 6], [0, ry + 4], [26, ry - 6], [rx - 3, 24], [rx, -4], [rx - 10, 20], [16, 24], [0, 23], [-16, 24], [-rx + 10, 20]], c.beardCol, { lw: 3, w: .6 });
+  if (c.beard === 'trim') poly([[-rx + 1, 4], [-rx + 5, 28], [-24, ry - 4], [0, ry + 1], [24, ry - 4], [rx - 5, 28], [rx - 1, 4], [rx - 7, 24], [18, 40], [0, 43], [-18, 40], [-rx + 7, 24]], c.beardCol, { lw: 2.5, w: .5 });
+  if (c.beard === 'goatee') poly([[-11, 38], [11, 38], [8, ry + 2], [-8, ry + 2]], c.beardCol, { lw: 3, w: .5 });
+  if (c.beard === 'stubble') for (let i = 0; i < 26; i++) { const a = Math.PI * (.1 + hash(i) * .8), r = .75 + hash(i + 7) * .2; blob(Math.cos(a) * rx * r, Math.sin(a) * ry * r, 1.3, 1.3, '#b7aea2', { lw: 0, n: 6 }); }
+  // eyes & brows
+  const bl = st.blink ?? blinkAt(t, (c.rx * 7) % 3);
+  eye(-17, -6, 12, lk[0], lk[1], bl, { lid: st.lid }); eye(17, -6, 12, lk[0], lk[1], bl, { lid: st.lid });
+  const m = { worry: [5, -5], frown: [-5, 6], up: [-5, -5], flat: [0, 0] }[st.brow || 'flat'] || [0, 0];
+  const bw = c.browW || 4.5;
+  curve([[-29, -25 + m[0]], [-7, -25 + m[1]]], bw, c.brow); curve([[7, -25 + m[1]], [29, -25 + m[0]]], bw, c.brow);
+  // nose
+  curve([[2, -3], [9, 13], [0, 16]], 3);
+  // mouth
+  if (tk > .05) blob(0, 31, 11, 2 + tk * 9, c.lips || '#5a1f2b', { lw: 3 });
+  else {
+    const mm = { smirk: [[-9, 30], [2, 32], [11, 27]], smile: [[-11, 28], [0, 35], [11, 28]], frown: [[-9, 33], [0, 29], [9, 33]], open: null }[st.mouth || 'flat'] || [[-9, 31], [0, 32], [9, 31]];
+    if (mm) curve(mm, 3.2, c.lips ? '#8a3140' : INK);
+    else blob(0, 31, 9, 8, '#5a1f2b', { lw: 3 });
+  }
+  if (c.beard === 'full' || c.beard === 'trim' || c.beard === 'goatee') poly([[-18, 23], [0, 18], [18, 23], [12, 27], [0, 24], [-12, 27]], c.beardCol, { lw: 2, w: .3 });
+  if (c.mustache) poly([[-20, 22], [0, 16], [20, 22], [14, 28], [0, 24], [-14, 28]], c.mustache, { lw: 2.5, w: .4 });
+  if (c.lipRing) blob(7, 37, 3.5, 3.5, null, { lw: 2.2, sc: '#cfd3d8', w: .1 });
+  if (c.earRing) blob(-rx - 1, 15, 3.5, 3.5, null, { lw: 2.2, sc: '#cfd3d8', w: .1 });
+  if (c.earrings) for (const ex of [-rx - 1, rx + 1]) blob(ex, 18, 4, 6, null, { lw: 2.2, sc: '#e2b43c', w: .1 });
+  ctx.restore();
+}
+function personArms(c, st) {
+  const t = st.t || 0, sleeve = c.top === 'hoodie' ? c.topCol : c.skin;
+  const L = st.L || [-44, -24], R = st.R || [44, -24];
+  const arm = (sh, h, side, item) => {
+    const mid = [(sh[0] + h[0]) / 2 + side * 20, (sh[1] + h[1]) / 2 + 16];
+    if (item === 'cup') freddo(h[0], h[1] - 4);
+    limb([sh, mid, h], 12, sleeve, { w: .5 });
+    if (c.top === 'tee') blob(sh[0] + side * 4, sh[1] + 8, 16, 18, c.topCol, { lw: 3.5, w: .4 });
+    if (c.top === 'hoodie') blob(h[0], h[1] + 2, 10, 7, c.topCol, { lw: 3, w: .3 });
+    blob(h[0], h[1], 9, 8, c.skin, { lw: 3, w: .4 });
+    if (item === 'cig') cigarette(h[0] + side * 4, h[1] - 4, side > 0 ? -.4 : Math.PI + .4, t, side);
+    if (item === 'phone') phone(h[0], h[1] - 10);
+  };
+  arm([-52, -118], L, -1, st.itemL); arm([52, -118], R, 1, st.itemR);
+}
+// hand motion helpers
+const slapK = (t, times) => { for (const s of times) if (t >= s && t < s + .35) return Math.sin(prog(t, s, s + .35) * Math.PI); return 0; };
+const lerp2 = (a, b, k) => [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
+
+</script>
+<script>
+/* =========================================================
+   Ep.1, Scene 2 – «Η αυλή» (script beats 2 → start of 3)
+   ========================================================= */
+const GROUND = 690, SEAT = 560;
+const POS = { giannos: 460, mimis: 640, giorgos: 820 };
+
+const LINES = [
+  { a: 3.8,  b: 7.6,  who: 'giannos', el: 'Εφτά χρόνια στη Δανία. Εφτά. Ούτε ένα κουνούπι.', en: 'Seven years in Denmark. Seven. Not one mosquito.' },
+  { a: 7.9,  b: 9.1,  who: 'mimis',   el: 'Ούτε ήλιο.', en: 'Or sun.' },
+  { a: 9.3,  b: 11.3, who: 'giannos', el: 'Ναι, αλλά δεν με τρώει ο ήλιος.', en: "Yeah, but the sun doesn't eat me alive." },
+  { a: 11.5, b: 12.9, who: 'mimis',   el: 'Σε τρώει η κατάθλιψη.', en: 'Depression does.' },
+  { a: 13.3, b: 14.6, who: 'giannos', el: '…Δεν είναι το ίδιο.', en: "…That's not the same." },
+  { a: 15.6, b: 16.8, who: 'mimis',   el: 'Είναι χειρότερο.', en: "It's worse." },
+  { a: 17.2, b: 20.5, who: 'giorgos', el: 'Ρε σεις, αν με πάρει τηλέφωνο ο λοχίας, είμαι στο νοσοκομείο.', en: "Guys, if the sergeant calls, I'm in the hospital." },
+  { a: 20.7, b: 21.9, who: 'giannos', el: 'Δεν είσαι σε έξοδο;', en: "Aren't you on leave?" },
+  { a: 22.1, b: 24.3, who: 'giorgos', el: 'Τυπικά, αυτή τη στιγμή είμαι σκοπιά.', en: "Technically, right now I'm on guard duty." },
+  { a: 24.5, b: 25.7, who: 'mimis',   el: 'Και ποιος φυλάει;', en: "So who's guarding?" },
+  { a: 26.0, b: 29.1, who: 'giorgos', el: 'Ένας νέος. Του είπα ότι είναι «ευκαιρία ανάπτυξης».', en: 'A new recruit. I told him it\'s a "growth opportunity".' },
+  { a: 29.3, b: 30.3, who: 'giannos', el: 'Και το \'φαγε;', en: 'And he bought it?' },
+  { a: 30.5, b: 32.5, who: 'giorgos', el: 'Μου έδωσε και το κολατσιό του.', en: 'He gave me his lunch too.' },
+  { a: 33.6, b: 36.6, who: 'maria',   el: 'Μήμη! Η κόρη της Τούλας παντρεύεται τον Σεπτέμβρη!', en: "Mimis! Toula's daughter is getting married in September!" },
+  { a: 36.9, b: 38.3, who: 'mimis',   el: 'Συγχαρητήρια στην Τούλα.', en: 'Congrats to Toula.' },
+  { a: 38.6, b: 40.4, who: 'maria',   el: 'Εσύ πότε θα νοικοκυρευτείς;', en: 'When are YOU going to settle down?' },
+  { a: 40.8, b: 42.4, who: 'mimis',   el: 'Όταν νοικοκυρευτείς εσύ.', en: 'When you do.' },
+  { a: 44.7, b: 45.3, who: 'giorgos', el: 'Ωχ.', en: 'Oof.' },
+  { a: 45.7, b: 47.8, who: 'mimis',   el: 'Ήξερε τι έκανε όταν ρώτησε.', en: 'She knew what she was doing when she asked.' },
+  { a: 52.1, b: 54.6, who: 'vasilis', el: 'Παιδιά. Τελείωσε το μαρτύριο.', en: 'Boys. The torment is over.' },
+  { a: 55.0, b: 56.4, who: 'mimis',   el: 'Πέθανε η θεία;', en: 'Did auntie die?' },
+];
+const VOICES = {
+  giannos: { el: 'ΓΙΑΝΝΟΣ', en: 'GIANNOS', col: '#8cc4ff', pitch: .95, rate: 1.05, babble: 300 },
+  mimis:   { el: 'ΜΗΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
+  giorgos: { el: 'ΓΙΩΡΓΟΣ', en: 'GIORGOS', col: '#9be08a', pitch: 1.1, rate: 1.1, babble: 340 },
+  maria:   { el: 'ΜΑΡΙΑ', en: 'MARIA', col: '#ff9ac6', pitch: 1.5, rate: 1.12, babble: 480 },
+  vasilis: { el: 'ΒΑΣΙΛΗΣ', en: 'VASILIS', col: '#ffd23f', pitch: .5, rate: .82, babble: 170 },
+};
+
+/* ---------- shots (hard cuts, slow push inside each) ---------- */
+const CAMS = {
+  wide: [640, 360, 1], three: [640, 430, 1.35], giannos: [460, 370, 2.1], mimis: [640, 370, 2.1], giorgos: [820, 370, 2.1],
+  two: [550, 410, 1.6], win: [890, 240, 2.4], door: [860, 400, 1.2], vasilis: [960, 300, 1.7],
+};
+const SHOTS = [[0, 'wide'], [3.6, 'giannos'], [7.8, 'mimis'], [9.2, 'giannos'], [11.4, 'mimis'], [13.2, 'two'], [17.1, 'giorgos'], [20.6, 'three'],
+  [25.9, 'giorgos'], [29.2, 'three'], [32.9, 'wide'], [33.5, 'win'], [36.8, 'mimis'], [38.5, 'win'], [40.7, 'mimis'], [43.2, 'win'], [44.4, 'three'],
+  [48.2, 'door'], [51.9, 'vasilis'], [54.9, 'mimis'], [56.4, 'vasilis']];
+function camera(t) {
+  let i = 0; while (i < SHOTS.length - 1 && t >= SHOTS[i + 1][0]) i++;
+  const [st, name] = SHOTS[i], [x, y, z] = CAMS[name];
+  return { x, y, z: z * (1 + (t - st) * .008) };
+}
+
+/* ---------- background ---------- */
+function acroSmall() {
+  poly([[-100, 430], [0, 360], [60, 320], [130, 300], [200, 318], [290, 380], [380, 430]], '#b9a78e', { lw: 3.5, w: .5 });
+  for (const [x, y] of [[60, 314], [130, 294], [200, 312]]) rect(x - 5, y - 12, 10, 12, '#a39179', { lw: 2 });
+}
+function figTree(x, y, t) {
+  limb([[x, y], [x + 10, y - 120], [x - 20, y - 220]], 26, '#9a948a', { w: .6 });
+  limb([[x + 8, y - 130], [x + 90, y - 210]], 14, '#9a948a', { w: .6 });
+  for (const [bx, by, r] of [[-90, -240, 70], [0, -290, 90], [100, -250, 80], [-40, -200, 60], [60, -200, 64], [150, -200, 52]]) blob(x + bx + Math.sin(t + bx) * 2, y + by, r, r * .75, '#4f7a37', { lw: 4, w: 1.5 });
+  for (let i = 0; i < 14; i++) blob(x - 120 + hash(i) * 280, y - 320 + hash(i + 3) * 160, 12, 8, '#6a9848', { lw: 0, rot: hash(i) * 3 });
+  for (let i = 0; i < 5; i++) blob(x - 60 + hash(i + 11) * 180, y - 220 + hash(i + 13) * 60, 7, 8, '#6b3d5e', { lw: 2 });
+}
+function coop(x, y) {
+  poly([[x, y], [x + 190, y], [x + 190, y - 120], [x, y - 120]], '#b58a5a', { lw: 4 });
+  poly([[x - 12, y - 120], [x + 202, y - 120], [x + 95, y - 170]], '#8f5e3c', { lw: 4 });
+  ctx.save(); ctx.strokeStyle = 'rgba(40,40,40,.45)'; ctx.lineWidth = 1.2;
+  for (let i = 0; i < 18; i++) { ctx.beginPath(); ctx.moveTo(x + 14 + i * 9, y - 104); ctx.lineTo(x + 14 + i * 9 + 30, y - 14); ctx.moveTo(x + 44 + i * 9, y - 104); ctx.lineTo(x + 14 + i * 9, y - 14); ctx.stroke(); }
+  ctx.restore();
+  rect(x + 14, y - 104, 162, 90, null, { lw: 3 });
+}
+function chicken(x, y, t, seed, col = '#f3efe6') {
+  const peck = Math.max(0, Math.sin(t * 2 + seed * 4)) > .8 ? 10 : 0;
+  blob(x, y - 18, 20, 15, col, { lw: 3, w: .5 });
+  poly([[x - 18, y - 24], [x - 30, y - 38], [x - 24, y - 14]], col, { lw: 3, w: .4 });
+  blob(x + 16, y - 34 + peck, 9, 9, col, { lw: 3, w: .4 });
+  blob(x + 16, y - 45 + peck, 4, 4, '#d8392b', { lw: 0 });
+  poly([[x + 24, y - 34 + peck], [x + 31, y - 31 + peck], [x + 24, y - 29 + peck]], '#f2a33a', { lw: 2 });
+  blob(x + 18, y - 36 + peck, 1.6, 1.6, INK, { lw: 0 });
+  curve([[x - 4, y - 4], [x - 4, y + 4]], 2.5); curve([[x + 4, y - 4], [x + 4, y + 4]], 2.5);
+}
+function house(t) {
+  rect(760, 60, 800, 640, '#f3eee2', { lw: 4, w: .6 });
+  rect(740, 42, 840, 22, '#c4643c', { lw: 4, w: .5 });
+  for (let i = 0; i < 26; i++) curve([[748 + i * 32, 44], [748 + i * 32, 62]], 2, '#9c4a2a', { w: .3 });
+  poly([[760, 640], [1560, 640], [1560, 700], [760, 700]], '#cfc4ae', { lw: 3.5, w: .5 });
+  for (let i = 0; i < 12; i++) blob(790 + i * 66, 668, 26, 14, '#bfb39b', { lw: 2.5, w: .8 });
+  // door (Greek blue frame, dark interior)
+  rect(1000, 470, 120, 222, '#3f74a6', { lw: 4, w: .4 }); rect(1012, 482, 96, 210, '#2a2420', { lw: 3, w: .4 });
+  // upper window with green shutters is drawn in window()
+  // bougainvillea
+  for (let i = 0; i < 16; i++) blob(960 + hash(i) * 110 + Math.sin(t + i) * 1.5, 420 + hash(i + 4) * 70 - (i % 4) * 10, 20, 15, i % 3 ? '#d63f86' : '#b8306f', { lw: 2.5, w: 1 });
+  for (let i = 0; i < 6; i++) blob(960 + hash(i + 20) * 110, 440 + hash(i + 24) * 60, 12, 8, '#4f7a37', { lw: 0 });
+  // AC unit dripping
+  rect(1200, 330, 130, 80, '#e9e9e4', { lw: 3.5, w: .4 }); blob(1250, 370, 28, 28, '#d2d2cc', { lw: 3 });
+  for (let i = 0; i < 5; i++) curve([[1228 + i * 11, 346], [1228 + i * 11, 394]], 2, '#b8b8b2', { w: .2 });
+  const dp = (t * .8) % 1; blob(1310, 412 + dp * 270, 3, 4, '#8fc5e0', { lw: 0 });
+  blob(1310, 684, 20, 5, 'rgba(90,120,140,.3)', { lw: 0 });
+  // pots (τενεκέδες) with basil & geranium
+  for (const [px, col] of [[1140, '#d8392b'], [1190, '#4f7a37'], [950, '#e0527a']]) { rect(px - 20, 646, 40, 44, '#c8ccd0', { lw: 3, w: .4 }); for (let i = 0; i < 6; i++) blob(px - 16 + hash(i + px) * 32, 632 - hash(i + px + 1) * 24, 10, 8, i % 2 ? col : '#4f7a37', { lw: 2, w: .6 }); }
+}
+function windowFrame(t, shutK) {
+  rect(830, 170, 120, 130, '#2a2420', { lw: 4, w: .4 });
+  rect(820, 300, 140, 12, '#e3dccb', { lw: 3.5, w: .3 });
+  // shutters: open (flat against wall) → closed (covering window)
+  for (const side of [-1, 1]) {
+    const cx = side < 0 ? 830 : 950, w = 60 * (side < 0 ? 1 : -1);
+    const openX = side < 0 ? 830 - 62 : 950 + 2, closedX = side < 0 ? 830 : 890;
+    const x0 = lerp(openX, closedX, shutK);
+    rect(x0, 168, 60, 134, '#3d8a5a', { lw: 3.5, w: .4 });
+    for (let i = 0; i < 9; i++) curve([[x0 + 6, 180 + i * 13], [x0 + 54, 180 + i * 13]], 2, '#2c6a44', { w: .2 });
+  }
+}
+function clothesline(t) {
+  curve([[240, 190], [500, 214], [760, 196]], 2.5, '#6a6a6a', { w: .3 });
+  for (const [x, w, h, col] of [[300, 60, 80, '#e05a4a'], [380, 70, 60, '#f2d34a'], [470, 50, 90, '#6fa7d8'], [560, 80, 70, '#f4f3ee'], [660, 40, 50, '#b9477a']]) {
+    const y = 200 + (x - 240) * .03 - Math.max(0, x - 500) * .06, sway = Math.sin(t * 1.5 + x) * 3;
+    poly([[x, y], [x + w, y], [x + w + sway, y + h], [x + sway, y + h]], col, { lw: 3, w: .6 });
+    for (const px of [x + 6, x + w - 6]) rect(px - 2, y - 6, 4, 10, '#a37a4a', { lw: 1.5, w: 0 });
+  }
+}
+function background(t) {
+  const g = ctx.createLinearGradient(0, -200, 0, 420); g.addColorStop(0, '#9fd3ea'); g.addColorStop(1, '#f1ecd6');
+  ctx.fillStyle = g; ctx.fillRect(-400, -400, 2200, 900);
+  acroSmall();
+  // tomatoes over the garden wall
+  for (let i = 0; i < 9; i++) { limb([[-40 + i * 60, 440], [-40 + i * 60, 350]], 3, '#6a8a3a', { w: .5 }); blob(-40 + i * 60, 370, 22, 30, '#5f8a3a', { lw: 3, w: 1 }); blob(-30 + i * 60, 392, 7, 7, '#d8392b', { lw: 2 }); }
+  rect(-400, 430, 1160, 270, '#ebe2cd', { lw: 4, w: .6 });
+  rect(-410, 420, 1180, 16, '#d9ceb4', { lw: 3.5, w: .5 });
+  clothesline(t);
+  figTree(170, 690, t);
+  coop(-80, 690);
+  house(t);
+  windowFrame(t, shutters(t));
+  // yard floor
+  poly([[-400, 690], [1600, 690], [1600, 800], [-400, 800]], '#d9d0bd', { lw: 0 });
+  curve([[-400, 690], [1600, 690]], 4);
+  curve([[300, 720], [360, 706], [420, 716]], 2, '#b8ad96');
+  chicken(40 + Math.sin(t * .3) * 30, 700, t, 1); chicken(250, 712, t, 2, '#b97a4a'); chicken(1340, 706, t, 3);
+}
+const shutters = t => ease(prog(t, 43.4, 43.62));
+
+/* ---------- the table set ---------- */
+function chair(x) {
+  poly([[x - 62, SEAT - 158], [x + 62, SEAT - 158], [x + 56, SEAT - 40], [x - 56, SEAT - 40]], '#efeadb', { lw: 4, w: .5 });
+  for (let i = 0; i < 4; i++) curve([[x - 36 + i * 24, SEAT - 140], [x - 36 + i * 24, SEAT - 60]], 3, '#d7d0bb', { w: .3 });
+  for (const side of [-1, 1]) limb([[x + side * 50, SEAT + 10], [x + side * 62, GROUND]], 8, '#efeadb', { w: .3 });
+}
+function table(t) {
+  for (const lx of [400, 880]) limb([[lx, 560], [lx - (lx < 640 ? 10 : -10), GROUND]], 12, '#ece7da', { w: .3 });
+  poly([[370, 538], [910, 538], [928, 556], [352, 556]], '#f1ede2', { lw: 4, w: .5 });
+  rect(352, 556, 576, 12, '#ddd7c7', { lw: 3.5, w: .4 });
+  // ashtray-can, packs, lighter
+  rect(610, 516, 30, 30, '#c9ced4', { lw: 3, w: .3 }); blob(625, 516, 15, 4, '#8a8f96', { lw: 2.5 });
+  for (let i = 0; i < 3; i++) rect(616 + i * 6, 506 - i * 2, 3, 12, '#f2efe6', { lw: 1.2, w: 0 });
+  rect(540, 526, 34, 20, '#e8e4dc', { lw: 2.5, w: .3 }); rect(540, 526, 34, 7, '#c0392b', { lw: 0 });
+  rect(730, 528, 26, 18, '#1f3a5a', { lw: 2.5, w: .3 });
+  rect(700, 534, 10, 12, '#e2b43c', { lw: 2, w: .2 });
+}
+
+/* ---------- blocking ---------- */
+function lookFor(who, t) {
+  if (t >= 33 && t < 44) return [.7, -.9];                        // Maria's window
+  if (t >= 48.4) return who === 'vasilis' ? [-.8, .3] : [1, -.4];  // the door / Vasilis
+  const sp = LINES.find(l => t >= l.a - .3 && t < l.b + .4);
+  const target = sp ? sp.who : 'mimis';
+  if (target === who || !POS[target]) return who === 'giorgos' && t > 16.9 && t < 20.6 ? [-.2, .9] : [0, .1];
+  return [Math.sign(POS[target] - POS[who]), .1];
+}
+function drawTableScene(t) {
+  const sG = [1.2, 4.0, 6.3], sGe = [2.2], sM = [];
+  const ppl = {
+    giannos: () => {
+      const k = slapK(t, sG), L = lerp2([-44, -24], [34, -60], k);
+      return { t, talk: talk('giannos', t), look: lookFor('giannos', t), brow: t > 13 && t < 15 ? 'worry' : 'flat', L, R: [48, -30], itemR: 'cig', mouth: 'flat' };
+    },
+    mimis: () => {
+      const sip = Math.max(bump(t, 1.4, 2.6), bump(t, 14.6, 15.6));
+      return { t, talk: talk('mimis', t), look: lookFor('mimis', t), lid: t < 48.2, mouth: 'smirk', L: [-40, -26], R: lerp2([44, -20], [16, -176], sip), itemR: 'cup', itemL: 'cig' };
+    },
+    giorgos: () => {
+      const onPhone = t > 16.9 && t < 20.6, k = slapK(t, sGe), tk = talk('giorgos', t);
+      let L = [-44, -24];
+      if (tk > 0 && !onPhone) L = [-70, -90 + Math.sin(t * 7) * 12];
+      L = lerp2(L, [-14, -250], k);
+      return { t, talk: tk, look: lookFor('giorgos', t), brow: t > 44.5 && t < 46 ? 'worry' : 'flat', L, R: onPhone ? [20, -110] : [44, -22], itemR: onPhone ? 'phone' : null, mouth: 'smirk' };
+    },
+  };
+  const S = {}; for (const k in ppl) S[k] = ppl[k]();
+  for (const k in POS) chair(POS[k]);
+  for (const k in POS) person(POS[k], SEAT, 1, CAST[k], { ...S[k], part: 'legs' });
+  for (const k in POS) person(POS[k], SEAT, 1, CAST[k], { ...S[k], part: 'body' });
+  table(t);
+  freddo(470, 540); freddo(836, 540);
+  for (const k in POS) person(POS[k], SEAT, 1, CAST[k], { ...S[k], part: 'arms' });
+}
+function drawMaria(t) {
+  if (t < 33 || t > 43.7) return;
+  const up = back(prog(t, 33.1, 33.6)) * (1 - prog(t, 43.2, 43.45));
+  ctx.save(); ctx.beginPath(); ctx.rect(832, 172, 116, 126); ctx.clip();
+  person(890, 470 - up * 60, .82, CAST.maria, { t, talk: talk('maria', t), look: [-.6, .7], brow: t > 38 ? 'frown' : 'up', part: 'body' });
+  ctx.restore();
+}
+function vasilisX(t) { return lerp(1060, 960, ease(prog(t, 48.6, 51.2))); }
+function drawRays(t) {           // the "Oscar" light, behind everyone
+  const glow = prog(t, 49.2, 49.8); if (t < 48.5 || glow <= 0) return;
+  ctx.save(); ctx.globalAlpha = glow * .55; ctx.translate(vasilisX(t), GROUND - 150 - 330);
+  for (let i = 0; i < 12; i++) { const a = i / 12 * TAU + t * .4; ctx.fillStyle = i % 2 ? '#fff6b0' : '#ffe27a'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, 900, a, a + .18); ctx.fill(); }
+  ctx.restore();
+}
+function drawVasilis(t) {
+  if (t < 48.5) return;
+  const k = ease(prog(t, 48.6, 51.2)), x = lerp(1060, 960, k), walking = t < 51.2;
+  const s = lerp(.92, 1, k), hips = GROUND - 150 * s;
+  const st = { t, talk: talk('vasilis', t), look: t > 55 ? [-.9, .3] : [-.6, .2], legs: walking ? 'walk' : 'stand', L: [-44, -300], R: [44, -300], lid: t > 55, mouth: t > 56.4 ? 'flat' : 'smile' };
+  person(x, hips, s, CAST.vasilis, st);
+  // the box, held up like an Oscar
+  ctx.save(); ctx.translate(x, hips - 338 * s); ctx.scale(s, s);
+  rect(-70, -46, 140, 92, '#e9e4d8', { lw: 4, w: .5 });
+  rect(-64, -40, 58, 80, '#2a2a30', { lw: 2.5, w: .3 });
+  for (let i = 0; i < 6; i++) curve([[-60 + i * 9, -38], [-60 + i * 9, 38]], 1.2, '#6a6a72', { w: .1 });
+  blob(-40, -10, 6, 6, '#f3d38a', { lw: 1.5 }); blob(-24, -6, 5, 5, '#f3d38a', { lw: 1.5 });
+  txt('ΕΞΥΠΝΗ', 32, -20, 17, '#e8392b', { font: TVFONT, style: 'italic', weight: 900 });
+  txt('ΣΙΤΑ', 32, 2, 22, '#e8392b', { font: TVFONT, style: 'italic', weight: 900 });
+  txt('ΜΑΓΝΗΤΙΚΗ', 32, 24, 10, '#231a2e', { font: TVFONT, weight: 900 });
+  ctx.restore();
+  // the flies that came in with him
+  for (let i = 0; i < 15; i++) {
+    const p = prog(t, 48.6 + i * .03, 52 + i * .1), ax = x + Math.cos(t * 3 + i) * (40 + i * 6) * (1 + p), ay = hips - 200 + Math.sin(t * 4 + i * 2) * (30 + i * 3) - p * 60;
+    blob(ax, ay, 3, 2.5, INK, { lw: 0, n: 8 }); blob(ax - 1, ay - 3, 3, 1.5, 'rgba(230,236,244,.8)', { lw: 0, n: 8 });
+  }
+}
+function render(t) {
+  const c = camera(t);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.translate(W / 2, H / 2); ctx.scale(c.z, c.z); ctx.translate(-c.x, -c.y);
+  background(t);
+  drawRays(t);
+  drawMaria(t);
+  if (t >= 44 && t < 44.4) { ctx.save(); ctx.translate(890, 236); txt('ΚΡΑΚ!', 0, 0, 34, '#fff', { font: TVFONT, style: 'italic', weight: 900, stroke: 8 }); ctx.restore(); }
+  drawTableScene(t);
+  drawVasilis(t);
+  for (let i = 0; i < 10; i++) mosquito(640 + Math.sin(t * (1.1 + i * .13) + i) * 380, 330 + Math.cos(t * (1.7 + i * .1) + i * 2) * 110, .9, t);
+  ctx.restore();
+  const fadeIn = 1 - prog(t, 0, 1), fadeOut = prog(t, 57.8, 59);
+  if (fadeIn > 0 || fadeOut > 0) { ctx.fillStyle = `rgba(0,0,0,${Math.max(fadeIn, fadeOut)})`; ctx.fillRect(0, 0, W, H); }
+}
+
+runScene({
+  dur: 59, poster: 52.8, lines: LINES, voices: VOICES, render,
+  events: [[1.2, SFX.slap], [2.2, SFX.slap], [4.0, SFX.slap], [6.3, SFX.slap], [1.5, SFX.sip], [14.7, SFX.sip],
+    [33.0, SFX.creak], [43.45, SFX.slam], [43.95, SFX.crash], [48.6, SFX.door], [48.8, SFX.flies], [49.2, SFX.choir]],
+  ambience: t => ({ cicada: t > 33.4 && t < 43.2 ? .012 : .03, mosq: .004 }),
+});
+</script>
+</body>
+</html>
