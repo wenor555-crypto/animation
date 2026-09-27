@@ -26,7 +26,7 @@ Built round by round through the interview. Nothing here is final until marked *
 - **Structure note:** episodes start grounded in everyday Greek life and escalate into the sci-fi side. In Ep. 1 that turn happens once the σίτα becomes too smart.
 - **Satire limits:** none. No topic is off-limits; the show is meant to be edgy.
 
-## Round 3: Characters (LOCKED core; names and looks pending)
+## Round 3: Characters (LOCKED; looks pending)
 
 **Home base:** a shared apartment in Athens. The gang often goes back to their home village, **Λέχαιο** (spelling and location to be confirmed). Like Rick and Morty, they also travel around a lot.
 
@@ -34,13 +34,37 @@ Built round by round through the interview. Nothing here is final until marked *
 
 | # | Working title | Core | Notes |
 |---|---|---|---|
-| 1 | **The Drunk / "Panik"** | Borderline bipolar alcoholic. When drunk he turns into **Panik**, a confrontational, quarrelsome (εριστικός) vigilante. | Quit weed. |
-| 2 | **The Kamikaze** | Bold and self-destructive; does crazy stuff without thinking about consequences or risks. Studied cinema for 5 years and has a very messed-up sense of humour. | Quit weed. |
-| 3 | **The Charmer** | Finance master's graduate. Very social and can make anyone like him, which is how he solves his own and the group's problems. Selfish, always angling for a better position. | Quit weed. |
-| 4 | **The Mangaka** | Tall and laid back, a manga writer. Dreams of going to Japan to become a mangaka but is stuck in the Greek ρουτίνα: no money, just grind. Has learned Japanese and does anything he can to get there. | Smokes weed often. |
-| 5 | **The Engineer** | MSc in electrical engineering. Makes all the plans and builds software and hardware gadgets. He is the motivator who drags the group out of boredom and depression, and acts as the group's "father figure". Usually the one with the car. | Smokes weed often. |
+| 1 | **Κώστας**: The Drunk / "Panik" | Borderline bipolar alcoholic. When drunk he turns into **Panik**, a confrontational, quarrelsome (εριστικός) vigilante. | Quit weed. |
+| 2 | **Μήμης**: The Kamikaze | Bold and self-destructive; does crazy stuff without thinking about consequences or risks. Studied cinema for 5 years and has a very messed-up sense of humour. | Quit weed. |
+| 3 | **Γιώργος**: The Charmer | Finance master's graduate. Very social and can make anyone like him, which is how he solves his own and the group's problems. Selfish, always angling for a better position. | Quit weed. |
+| 4 | **Χρήστος**: The Mangaka | Tall and laid back, a manga writer. Dreams of going to Japan to become a mangaka but is stuck in the Greek ρουτίνα: no money, just grind. Has learned Japanese and does anything he can to get there. | Smokes weed often. |
+| 5 | **Γιάννος**: The Engineer | MSc in electrical engineering. Makes all the plans and builds software and hardware gadgets. He is the motivator who drags the group out of boredom and depression, and acts as the group's "father figure". Usually the one with the car. | Smokes weed often. |
 
 - **Awareness:** everyone is clueless about the sci-fi, with random moments where they aren't.
 - **Episode 1 extras:** more people plus family members, drawn from everyday Greek archetypes.
 - **Ep. 1 villain concept:** a Skynet-style takeover. The σίτα recruits other "smart" devices, especially funny telemarketing and TV-shop products like itself.
 - **Voice actors:** none yet.
+
+- **Γιάννος** is the main source of the show's sci-fi twists.
+
+### Λέχαιο (the real village in Corinthia)
+All five grew up there, but none of them lives there permanently now. Episode 1 happens during summer:
+- **Κώστας** lives there, in his parents' house.
+- **Γιώργος** is stationed nearby for his mandatory army service.
+- **Μήμης** is staying there temporarily. His family's house is traditional, with a yard, a περιβόλι and a κοτέτσι. At home: his mom and dad (both in their 70s) and 2 of his 3 sisters (mid-30s). **His dad bought the έξυπνη σίτα from telemarketing.**
+- **Γιάννος** works as an engineer in Denmark and is home on summer vacation.
+- **Χρήστος** is home on summer vacation.
+
+## Round 4: Episode 1, "Η Έξυπνη Σίτα" (IN PROGRESS)
+
+### The joke behind the product
+The έξυπνη σίτα is just a mesh curtain with magnets sewn down the middle and an adhesive strip around the frame. It is "smart" only because it snaps shut behind you. Greek retail and telemarketing (Jumbo, TV shopping) routinely call dumb objects "έξυπνο/μαγικό". The episode takes that marketing word literally: Γιάννος gives it a real brain.
+
+### Opening (LOCKED)
+- **Time and place:** a hot summer day in Μήμης's yard, with flies and mosquitoes everywhere.
+- **Characters:** Μήμης, Γιώργος and Γιάννος drink freddo espresso and smoke, like typical Greeks.
+- **The σίτα arrives:** Μήμης's dad comes out, excited, with the σίτα he bought from telemarketing, and starts installing it.
+- **Γιάννος** finds it ironic that it's called "smart" with zero smart features, and starts riffing on how he could make it smart: custom firmware written with his new AI agent.
+- **Γιώργος** smells a money-making opportunity and keeps pushing Γιάννος to actually do it.
+- **Μήμης** doesn't give a fuck and goes with the flow, sipping his coffee: "αν το χαλάσεις, θα μου πάρεις καινούργιο."
+- **Ending:** not decided yet. Deliberately left open for now.
