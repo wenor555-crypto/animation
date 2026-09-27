@@ -128,3 +128,6 @@ The designs are cartoon caricatures based on the real friends. The photo itself 
 
 ### Recruitment mechanic (LOCKED)
 The σίτα recruits by hacking devices **one by one**. Each hacked device gives it **physical access** to the next one. The recruitment chain is a heist in steps. The exact chain is still being worked out.
+- **Κώστας:** he notices first that the σίτα is really alive, right after he sets it on fire. Being drunk, he passes out and misses half the episode, after making the σίτα furious and starting the spiral. He comes back the next day when he wakes up, and remembers nothing.
+
+**Round 4: LOCKED.** Next: Round 5, the beat sheet (`episode-1-beat-sheet.md`).
