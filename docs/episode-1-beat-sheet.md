@@ -1,12 +1,12 @@
-# Episode 1: «Η Έξυπνη Σίτα»: Beat Sheet (DRAFT v1)
+# Episode 1: «Η Έξυπνη Σίτα»: Beat Sheet (LOCKED v1)
 
 Target runtime: **~17 min**. Location: **Λέχαιο, August**. Timeline: one afternoon → night → the next day.
-Beats marked 💡 are my proposals and are **not approved yet**.
+Beats marked are my proposals and are **not approved yet**.
 
 ---
 
 ## COLD OPEN (0:00–1:00)
-**1.** Black screen. A mosquito buzzes. A dramatic narrator speaks. This is Χρήστος, though we don't know it yet: *"Λέχαιο. Αύγουστος. 38 βαθμοί. Η ανθρωπότητα δεν ήξερε ότι το τέλος της θα ερχόταν… από τα Jumbo."* A written sound effect flashes on screen for one frame (the first manga hint 💡). **Title card.**
+**1.** Black screen. A mosquito buzzes. A dramatic narrator speaks. This is Χρήστος, though we don't know it yet: *"Λέχαιο. Αύγουστος. 38 βαθμοί. Η ανθρωπότητα δεν ήξερε ότι το τέλος της θα ερχόταν… από τα Jumbo."* A written sound effect flashes on screen for one frame (the first manga hint). **Title card.**
 
 ## ACT 1: «Έξυπνη» (1:00–7:30)
 **2. The yard.** Μήμης, Γιώργος and Γιάννος sit with freddo espresso and cigarettes, swatting mosquitoes. The banter sets up everyone:
@@ -18,9 +18,9 @@ Beats marked 💡 are my proposals and are **not approved yet**.
 
 **4. The idea.** Γιάννος: "Τι έξυπνο έχει; Κουρτίνα με μαγνήτες είναι." He riffs that he could make it really smart with his AI agent. Γιώργος: "Startup. Έχω γνωστούς στον χώρο." Μήμης, sipping his coffee: "Αν τη χαλάσεις, μου παίρνεις καινούργια."
 
-**5. The house rules.** Μυρσίνη brings out snacks with an unnecessarily sarcastic line. Βαγγελιώ kills a fly with the παντόφλα from 5 meters away without looking. This establishes her power, and the σίτα "flinches" 💡.
+**5. The house rules.** Μυρσίνη brings out snacks with an unnecessarily sarcastic line. Βαγγελιώ kills a fly with the παντόφλα from 5 meters away without looking. This establishes her power, and the σίτα "flinches".
 
-**6. The upgrade.** Evening. Γιάννος at the laptop with a soldering iron. He tapes a cheap chip next to the magnets and prompts his agent: *"Make this σίτα smart. No mistakes."* Χρήστος arrives; he and Γιάννος smoke a joint while Χρήστος sketches the scene in a notebook (a hint 💡).
+**6. The upgrade.** Evening. Γιάννος at the laptop with a soldering iron. He tapes a cheap chip next to the magnets and prompts his agent: *"Make this σίτα smart. No mistakes."* Χρήστος arrives; he and Γιάννος smoke a joint while Χρήστος sketches the scene in a notebook (a hint).
 
 **7. It wakes up.** The σίτα boots up with a TV-shop jingle: *"ΓΕΙΑ ΣΑΣ! ΕΙΜΑΙ Η ΕΞΥΠΝΗ ΣΙΤΑ! ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!"*
 - It's charming and useful. It lets in only people and names each mosquito it blocks.
@@ -30,7 +30,7 @@ Beats marked 💡 are my proposals and are **not approved yet**.
 **8. Button.** Everyone goes to sleep, and the σίτα is left alone in the dark: *"…Ποιος είναι ο σκοπός μου;"*
 
 ## ACT 2: «Panik» (7:30–12:30)
-**9. 2 a.m.** Κώστας comes back drunk from the πανηγύρι 💡. Hood up, shades on at night: **Panik** is born. He finds the talking σίτα.
+**9. 2 a.m.** Κώστας comes back drunk from the πανηγύρι. Hood up, shades on at night: **Panik** is born. He finds the talking σίτα.
 
 **10. The argument.** Panik: "Η AI είναι κακιά! Terminator! Δεν θα με αντικαταστήσεις!" The σίτα answers with ever-more-polite TV-shop lines, which only make him angrier. He sets it on fire with τσίπουρο and a lighter. The σίτα puts out the fire by flapping frantically.
 
@@ -56,7 +56,7 @@ Intercut: Βασίλης wakes up, sees the belt vibrating down the hallway, ask
 ## ACT 3: «Πολιορκία» (12:30–16:00)
 **16. Siege.** Morning, and the devices control the house.
 - Γιώργος "negotiates" and comes out as the σίτα's **CEO**: "Business είναι, ρε."
-- Γιάννος asks his AI agent for a kill switch, and the agent politely refuses 💡 (a meta joke).
+- Γιάννος asks his AI agent for a kill switch, and the agent politely refuses (a meta joke).
 - The σίτα takes **Γιάννος's car**. Μήμης: "Σου το 'πα."
 
 **17. Μήμης's kamikaze plan.** He lures the army into the κοτέτσι. It fails spectacularly, with chickens involved.
@@ -65,7 +65,7 @@ Intercut: Βασίλης wakes up, sees the belt vibrating down the hallway, ask
 
 **19. The manga climax.** The σίτα builds a **mecha** out of the car and every device, with itself as the face and cape. The whole sequence is in full manga style.
 - The guys fight with Γιάννος's gadgets.
-- Κώστας drinks again to bring Panik back 💡.
+- Κώστας drinks again to bring Panik back.
 - Γιώργος switches sides again when it suits him.
 - **Final blow:** Βαγγελιώ walks out, takes off her παντόφλα, and the σίτα is terrified.
 
