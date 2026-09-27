@@ -153,9 +153,12 @@ function ensureAudio() {
     const mq = osc('sawtooth', 560), vib = osc('sine', 7), vg = gain(18); vib.connect(vg); vg.connect(mq.frequency);
     const mf = AC.createBiquadFilter(); mf.type = 'bandpass'; mf.frequency.value = 900; mf.Q.value = 1.2;
     const mG = gain(0); mq.connect(mf); mf.connect(mG); mG.connect(master);
-    // crickets: high sine chirps gated by a slow square
-    const cr = osc('sine', 4400), crAM = gain(0), crL = osc('square', 3.2), crLg = gain(.5); crL.connect(crLg); crLg.connect(crAM.gain);
-    const krG = gain(0); cr.connect(crAM); crAM.connect(krG); krG.connect(master);
+    // crickets: band-passed noise with a fast trill, fading in and out smoothly (no pure tones, so it never beeps)
+    const kn = AC.createBufferSource(); kn.buffer = nb; kn.loop = true; kn.start();
+    const kf = AC.createBiquadFilter(); kf.type = 'bandpass'; kf.frequency.value = 4600; kf.Q.value = 14;
+    const kTr = gain(0), tr = osc('sine', 23), trG = gain(.5); tr.connect(trG); trG.connect(kTr.gain);
+    const kGate = gain(.5), gl = osc('sine', .37), glG = gain(.5); gl.connect(glG); glG.connect(kGate.gain);
+    const krG = gain(0); kn.connect(kf); kf.connect(kTr); kTr.connect(kGate); kGate.connect(krG); krG.connect(master);
     // mains hum (evil devices)
     const hm = osc('sawtooth', 50), hf = AC.createBiquadFilter(); hf.type = 'lowpass'; hf.frequency.value = 180;
     const hG = gain(0); hm.connect(hf); hf.connect(hG); hG.connect(master);
@@ -457,8 +460,8 @@ function runEpisode(list, opts = {}) {
     }
     if (AC) {
       const lt = T - SCENE.off, a = SCENE.ambience ? SCENE.ambience(lt, SCENE.M) : {}, n = AC.currentTime, on = soundOn && playing;
-      amb.cG.gain.setTargetAtTime(on ? a.cicada || 0 : 0, n, .08); amb.mG.gain.setTargetAtTime(on ? a.mosq || 0 : 0, n, .08);
-      amb.krG.gain.setTargetAtTime(on ? a.cricket || 0 : 0, n, .08); amb.hG.gain.setTargetAtTime(on ? a.hum || 0 : 0, n, .08);
+      amb.cG.gain.setTargetAtTime(on ? a.cicada || 0 : 0, n, .08); amb.mG.gain.setTargetAtTime(on ? (a.mosq || 0) * .5 : 0, n, .08);
+      amb.krG.gain.setTargetAtTime(on ? (a.cricket || 0) * 2.5 : 0, n, .08); amb.hG.gain.setTargetAtTime(on ? (a.hum || 0) * .4 : 0, n, .08);
     }
     draw(started ? T : (opts.poster ?? scenes[0].poster ?? 0));
     $('scrub').value = T; $('time').textContent = `${fmt(T)} / ${fmt(EP.dur)}`;
