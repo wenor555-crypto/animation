@@ -52,7 +52,7 @@ All five grew up there, but none of them lives there permanently now. Episode 1 
 - **Κώστας** lives there, in his parents' house.
 - **Γιώργος** is stationed nearby for his mandatory army service.
 - **Μήμης** is staying there temporarily. His family's house is traditional, with a yard, a περιβόλι and a κοτέτσι. At home: his mom and dad (both in their 70s) and 2 of his 3 sisters (mid-30s). **His dad bought the έξυπνη σίτα from telemarketing.**
-- **Γιάννος** works as an engineer in Denmark and is home on summer vacation.
+- **Γιάννος** has worked as an engineer in Denmark for 2 years and is home on summer vacation.
 - **Χρήστος** is home on summer vacation.
 
 ## Round 4: Episode 1, "Η Έξυπνη Σίτα" (IN PROGRESS)

@@ -5,7 +5,7 @@ defineScene((() => {
    ========================================================= */
 
 const LINES = [
-  { a: 3.8,  b: 7.6,  who: 'giannos', el: 'Εφτά χρόνια στη Δανία. Εφτά. Ούτε ένα κουνούπι.', en: 'Seven years in Denmark. Seven. Not one mosquito.' },
+  { a: 3.8,  b: 7.6,  who: 'giannos', el: 'Δύο χρόνια στη Δανία. Δύο. Ούτε ένα κουνούπι.', en: 'Two years in Denmark. Two. Not one mosquito.' },
   { a: 7.9,  b: 9.1,  who: 'mimis',   el: 'Ούτε ήλιο.', en: 'Or sun.' },
   { a: 9.3,  b: 11.3, who: 'giannos', el: 'Ναι, αλλά δεν με τρώει ο ήλιος.', en: "Yeah, but the sun doesn't eat me alive." },
   { a: 11.5, b: 12.9, who: 'mimis',   el: 'Σε τρώει η κατάθλιψη.', en: 'Depression does.' },
