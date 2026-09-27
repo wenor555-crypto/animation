@@ -68,3 +68,14 @@ The έξυπνη σίτα is just a mesh curtain with magnets sewn down the midd
 - **Γιώργος** smells a money-making opportunity and keeps pushing Γιάννος to actually do it.
 - **Μήμης** doesn't give a fuck and goes with the flow, sipping his coffee: "αν το χαλάσεις, θα μου πάρεις καινούργιο."
 - **Ending:** not decided yet. Deliberately left open for now.
+
+### The σίτα: product reference
+![έξυπνη σίτα](reference/exypni-sita.png)
+- **Original TV-shop ad:** ["ΕΞΥΠΝΗ ΣΙΤΑ" (2014)](https://www.youtube.com/watch?v=nfZGXRMoSRA). This is the ad to parody.
+- **What's in the box:** 9 pairs of "strong" magnets, 20 pins (πινέζες) and 12 adhesive velcro strips. No tools, no technician.
+- **Look:** two tall black-mesh panels with black trim and vertical stripes, joined by a magnetic seam down the middle. The bottom corners flap open when someone walks through.
+- **Design ideas:**
+  - The magnetic seam is its **mouth**: the magnets clack together when it talks, like teeth.
+  - The bottom flaps work as hands or feet.
+  - The 9 magnet pairs are its "brain". Γιάννος's chip gets taped next to them.
+  - The pins and velcro are its weak points (and maybe its weapons).
