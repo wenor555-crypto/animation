@@ -139,9 +139,16 @@ function mosquito(x, y, s, t) {
    AUDIO: synth SFX + ambience
    ========================================================= */
 let AC = null, master = null, amb = null, soundOn = true, voOn = true, playing = false;
+let AT = null;       // when set, sounds are scheduled at this time instead of "now" (offline export)
+const audioNow = () => AT ?? AC.currentTime;
 function ensureAudio() {
-  if (!AC) {
-    AC = new (window.AudioContext || window.webkitAudioContext)(); master = AC.createGain(); master.connect(AC.destination);
+  if (!AC) { AC = new (window.AudioContext || window.webkitAudioContext)(); buildAudio(); }
+  if (AC.state === 'suspended') AC.resume();
+  queueClips();
+}
+function buildAudio() {
+  {
+    master = AC.createGain(); master.connect(AC.destination);
     const osc = (type, f) => { const o = AC.createOscillator(); o.type = type; o.frequency.value = f; o.start(); return o; };
     const gain = v => { const g = AC.createGain(); g.gain.value = v; return g; };
     const nb = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate), d = nb.getChannelData(0);
@@ -164,19 +171,22 @@ function ensureAudio() {
     const hG = gain(0); hm.connect(hf); hf.connect(hG); hG.connect(master);
     amb = { cG, mG, krG, hG };
   }
-  if (AC.state === 'suspended') AC.resume();
-  queueClips();
+}
+/* the ambience levels for scene time lt (same mix as live playback) */
+function setAmbience(a, n, on = true) {
+  amb.cG.gain.setTargetAtTime(on ? a.cicada || 0 : 0, n, .08); amb.mG.gain.setTargetAtTime(on ? (a.mosq || 0) * .5 : 0, n, .08);
+  amb.krG.gain.setTargetAtTime(on ? (a.cricket || 0) * 2.5 : 0, n, .08); amb.hG.gain.setTargetAtTime(on ? (a.hum || 0) * .4 : 0, n, .08);
 }
 function tone(f, dur, type = 'triangle', vol = .06, slide = 0, delay = 0) {
   if (!soundOn || !AC) return;
-  const o = AC.createOscillator(), g = AC.createGain(), n = AC.currentTime + delay;
+  const o = AC.createOscillator(), g = AC.createGain(), n = audioNow() + delay;
   o.type = type; o.frequency.setValueAtTime(f, n); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(20, f * slide), n + dur);
   g.gain.setValueAtTime(0, n); g.gain.linearRampToValueAtTime(vol, n + .008); g.gain.exponentialRampToValueAtTime(.0001, n + dur);
   o.connect(g); g.connect(master); o.start(n); o.stop(n + dur + .02);
 }
 function noise(dur, vol = .2, freq = 800, q = .7, type = 'lowpass', delay = 0) {
   if (!soundOn || !AC) return;
-  const n = AC.currentTime + delay, len = Math.floor(AC.sampleRate * dur), buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0);
+  const n = audioNow() + delay, len = Math.floor(AC.sampleRate * dur), buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0);
   for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
   const s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
   s.buffer = buf; f.type = type; f.frequency.value = freq; f.Q.value = q;
@@ -458,10 +468,9 @@ function runEpisode(list, opts = {}) {
       if (T >= EP.dur) { T = EP.dur; pause(); }
       setScene();
     }
-    if (AC) {
+    if (AC && !(window.OfflineAudioContext && AC instanceof OfflineAudioContext)) {
       const lt = T - SCENE.off, a = SCENE.ambience ? SCENE.ambience(lt, SCENE.M) : {}, n = AC.currentTime, on = soundOn && playing;
-      amb.cG.gain.setTargetAtTime(on ? a.cicada || 0 : 0, n, .08); amb.mG.gain.setTargetAtTime(on ? (a.mosq || 0) * .5 : 0, n, .08);
-      amb.krG.gain.setTargetAtTime(on ? (a.cricket || 0) * 2.5 : 0, n, .08); amb.hG.gain.setTargetAtTime(on ? (a.hum || 0) * .4 : 0, n, .08);
+      setAmbience(a, n, on);
     }
     draw(started ? T : (opts.poster ?? scenes[0].poster ?? 0));
     $('scrub').value = T; $('time').textContent = `${fmt(T)} / ${fmt(EP.dur)}`;
@@ -470,6 +479,37 @@ function runEpisode(list, opts = {}) {
   window.renderAt = t => { started = true; T = t; setScene(); updateUI(); draw(t); return { scene: SCENE.id, local: t - SCENE.off }; };
   window.EPISODE = EP;
   updateUI(); requestAnimationFrame(frame);
+}
+/* Render the whole soundtrack offline (for the MP4 export): same events, clips and ambience as playback. */
+async function exportAudio(sr = 44100) {
+  const ep = EPISODE, len = Math.ceil(sr * (ep.dur + 1));
+  AC = new OfflineAudioContext(1, len, sr); buildAudio(); soundOn = true;
+  const bufs = {};
+  for (const [k, src] of Object.entries(window.CLIPS || {})) {
+    const bin = atob(src.slice(src.indexOf(',') + 1)), bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    bufs[k] = await AC.decodeAudioData(bytes.buffer);
+  }
+  const step = .05; let lastA = '';
+  for (const sc of ep.scenes) {
+    SCENE = sc;
+    for (let lt = 0; lt < sc.dur; lt += step) {
+      const prev = lt - step, t = sc.off + lt;
+      for (const [et, fn] of sc.events) if (et > prev && et <= lt) { AT = sc.off + et; fn(); }
+      sc.lines.forEach((L, i) => { if (L.a > prev && L.a <= lt) { const b = bufs[clipKey(sc, i)]; if (b) { const s = AC.createBufferSource(); s.buffer = b; s.connect(master); s.start(sc.off + L.a); } } });
+      const a = sc.ambience ? sc.ambience(lt, sc.M) : {}, key = JSON.stringify(a);
+      if (key !== lastA) { setAmbience(a, t); lastA = key; }
+    }
+  }
+  AT = null;
+  const out = (await AC.startRendering()).getChannelData(0);
+  const wav = new DataView(new ArrayBuffer(44 + out.length * 2)), str = (o, s) => { for (let i = 0; i < s.length; i++) wav.setUint8(o + i, s.charCodeAt(i)); };
+  str(0, 'RIFF'); wav.setUint32(4, 36 + out.length * 2, true); str(8, 'WAVEfmt '); wav.setUint32(16, 16, true); wav.setUint16(20, 1, true); wav.setUint16(22, 1, true);
+  wav.setUint32(24, sr, true); wav.setUint32(28, sr * 2, true); wav.setUint16(32, 2, true); wav.setUint16(34, 16, true); str(36, 'data'); wav.setUint32(40, out.length * 2, true);
+  let peak = 0; for (let i = 0; i < out.length; i++) peak = Math.max(peak, Math.abs(out[i]));
+  const gainK = peak > .98 ? .98 / peak : 1;
+  for (let i = 0; i < out.length; i++) wav.setInt16(44 + i * 2, Math.max(-1, Math.min(1, out[i] * gainK)) * 32767, true);
+  return new Blob([wav], { type: 'audio/wav' });
 }
 function runScene(cfg) { runEpisode([cfg], { poster: cfg.poster }); }
 

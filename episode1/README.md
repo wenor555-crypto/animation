@@ -31,6 +31,8 @@ python3 tools/gen_voices.py --count      # characters still to generate vs. your
 python3 tools/gen_voices.py              # generate missing clips (existing ones are kept)
 python3 build.py                         # → dist/*.html
 ```
+To make an **MP4** (1280×720, 30 fps, H.264 + AAC): `node tools/export_mp4.js video/episode1.mp4`. It renders every frame and the whole soundtrack offline, so the result is exact (about 20 minutes to run). `video/` is git-ignored.
+
 To re-record a line, delete its mp3 and run `gen_voices.py` again. Voice ids per character are in `tools/gen_voices.py`.
 
 ## Scene list
