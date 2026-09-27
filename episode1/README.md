@@ -4,7 +4,7 @@ Everything is drawn in code on a `<canvas>`. Open **`dist/episode1.html`** in a 
 
 - **Space** plays or pauses, **← / →** skip 5 seconds, and the scene menu jumps to any scene.
 - **ΕΛ / EN** switches the subtitles.
-- The voices are **placeholders** generated with ElevenLabs (AI). Lines without a clip fall back to the browser's Greek text-to-speech.
+- The voices are **placeholders** generated with ElevenLabs (AI), using native Greek voices from the Voice Library (cast in `docs/show-bible.md`). Every clip is checked with speech-to-text against the script. Lines without a clip fall back to the browser's Greek text-to-speech.
 
 ## Layout
 | File | What |
@@ -28,10 +28,11 @@ The drawing code refers to beats by name: `M.fire.a` is when the `fire` beat sta
 ```bash
 export ELEVENLABS_API_KEY=...            # never commit it
 python3 tools/gen_voices.py --count      # characters still to generate vs. your quota (free)
-python3 tools/gen_voices.py              # generate missing clips (existing ones are kept)
+python3 tools/gen_voices.py              # generate missing clips (existing ones are kept), each checked with speech-to-text
+python3 tools/gen_voices.py --verify     # re-check all clips, regenerate the ones that fail
 python3 build.py                         # → dist/*.html
 ```
-To make an **MP4** (1280×720, 30 fps, H.264 + AAC): `node tools/export_mp4.js video/episode1.mp4`. It renders every frame and the whole soundtrack offline, so the result is exact (about 20 minutes to run). `video/` is git-ignored.
+To make an **MP4** (1280×720, 30 fps, H.264 + AAC): `node tools/export_mp4.js video/episode1.mp4`, or on the remote render box through `tools/compute_client.py` (needs `REMOTE_API_URL` / `REMOTE_API_TOKEN`). It renders every frame and the whole soundtrack offline, so the result is exact (about 20 minutes to run). `video/` is git-ignored.
 
 To re-record a line, delete its mp3 and run `gen_voices.py` again. Voice ids per character are in `tools/gen_voices.py`.
 

@@ -133,18 +133,22 @@ The σίτα recruits by hacking devices **one by one**. Each hacked device give
 **Round 4: LOCKED.** Next: Round 5, the beat sheet (`episode-1-beat-sheet.md`).
 
 ## Placeholder voice cast (ElevenLabs, `eleven_v3`, `language_code: el`)
-These are stand-ins until real voice actors are cast. None of the stock voices on the account is a native Greek voice. With `eleven_v3` and `language_code: el` they speak with a Greek accent; `eleven_multilingual_v2` kept their English accent. A handful of short lines still use the older v2 take, where the v3 take came out worse. Native Greek voices from the Voice Library (and Voice Design) need a paid ElevenLabs plan for API use.
+These are stand-ins until real voice actors are cast. Every voice is a **native Greek** voice from the ElevenLabs Voice Library (`language: el`, 39 of them at casting time). They were chosen by audition: 6 candidates per role, 2 contrasting lines each, and every take transcribed with ElevenLabs speech-to-text to catch wrong words and wrong stress. Settings: stability .5 and similarity .8. Panik uses stability 0. The σίτα uses 0 on shouted lines (with `!` or CAPS) and .5 on the cold, quiet ones.
+
+Two things the audition showed, both handled in `episode1/tools/gen_voices.py`:
+- **CAPS lose their accent.** Greek capitals are written without tonos, so the model guesses the stress: «ΕΞΥΠΝΗ» came out as «εξυπνή» in almost every take. The text sent to TTS gets the accent back («ΈΞΥΠΝΗ»), so the line is still shouted but stressed right. The script and subtitles are unchanged.
+- **v3 sometimes invents words.** Every clip is transcribed and compared with the script. A take that doesn't match is redone (up to 4 takes, best kept). Results are in `episode1/audio/stt_report.json`.
 
 | Character | Voice | Why |
 |---|---|---|
-| Αφηγητής | Brian (`nPczCjzI2devNBz1zQrb`) | deep, resonant trailer voice |
-| Γιάννος | Chris (`iP95p4xoKVk53GoZ742B`) | down-to-earth, the plan-maker |
-| Μίμης | Callum (`N2lVS1w4EtoT3dr4eOWO`) | husky trickster, deadpan |
-| Γιώργος | Eric (`cjVigY5qzO86Huf0OWal`) | smooth, classy charmer |
-| Χρήστος | Will (`bIHbv24MWmeRgasZH58o`) | relaxed, chill |
-| Κώστας / Panik | Harry (`SOYHLrjzK2X1ezoPC6cr`) | rough; Panik uses more expressive settings |
-| Βασίλης | Bill (`pqHfZKP75CvOlQylNhV4`) | old, calm, unbothered |
-| Βαγγελιώ | Lily (`pFZP5JQG7iQjIQuC4Bku`) | velvety, commanding |
-| Μαρία | Laura (`FGY2WhTYpPnrIDTdsKH5`) | quirky, sassy |
-| Μυρσίνη | Bella (`hpp4J3VqNfWAUOO0d1Us`) | bright, warm hostess |
-| Η σίτα | Sarah (`EXAVITQu4vr4xnSDxMaL`) | TV presenter at 200% (low stability, high style) |
+| Αφηγητής | Theos (`n0vzWypeCK1NlWPVwhOc`) | broadcast-TV narrator, low and assertive; the most used Greek voice in the library |
+| Γιάννος | Georgios (`TN3alZndDSA8GYZSOf3r`) | young, conversational, calm and reassuring: the group's father figure |
+| Μίμης | Eugene (`5DAtyqt3LGjv9jkjNVFd`) | expressive but calm, for the deadpan kamikaze |
+| Γιώργος | KonstantinosN (`9xjHNaV3YwyHqzzgRuXl`) | ad voice with an anchorman delivery: the salesman CEO |
+| Χρήστος | Stefanos (`20zUtLxCwVzsFDWub4sB`) | young Athenian, soft and slow: laid back; says the Japanese right |
+| Κώστας / Panik | Atlas (`ejJ1ETWS2ohLMMeCu1H3`) | the most theatrical at stability 0 (Panik); natural at .5 (Κώστας). Described as older than Κώστας |
+| Βασίλης | Nikos (`QnPbsq4pmOZkrE4RQQCA`) | old, deep, resonant, unbothered; stresses «Δημητράκι» right (Talos didn't) |
+| Βαγγελιώ | Crhysa (`4hx4668A4ljDTKS4m5oV`) | loud, lively and clear in the shouted lines; three other candidates mangled «ΑΝΟΙΧΤΗ». There is no old female Greek voice in the library |
+| Μαρία | Madlen (`Jv2zcgjn9Qu0uNMKJjb1`) | young, casual, dry; two candidates said «Μιμή» instead of «Μίμη» |
+| Μυρσίνη | Aria (`mRTQIE2xdk2oMdoKFGJu`) | smooth and warm, with enough lift in the intonation for the sarcasm |
+| Η σίτα | Sofia (`0oYUKTNPbymIKVAkDQqh`) | the library's "TV spots / telemarketing" voice, widest pitch range of the candidates: the TV-shop presenter at 200% |
