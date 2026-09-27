@@ -1,4 +1,4 @@
-/* Ep.1, Scenes 16–17 – «Το κοτέτσι» + «Γιατί είναι όλα ρομπότ;» (beats 17–18): Μήμης's kamikaze plan; Κώστας wakes up. */
+/* Ep.1, Scenes 16–17 – «Το κοτέτσι» + «Γιατί είναι όλα ρομπότ;» (beats 17–18): Μίμης's kamikaze plan; Κώστας wakes up. */
 defineScene((() => {
 const X = { mimis: 420, giannos: 560, christos: 700, giorgos: 1185, sita: 1060, kostas: 220 };
 const CAMS = { wide: [640, 400, 1.05], guys: [560, 390, 1.7], mimis: [420, 350, 2.3], giannos: [560, 350, 2.3], coop: [110, 540, 1.6], chase: [400, 480, 1.1],
@@ -36,7 +36,7 @@ function render(t, _M, sc) {
   yard(t, { light: 'day', winLit: 'red', winTop: 'red', noChickens: true, coopDoor: inM(t, M.chaos, 1, 99) ? 1 : t > M.lock.a + .6 ? 0 : 1, coopShake: inM(t, M.chaos) ? t : 0 });
   const youK = t > M.you.a ? 1 : 0;
   sita({ t, chip: 1, led: 'red', mood: 'evil', burn: 1, talk: talk('sita', t), open: youK * .2, sway: Math.sin(t * 1.2) * .2 });
-  // the army: chasing Μήμης into the coop, then bursting out with hen pilots
+  // the army: chasing Μίμης into the coop, then bursting out with hen pilots
   const chaseK = prog(t, M.come.a, M.chase.b), inCoop = t > M.chase.b && t < M.out.a, outK = prog(t, M.out.a, M.out.b);
   if (!inCoop) {
     const ax = t < M.come.a ? 1100 : t < M.out.a ? lerp(1100, 60, chaseK) : lerp(60, 700, outK);
@@ -48,7 +48,7 @@ function render(t, _M, sc) {
   }
   // Γιώργος on the σίτα's side, CEO shades on
   stand(X.giorgos, 'giorgos', 1, { t, talk: talk('giorgos', t), look: [-1, 0], shades: true, mouth: 'smirk', L: [-58, -40], R: [58, -40] });
-  // Μήμης: leaps the barricade, runs into the coop, out the other side, slams the door
+  // Μίμης: leaps the barricade, runs into the coop, out the other side, slams the door
   const [mx, mw] = path(t, [[M.jump.a, 420], [M.come.b, 300], [M.chase.a + 1.6, 100], [M.chase.b - .6, 40], [M.chase.b, 40], [M.lock.b, 40]]);
   const mOut = t > M.jump.a;
   const feathered = t > M.chaos.a + 1;

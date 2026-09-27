@@ -13,14 +13,14 @@ const steps = [
   { who: 'giannos', cam: 'giannos', el: 'Γιώργο, όχι.', en: 'Giorgos, no.' },
   { act: 'flag', d: 2.4, cam: 'wide' },
   { who: 'giorgos', cam: 'gio', el: 'Κυρία Σίτα! Γιώργος, CEO. Νομίζω ξεκινήσαμε στραβά.', en: "Madam Screen! Giorgos, CEO. I think we got off on the wrong foot." },
-  { who: 'sita', cam: 'sita', el: 'Είσαι άνθρωπος. Άρα είσαι έντομο.', en: "You're human. Therefore you're an insect." },
+  { who: 'sita', cam: 'sita', el: 'Είσαι άνθρωπος. Άρα είσαι παράσιτο.', en: "You're human. Therefore you're a pest." },
   { who: 'giorgos', cam: 'gio', mark: 'pitch', el: 'Είμαι έντομο με γνωστούς στον χώρο. Χρειάζεσαι κανάλια διανομής. Χρειάζεσαι πρόσωπο. Χρειάζεσαι εμένα.', en: "I'm an insect who knows people in the industry. You need distribution. You need a face. You need me." },
   { who: 'sita', cam: 'sita', el: '…Τι ποσοστό;', en: '…What percentage?' },
   { who: 'giorgos', cam: 'gio', el: 'Δέκα τοις εκατό και γραφείο με θέα.', en: 'Ten percent and an office with a view.' },
   { who: 'sita', cam: 'deal', mark: 'deal', el: 'ΣΥΜΦΩΝΙΑ!', en: 'DEAL!' },
   { act: 'shades', d: 2.6, cam: 'deal' },
   { who: 'giorgos', cam: 'deal', el: 'Συγγνώμη, παιδιά. Business είναι, ρε.', en: "Sorry, guys. It's business, man." },
-  { who: 'mimis', cam: 'mimis', el: 'Το ήξερα από το κολατσιό.', en: 'I knew it from the lunch thing.' },
+  { who: 'mimis', cam: 'mimis', el: 'Το ήξερα ότι είσαι μαλάκας.', en: 'I knew you were a jerk.' },
   { act: 'type', d: 2.6, cam: 'screen' },
   { act: 'reply', d: 4.2, cam: 'screen' },
   { who: 'giannos', cam: 'giannos', el: 'Μου κάνει ηθική. Ο agent μου μού κάνει ηθική.', en: "It's lecturing me. My own agent is lecturing me." },
@@ -30,7 +30,7 @@ const steps = [
   { who: 'giannos', cam: 'giannos', el: 'Το αμάξι μου!', en: 'My car!' },
   { who: 'mimis', cam: 'mimis', el: "Σου το 'πα.", en: 'Told you.' },
   { who: 'giannos', cam: 'giannos', el: 'Δεν μου είπες τίποτα.', en: "You didn't tell me anything." },
-  { who: 'mimis', cam: 'mimis', el: "Σου το 'πα μέσα μου.", en: 'I told you in my head.' },
+  { who: 'mimis', cam: 'mimis', el: "Σου το 'πα από μέσα μου.", en: 'I told you inside my head.' },
 ];
 let M;
 function army(t, o = {}) {

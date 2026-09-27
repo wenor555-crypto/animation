@@ -8,7 +8,7 @@ const CAMS = {
 const steps = [
   { act: 'look', d: 1.6, cam: 'two' },
   { who: 'giannos', cam: 'giannos', el: 'Είναι κουρτίνα με μαγνήτες. Κυριολεκτικά. Κουρτίνα. Με μαγνήτες.', en: "It's a curtain with magnets. Literally. A curtain. With magnets." },
-  { who: 'mimis', cam: 'mimis', el: 'Κι εσύ είσαι μηχανικός με φούτερ στους 38. Όλοι κάτι έχουμε.', en: "And you're an engineer in a hoodie at 38 degrees. We've all got something." },
+  { who: 'mimis', cam: 'mimis', el: 'Κι εσύ είσαι μηχανικός με φούτερ στους 38. Όλοι έχουμε θέματα.', en: "And you're an engineer in a hoodie at 38 degrees. We've all got issues." },
   { act: 'up', d: 2, cam: 'gsita' },
   { who: 'giannos', cam: 'gsita', mark: 'riff', el: 'Όχι, ρε, σοβαρά τώρα. Αν της βάλεις ένα φτηνό μικροελεγκτή εδώ, δίπλα στους μαγνήτες… έναν αισθητήρα, μια κάμερα… να ξέρει ποιος μπαίνει, να κλείνει όταν έρχεται κουνούπι, όχι όταν έρχεται άνθρωπος…', en: "No, seriously though. Put a cheap microcontroller here, next to the magnets… a sensor, a camera… so it knows who's coming in, closes for a mosquito, not for a person…" },
   { who: 'giorgos', cam: 'giorgos', mark: 'glasses', el: 'Για πες.', en: 'Go on.' },
@@ -35,7 +35,7 @@ function render(t, _M, sc) {
   ctx.save(); applyCam(c);
   yard(t, {});
   sita({ t, sway: Math.sin(t * 1.3) * .25 });
-  const seated = t >= M.sitdown.a - .2;                         // both sit back down on the cut to Μήμης
+  const seated = t >= M.sitdown.a - .2;                         // both sit back down on the cut to Μίμης
   const gUp = t >= M.up.a + .4 && !seated, gorUp = t >= M.rise.a && !seated;
   const gx = path(t, [[M.up.a + .4, 470], [M.up.b, 935]]);
   const X2 = { ...X, giannos: gUp ? gx[0] : 460, giorgos: gorUp ? 720 : 820 };

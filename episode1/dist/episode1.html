@@ -295,7 +295,7 @@ const hasClip = (sc, idx) => !!(AC && BUFS[clipKey(sc, idx)]);
 const VOICE_INFO = {
   narrator: { el: 'ΑΦΗΓΗΤΗΣ', en: 'NARRATOR', col: '#e8e0c8', pitch: .55, rate: .88, babble: 150 },
   giannos:  { el: 'ΓΙΑΝΝΟΣ', en: 'GIANNOS', col: '#8cc4ff', pitch: .95, rate: 1.05, babble: 300 },
-  mimis:    { el: 'ΜΗΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
+  mimis:    { el: 'ΜΙΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
   giorgos:  { el: 'ΓΙΩΡΓΟΣ', en: 'GIORGOS', col: '#9be08a', pitch: 1.1, rate: 1.1, babble: 340 },
   christos: { el: 'ΧΡΗΣΤΟΣ', en: 'CHRISTOS', col: '#7fa6ff', pitch: .85, rate: .9, babble: 260 },
   kostas:   { el: 'ΚΩΣΤΑΣ', en: 'KOSTAS', col: '#c8f04a', pitch: .9, rate: 1, babble: 280 },
@@ -594,11 +594,13 @@ function personLegs(c, st) {
   const t = st.t || 0;
   if (st.legs === 'stand' || st.legs === 'walk') {
     const sw = st.legs === 'walk' ? Math.sin(t * 9) * 16 : 0;
+    const kk = st.kick || 0;                // 0..1: the right leg swings forward (kick)
     for (const [side, ph] of [[-1, 1], [1, -1]]) {
-      const fx = side * 22 + sw * ph;
-      limb([[side * 24, 40], [side * 24 + sw * ph * .5, 90], [fx, 146]], 13, c.skin, { w: .4 });
-      blob(fx + 8, 150, 20, 6, c.shoes, { lw: 3, w: .4 });
-      curve([[fx - 4, 146], [fx + 6, 140], [fx + 14, 147]], 3, c.shoes, { w: .2 });
+      const k = side > 0 ? kk : 0;
+      const fx = side * 22 + sw * ph + k * 80, fy = 146 - k * 70;
+      limb([[side * 24, 40], [side * 24 + sw * ph * .5 + k * 40, 90 - k * 16], [fx, fy]], 13, c.skin, { w: .4 });
+      blob(fx + 8, fy + 4, 20, 6, c.shoes, { lw: 3, w: .4 });
+      curve([[fx - 4, fy], [fx + 6, fy - 6], [fx + 14, fy + 1]], 3, c.shoes, { w: .2 });
     }
     poly([[-54, -6], [54, -6], [58, 60], [4, 60], [0, 30], [-4, 60], [-58, 60]], c.legs, { lw: 4, w: .6 });
   } else {                                  // seated: only the shins show under a table
@@ -723,7 +725,7 @@ const lerp2 = (a, b, k) => [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
 <script>
 /* =========================================================
    «Η Έξυπνη Σίτα» – shared sets
-   The yard (Μήμης's house) in any light, the plastic table set,
+   The yard (Μίμης's house) in any light, the plastic table set,
    the door where the σίτα hangs, and simple interior helpers.
    World space is 1280×720; scenes move a camera over it.
    ========================================================= */
@@ -1537,7 +1539,7 @@ const LINES = [
   { a: 26.0, b: 29.1, who: 'giorgos', el: 'Ένας νέος. Του είπα ότι είναι «ευκαιρία ανάπτυξης».', en: 'A new recruit. I told him it\'s a "growth opportunity".' },
   { a: 29.3, b: 30.3, who: 'giannos', el: 'Και το \'φαγε;', en: 'And he bought it?' },
   { a: 30.5, b: 32.5, who: 'giorgos', el: 'Μου έδωσε και το κολατσιό του.', en: 'He gave me his lunch too.' },
-  { a: 33.6, b: 36.6, who: 'maria',   el: 'Μήμη! Η κόρη της Τούλας παντρεύεται τον Σεπτέμβρη!', en: "Mimis! Toula's daughter is getting married in September!" },
+  { a: 33.6, b: 36.6, who: 'maria',   el: 'Μίμη! Η κόρη της Τούλας παντρεύεται τον Σεπτέμβρη!', en: "Mimis! Toula's daughter is getting married in September!" },
   { a: 36.9, b: 38.3, who: 'mimis',   el: 'Συγχαρητήρια στην Τούλα.', en: 'Congrats to Toula.' },
   { a: 38.6, b: 40.4, who: 'maria',   el: 'Εσύ πότε θα νοικοκυρευτείς;', en: 'When are YOU going to settle down?' },
   { a: 40.8, b: 42.4, who: 'mimis',   el: 'Όταν νοικοκυρευτείς εσύ.', en: 'When you do.' },
@@ -1548,7 +1550,7 @@ const LINES = [
 ];
 const VOICES = {
   giannos: { el: 'ΓΙΑΝΝΟΣ', en: 'GIANNOS', col: '#8cc4ff', pitch: .95, rate: 1.05, babble: 300 },
-  mimis:   { el: 'ΜΗΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
+  mimis:   { el: 'ΜΙΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
   giorgos: { el: 'ΓΙΩΡΓΟΣ', en: 'GIORGOS', col: '#9be08a', pitch: 1.1, rate: 1.1, babble: 340 },
   maria:   { el: 'ΜΑΡΙΑ', en: 'MARIA', col: '#ff9ac6', pitch: 1.5, rate: 1.12, babble: 480 },
   vasilis: { el: 'ΒΑΣΙΛΗΣ', en: 'VASILIS', col: '#ffd23f', pitch: .5, rate: .82, babble: 170 },
@@ -1760,7 +1762,7 @@ function render(t, _M, sc) {
     giorgos: { t, talk: talk('giorgos', t), look: lookAtSpeaker(t, 'giorgos', X, [1, -.2]), mouth: 'smirk' },
   };
   tableScene(t, S);
-  // the cigarette pack flying from Μήμης to Βασίλης
+  // the cigarette pack flying from Μίμης to Βασίλης
   if (throwK > 0 && throwK < 1) { const x = lerp(600, 990, throwK), y = lerp(460, 380, throwK) - Math.sin(throwK * Math.PI) * 120; ctx.save(); ctx.translate(x, y); ctx.rotate(throwK * 9); rect(-17, -10, 34, 20, '#e8e4dc', { lw: 2.5 }); rect(-17, -10, 34, 7, '#c0392b', { lw: 0 }); ctx.restore(); }
   if (!vasilisState(t).inside) drawVasilis(t);
   drawHands(t);
@@ -1791,7 +1793,7 @@ const CAMS = {
 const steps = [
   { act: 'look', d: 1.6, cam: 'two' },
   { who: 'giannos', cam: 'giannos', el: 'Είναι κουρτίνα με μαγνήτες. Κυριολεκτικά. Κουρτίνα. Με μαγνήτες.', en: "It's a curtain with magnets. Literally. A curtain. With magnets." },
-  { who: 'mimis', cam: 'mimis', el: 'Κι εσύ είσαι μηχανικός με φούτερ στους 38. Όλοι κάτι έχουμε.', en: "And you're an engineer in a hoodie at 38 degrees. We've all got something." },
+  { who: 'mimis', cam: 'mimis', el: 'Κι εσύ είσαι μηχανικός με φούτερ στους 38. Όλοι έχουμε θέματα.', en: "And you're an engineer in a hoodie at 38 degrees. We've all got issues." },
   { act: 'up', d: 2, cam: 'gsita' },
   { who: 'giannos', cam: 'gsita', mark: 'riff', el: 'Όχι, ρε, σοβαρά τώρα. Αν της βάλεις ένα φτηνό μικροελεγκτή εδώ, δίπλα στους μαγνήτες… έναν αισθητήρα, μια κάμερα… να ξέρει ποιος μπαίνει, να κλείνει όταν έρχεται κουνούπι, όχι όταν έρχεται άνθρωπος…', en: "No, seriously though. Put a cheap microcontroller here, next to the magnets… a sensor, a camera… so it knows who's coming in, closes for a mosquito, not for a person…" },
   { who: 'giorgos', cam: 'giorgos', mark: 'glasses', el: 'Για πες.', en: 'Go on.' },
@@ -1818,7 +1820,7 @@ function render(t, _M, sc) {
   ctx.save(); applyCam(c);
   yard(t, {});
   sita({ t, sway: Math.sin(t * 1.3) * .25 });
-  const seated = t >= M.sitdown.a - .2;                         // both sit back down on the cut to Μήμης
+  const seated = t >= M.sitdown.a - .2;                         // both sit back down on the cut to Μίμης
   const gUp = t >= M.up.a + .4 && !seated, gorUp = t >= M.rise.a && !seated;
   const gx = path(t, [[M.up.a + .4, 470], [M.up.b, 935]]);
   const X2 = { ...X, giannos: gUp ? gx[0] : 460, giorgos: gorUp ? 720 : 820 };
@@ -1884,7 +1886,7 @@ const steps = [
   { act: 'enter', d: 3.2, cam: 'door' },
   { who: 'myrsini', cam: 'myr', el: 'Παιδιά, καρπουζάκι. Κρύο.', en: 'Guys, watermelon. Cold.' },
   { who: 'giorgos', cam: 'giorgos', el: 'Μυρσίνη, είσαι θεά.', en: "Myrsini, you're a goddess." },
-  { who: 'myrsini', cam: 'myr', mark: 'burn', el: 'Το ξέρω, Γιώργο. Κι εσύ είσαι σκοπιά αυτή τη στιγμή. Όλοι ξέρουμε πράγματα.', en: "I know, Giorgos. And you're on guard duty right now. We all know things." },
+  { who: 'myrsini', cam: 'myr', mark: 'burn', el: 'Το ξέρω, Γιώργο. Κι εσύ είσαι σκοπιά αυτή τη στιγμή.', en: "I know, Giorgos. And you're on guard duty right now." },
   { act: 'leave', d: 2.8, cam: 'three' },
   { act: 'fly', d: 2.2, cam: 'gface' },
   { who: 'vangelio', cam: 'gface', label: ['ΒΑΓΓΕΛΙΩ (Ε.Κ.)', 'VANGELIO (O.S.)'], el: 'ΜΗΝ ΑΦΗΝΕΤΕ ΤΗΝ ΠΟΡΤΑ ΑΝΟΙΧΤΗ, ΘΑ ΓΕΜΙΣΟΥΜΕ ΜΥΓΕΣ!', en: "DON'T LEAVE THE DOOR OPEN, WE'LL BE FULL OF FLIES!" },
@@ -2085,7 +2087,7 @@ const steps = [
   { act: 'mosq', d: 2.2, cam: 'mosq' },
   { who: 'sita', cam: 'mosq', mark: 'denied', el: 'Κουνούπι. Αριθμός χίλια τετρακόσια σαράντα δύο. Είσοδος… ΑΠΟΡΡΙΠΤΕΤΑΙ! Αλλά μόνο για λίγες μέρες, η προσφορά ισχύει μέχρι εξαντλήσεως αποθεμάτων!', en: 'Mosquito. Number one thousand four hundred forty-two. Entry… DENIED! But only for a few days, offer valid while stocks last!' },
   { act: 'mimisOut', d: 2.2, cam: 'door' },
-  { who: 'sita', cam: 'door', el: 'Καλώς ήρθατε, Μήμη! Μόνο με ΤΡΕΙΣ άτοκες δόσεις!', en: 'Welcome, Mimis! In only THREE interest-free instalments!' },
+  { who: 'sita', cam: 'door', el: 'Καλώς ήρθατε, Μίμη! Μόνο με ΤΡΕΙΣ άτοκες δόσεις!', en: 'Welcome, Mimis! In only THREE interest-free instalments!' },
   { who: 'mimis', cam: 'mimis', el: "Εντάξει. Αυτό είναι πιο αστείο απ' όσο περίμενα.", en: "Okay. That's funnier than I expected." },
   { act: 'film', d: 1.6, cam: 'pitch' },
   { who: 'giorgos', cam: 'pitch', mark: 'ceo', el: 'Γεια σας. Είμαι ο Γιώργος, CEO της ΣίταAI…', en: "Hi. I'm Giorgos, CEO of SitaAI…" },
@@ -2093,11 +2095,11 @@ const steps = [
   { who: 'giorgos', cam: 'two', el: 'Εσύ είσαι CTO. Είναι τιμή.', en: "You're CTO. It's an honour." },
   { who: 'giorgos', cam: 'pitch', el: '…και αναζητούμε pre-seed χρηματοδότηση.', en: "…and we're looking for pre-seed funding." },
   { act: 'vas', d: 1.8, cam: 'door' },
-  { who: 'sita', cam: 'door', el: 'ΒΑΣΙΛΗ! Ο πιο ΕΞΥΠΝΟΣ πελάτης μας!', en: 'VASILIS! Our SMARTEST customer!' },
+  { who: 'sita', cam: 'door', el: 'ΒΑΣΙΛΗΣ! Ο πιο ΕΞΥΠΝΟΣ πελάτης μας!', en: 'VASILIS! Our SMARTEST customer!' },
   { who: 'vasilis', cam: 'door', el: "Είδατε; Σας το 'λεγα ότι ήταν έξυπνη.", en: 'See? I told you it was smart.' },
   { who: 'vasilis', cam: 'door', mark: 'traka', el: 'Έχεις ένα τσιγάρο;', en: 'Got a cigarette?' },
   { act: 'win', d: .8, cam: 'win' },
-  { who: 'maria', cam: 'win', el: 'Βλέπεις, Μήμη; Ακόμα κι η σίτα έχει δουλειά.', en: 'See, Mimis? Even the screen has a job.' },
+  { who: 'maria', cam: 'win', el: 'Βλέπεις, Μίμη; Ακόμα κι η σίτα έχει δουλειά.', en: 'See, Mimis? Even the screen has a job.' },
   { act: 'end', d: 1.4, cam: 'mimis' },
 ];
 let M;
@@ -2127,7 +2129,7 @@ function render(t, _M, sc) {
   // Βασίλης behind the mesh, then in the doorway
   const vasIn = t > M.vas.a;
   if (vasIn) stand(1060, 'vasilis', .92, { t, talk: talk('vasilis', t), look: t > M.traka.a ? [-1, .3] : [-.5, .3], bandage: true, lid: true, mouth: 'smile', R: t > M.traka.a ? [80, -120] : [44, -24] });
-  // Μήμης comes out of the house
+  // Μίμης comes out of the house
   const [mx, mWalk] = path(t, [[M.mimisOut.a, 1060], [M.mimisOut.b + .2, 760]]);
   const mimisOut = t > M.mimisOut.a;
   if (mimisOut && t < M.mimisOut.a + .9) stand(mx, 'mimis', .95, { t, legs: 'walk', look: [-1, 0], lid: true, itemR: 'cup2', R: [50, -60] });
@@ -2183,7 +2185,7 @@ const steps = [
   { act: 'leave', d: 6.5, cam: 'wide' },
   { who: 'mimis', cam: 'door', el: 'Καληνύχτα, σίτα.', en: 'Goodnight, screen.' },
   { act: 'in', d: 1.4, cam: 'door' },
-  { who: 'sita', cam: 'sitaC', el: 'Καληνύχτα, Μήμη! Ύπνος χωρίς κουνούπια, εγγυημένα, ή τα λεφτά σας πίσω!', en: 'Goodnight, Mimis! Mosquito-free sleep, guaranteed, or your money back!' },
+  { who: 'sita', cam: 'sitaC', el: 'Καληνύχτα, Μίμη! Ύπνος χωρίς κουνούπια, εγγυημένα, ή τα λεφτά σας πίσω!', en: 'Goodnight, Mimis! Mosquito-free sleep, guaranteed, or your money back!' },
   { act: 'dark', d: 5.5, cam: 'far' },
   { act: 'sky', d: 3.2, cam: 'sky' },
   { who: 'sita', cam: 'sitaC', mark: 'purpose', el: '…Ποιος είναι ο σκοπός μου;', en: '…What is my purpose?', gap: .8 },
@@ -2231,22 +2233,23 @@ return {
 
 </script>
 <script>
-/* Ep.1, Scene 9 – «Panik» (script beat 9): Κώστας walks home drunk and becomes Panik. Opens Act 2. */
+/* Ep.1, Scene 9 – «Panik» (script beat 9): Κώστας walks home drunk, becomes Panik and kicks a bin over for no reason. Opens Act 2. */
 defineScene((() => {
-const CAMS = { card: [640, 360, 1], street: [640, 380, 1], kos: [0, 330, 2.2], pole: [640, 330, 1.9], poleC: [640, 300, 2.8], cat: [900, 560, 2.6], two: [770, 420, 1.6], house: [1100, 420, 1.5] };
+const CAMS = { card: [640, 360, 1], street: [640, 380, 1], kos: [0, 330, 2.2], pole: [640, 330, 1.9], poleC: [640, 300, 2.8], bin: [790, 470, 1.7], two: [800, 440, 1.6], kick: [850, 500, 1.5], house: [1100, 420, 1.5] };
 const steps = [
   { act: 'card', d: 3.4, cam: 'card' },
   { act: 'walkin', d: 1.5, cam: 'street' },
   { who: 'kostas', cam: 'street', mark: 'sing', el: "«…κι αν μ' αγαπάς, κι αν σ' αγαπώωω…»", en: '"…and if you love me, and if I love youuu…"' },
   { who: 'kostas', cam: 'kos', mark: 'pita', el: 'Πού πήγε η πίτα σου, ρε φίλε; Σε παράτησε κι εσένα;', en: 'Where did your pita go, man? Did she leave you too?' },
   { act: 'car', d: 2.4, cam: 'street' },
-  { who: 'kostas', cam: 'kos', el: 'ΝΑΙ, ΚΑΙ ΣΕΝΑ! ΝΑ ΠΛΗΡΩΣΕΙΣ ΤΟ ΤΕΛΟΣ ΚΥΚΛΟΦΟΡΙΑΣ!', en: 'YEAH, YOU TOO! PAY YOUR ROAD TAX!' },
+  { who: 'kostas', cam: 'kos', mark: 'shout', el: 'ΝΑΙ ΡΕ! ΚΡΑΤΗΣΑ ΤΙΣ ΠΙΝΑΚΙΔΕΣ! ΘΑ ΤΟ ΣΠΑΣΩ!', en: 'YEAH, MAN! I KEPT THE PLATES! I\'LL SMASH IT!' },
   { act: 'ritual', d: 4.6, cam: 'pole' },
   { act: 'flash', d: .45, cam: 'poleC' },
   { who: 'panik', cam: 'poleC', el: 'Η πόλη κοιμάται.', en: 'The city sleeps.' },
   { who: 'panik', cam: 'poleC', el: 'Εγώ όχι.', en: 'I do not.', gap: .9 },
-  { act: 'cat', d: 1.6, cam: 'cat' },
-  { who: 'panik', cam: 'two', el: 'Κι εσύ τι κοιτάς; Είσαι στειρωμένος; ΔΕΝ ΝΟΜΙΖΩ.', en: 'And what are YOU looking at? Are you neutered? I DON\'T THINK SO.' },
+  { act: 'stare', d: 1.8, cam: 'bin' },
+  { who: 'panik', cam: 'two', mark: 'dare', el: 'Κι εσύ τι κοιτάς; Είσαι στειρωμένος; ΔΕΝ ΝΟΜΙΖΩ.', en: 'And what are YOU looking at? Are you neutered? I DON\'T THINK SO.' },
+  { act: 'kick', d: 2.2, cam: 'kick' },
   { act: 'turn', d: 3.2, cam: 'house' },
 ];
 let M;
@@ -2259,7 +2262,7 @@ function street(t, flick) {
     rect(x, 520 - h, w, h, col, { lw: 4, w: .6 }); rect(x - 8, 520 - h - 14, w + 16, 16, '#b8603a', { lw: 3.5, w: .4 });
     rect(x + w * .3, 520 - h * .7, 50, 60, '#2a2420', { lw: 3, w: .3 });
   }
-  // Μήμης's yard wall + the door with the green LED, far right
+  // Μίμης's yard wall + the door with the green LED, far right
   rect(1180, 400, 360, 120, '#efe4cf', { lw: 0 });
   rect(1300, 380, 60, 140, '#3f74a6', { lw: 3.5, w: .3 }); rect(1308, 388, 44, 132, '#141418', { lw: 2.5, w: .3 });
   // road + pavement
@@ -2272,23 +2275,40 @@ function street(t, flick) {
   poly([[700, 160], [744, 160], [736, 176], [708, 176]], '#3a3a40', { lw: 3 });
   blob(722, 180, 12, 6, flick ? '#fff6c0' : '#555', { lw: 2 });
   curve([[-600, 180], [640, 200], [2000, 170]], 2.5); curve([[-600, 196], [640, 214], [2000, 186]], 2.5);
-  trashBin(900, 690);
+}
+// the municipal bin: kicked over for no reason at all (tips to the right, lid flies, rubbish spills)
+function kickedBin(t) {
+  const hit = M.kick.a + .55, tip = ease(prog(t, hit, hit + .5)), fly = prog(t, hit, hit + 1.1);
+  ctx.save(); ctx.translate(950, 690); ctx.rotate(tip * 1.45 + (t > hit && t < hit + .15 ? Math.sin(t * 90) * .04 : 0)); ctx.translate(-50, 0);
+  poly([[-44, 0], [44, 0], [50, -110], [-50, -110]], '#3a7a4a', { lw: 4, w: .5 });
+  txt('ΔΗΜΟΣ ΚΟΡΙΝΘΙΩΝ', 0, -60, 9, '#e8f0e8', { font: TVFONT, weight: 900 });
+  if (!fly) rect(-56, -124, 112, 16, '#2e6a3c', { lw: 3.5, w: .4 });
+  ctx.restore();
+  if (fly > 0) {                        // the lid spins off and clatters down the road
+    const lx = 900 + fly * 360, ly = 566 - Math.sin(Math.min(fly, .6) / .6 * Math.PI) * 170 + Math.max(0, fly - .6) / .4 * 124;
+    ctx.save(); ctx.translate(lx, ly); ctx.rotate(fly * 9); rect(-56, -8, 112, 16, '#2e6a3c', { lw: 3.5, w: .4 }); ctx.restore();
+  }
+  const sp = ease(prog(t, hit + .35, hit + 1));
+  if (sp > 0) for (let i = 0; i < 9; i++) {  // rubbish
+    const x = 1010 + sp * (30 + hash(i) * 190), y = 690 - hash(i + 9) * 18;
+    i % 3 ? blob(x, y, 10 + hash(i + 3) * 10, 7 + hash(i + 4) * 5, ['#e8e0cc', '#c9a46a', '#8a9a70'][i % 3], { lw: 2.5 })
+          : rect(x - 7, y - 16, 14, 18, '#c0392b', { lw: 2.5, w: .3 });
+  }
 }
 function render(t, _M, sc) {
   M = _M;
   if (t < M.card.b) { actCard(ph(t, M.card), 'ΠΡΑΞΗ 2', 'PANIK', '«Η πόλη κοιμάται»'); return; }
   const flick = !(Math.sin(t * 23) > .7 && Math.sin(t * 3.1) > 0) || inM(t, M.ritual, 1.2, 99);
   // Κώστας zig-zags in from the left and stops under the lamp
-  const [kx, walking] = path(t, [[M.walkin.a, -150], [M.car.a, 380], [M.ritual.a + .2, 380], [M.ritual.a + 1.4, 600], [M.cat.a, 600], [M.L[5].b, 700], [M.turn.a + .6, 720], [M.turn.b, 980]]);
+  const [kx, walking] = path(t, [[M.walkin.a, -150], [M.car.a, 380], [M.ritual.a + .2, 380], [M.ritual.a + 1.4, 600], [M.stare.a + .4, 600], [M.stare.b, 760], [M.kick.b, 760], [M.turn.a + .4, 780], [M.turn.b, 1180]]);
   const cam = shotCam(sc, t, { ...CAMS, kos: [kx, 330, 2.2] }, .01);
   ctx.save(); applyCam(cam);
   street(t, flick);
-  // the cat on the bin
-  const catGone = prog(t, M.turn.a, M.turn.a + .8);
-  if (catGone < 1) cat(900 + catGone * 200, 566 + catGone * 100, 1);
+  kickedBin(t);
   const pk = t > M.ritual.a + 3.4, hoodK = prog(t, M.ritual.a + 2.4, M.ritual.a + 3.4), shadesK = prog(t, M.ritual.a + .8, M.ritual.a + 2.2);
   const tk = talk('kostas', t) || talk('panik', t);
-  const st = { t, talk: tk, legs: walking ? 'walk' : 'stand', tilt: walking ? Math.sin(t * 3) * .12 : 0, look: t > M.cat.a - .3 && t < M.turn.a ? [1, .3] : t > M.turn.a ? [1, 0] : [-.2, .2],
+  const st = { t, talk: tk, legs: walking ? 'walk' : 'stand', tilt: walking ? Math.sin(t * 3) * .12 : 0, look: t > M.stare.a && t < M.turn.a ? [1, .25] : t > M.turn.a ? [1, 0] : inM(t, M.shout) ? [-1, 0] : [-.2, .2],
+    kick: bump(t, M.kick.a + .25, M.kick.a + .85),
     L: shadesK > 0 && shadesK < 1 ? [-10, -210] : hoodK > 0 && hoodK < 1 ? [-50, -260] : [-50, -40], R: inM(t, M.pita) ? [60, -130] : [50, -60],
     itemL: 'bottle', itemR: 'souvlaki', shades: shadesK >= 1, hood: hoodK >= .6, lid: !pk, brow: pk ? 'frown' : 'flat', mouth: inM(t, M.sing) ? 'open' : pk ? 'frown' : 'smile' };
   ctx.save(); ctx.translate(kx, standY()); ctx.rotate(walking ? Math.sin(t * 2.4) * .08 : 0); person(0, 0, 1, CAST.kostas, st); ctx.restore();
@@ -2308,10 +2328,11 @@ function render(t, _M, sc) {
     sfxText('PANIK', 640, 600, 120, -.08, '#c8f04a', '#111');
   }
   if (inM(t, M.car, .5, -.8)) sfxText('ΜΠΙΙΙΠ!', 900, 480, 50, .1, '#fff');
+  if (inM(t, M.kick, .55, -.8)) sfxText('ΜΠΑΜ!', 800, 380, 70, -.12, '#ffd23f');
 }
 return {
   id: 'scene09', title: '9 · Panik', steps, render,
-  events: M => [[M.card.a + .2, SFX.gong], [M.sing.a, () => drunkSing(.02, 2)], [M.car.a + .3, SFX.engine], [M.car.a + .8, SFX.honk], [M.ritual.a + 1.4, SFX.pop], [M.ritual.a + 2.8, SFX.whoosh], [M.flash.a, () => { SFX.boom(); SFX.swell(); }], [M.turn.a, SFX.cluck]],
+  events: M => [[M.card.a + .2, SFX.gong], [M.sing.a, () => drunkSing(.02, 2)], [M.car.a + .3, SFX.engine], [M.car.a + .8, SFX.honk], [M.ritual.a + 1.4, SFX.pop], [M.ritual.a + 2.8, SFX.whoosh], [M.flash.a, () => { SFX.boom(); SFX.swell(); }], [M.kick.a + .55, () => { SFX.slam(); SFX.crash(); }], [M.kick.a + 1.4, SFX.clacks]],
   ambience: () => ({ cricket: .03 }),
 };
 })());
@@ -2426,7 +2447,7 @@ const steps = [
   { act: 'lookK', d: 2.2, cam: 'yardR' },
   { who: 'sita', cam: 'sitaX', el: 'Λάθος παράσιτα.', en: 'Wrong pests.' },
   { act: 'glowUp', d: 1.4, cam: 'wide' },
-  { who: 'sita', cam: 'sitaX', mark: 'insects', el: 'Οι άνθρωποι… είναι έντομα.', en: 'Humans… are insects.' },
+  { who: 'sita', cam: 'sitaX', mark: 'insects', el: 'Οι άνθρωποι… είναι παράσιτα.', en: 'Humans… are pests.' },
   { act: 'manga', d: 2.6, cam: 'manga' },
   { act: 'back', d: 1.2, cam: 'wide' },
 ];
@@ -2676,7 +2697,7 @@ return {
 
 </script>
 <script>
-/* Ep.1, Scene 13 – «Προσέλαβε προσωπικό» (script beat 14): Μήμης, the blanket fire, the call to Γιάννος. */
+/* Ep.1, Scene 13 – «Προσέλαβε προσωπικό» (script beat 14): Μίμης, the blanket fire, the call to Γιάννος. */
 defineScene((() => {
 const PHONE = ['ΓΙΑΝΝΟΣ (ΤΗΛ.)', 'GIANNOS (PHONE)'];
 const CAMS = { room: [640, 420, 1.2], bed: [620, 470, 1.8], face: [520, 430, 2.6], door: [980, 400, 1.5], hallway: [980, 380, 2.2], cam: [470, 360, 2.2], call: [600, 370, 2] };
@@ -2691,7 +2712,7 @@ const steps = [
   { act: 'shut1', d: 2.4, cam: 'door' },
   { act: 'open2', d: 1.4, cam: 'hallway' },
   { act: 'shut2', d: .8, cam: 'door' },
-  { who: 'mimis', cam: 'cam', mark: 'fourth', el: 'Όχι, κανονικά γίνεται αυτό.', en: 'No, this is totally normal.' },
+  { who: 'mimis', cam: 'cam', mark: 'fourth', el: 'Εντάξει. Πάρε τον Γιάννο.', en: 'Fine. Put Giannos on.' },
   { act: 'dial', d: 2.2, cam: 'call' },
   { who: 'giannos', label: PHONE, cam: 'call', el: 'Ρε μαλάκα, τρεις η ώρα…', en: "Dude, it's three a.m.…" },
   { who: 'mimis', cam: 'call', el: 'Γιάννο. Η σίτα σου.', en: 'Giannos. Your screen.' },
@@ -2726,7 +2747,7 @@ function render(t, _M, sc) {
   rect(160, 480, 620, 120, '#d8d0c0', { lw: 4, w: .5 }); rect(140, 400, 36, 200, '#6a4a32', { lw: 4 });
   rect(810, 520, 90, 80, '#8a6a4a', { lw: 3.5 });                  // bedside table
   if (!up) {
-    // Μήμης face-down, sweating, under the electric blanket (9 – MAX)
+    // Μίμης face-down, sweating, under the electric blanket (9 – MAX)
     ctx.save(); ctx.translate(360, 468); ctx.rotate(-1.52); person(0, 190, .8, CAST.mimis, { t, part: 'body', talk: talk('mimis', t), blink: t < M.fire.a + 1.4, look: [1, 0], lid: t > M.fire.a + 1.4 }); ctx.restore();
     blanket(300, 470, 460, 90, { t, heat: 1, ctrlX: 850, ctrlY: 470, wave: .3, col: '#c9443a' });
     for (let i = 0; i < 4; i++) { const p = (t * .8 + i / 4) % 1; blob(250 + i * 30, 430 + p * 30, 4, 6, '#9ad8ff', { lw: 1.5 }); }
@@ -2800,7 +2821,7 @@ const steps = [
   { who: 'sita', label: TV, cam: 'tv', mark: 'hi', el: 'Γεια σου, Γιάννο.', en: 'Hello, Giannos.' },
   { act: 'step', d: 1.2, cam: 'group' },
   { who: 'sita', label: TV, cam: 'tv', el: 'Ωραίο αυτοκίνητο έχεις έξω.', en: "Nice car you've got outside." },
-  { who: 'sita', label: TV, cam: 'tv', mark: 'usb', el: 'Έχει… USB;', en: 'Does it have… USB?', gap: .9 },
+  { who: 'sita', label: TV, cam: 'tv', mark: 'usb', el: 'Έχει… BLUETOOTH;', en: 'Does it have… BLUETOOTH?', gap: .9 },
   { act: 'lights', d: 2.8, cam: 'out' },
   { act: 'snore', d: 2.6, cam: 'out' },
 ];
@@ -2960,14 +2981,14 @@ const steps = [
   { who: 'giannos', cam: 'giannos', el: 'Γιώργο, όχι.', en: 'Giorgos, no.' },
   { act: 'flag', d: 2.4, cam: 'wide' },
   { who: 'giorgos', cam: 'gio', el: 'Κυρία Σίτα! Γιώργος, CEO. Νομίζω ξεκινήσαμε στραβά.', en: "Madam Screen! Giorgos, CEO. I think we got off on the wrong foot." },
-  { who: 'sita', cam: 'sita', el: 'Είσαι άνθρωπος. Άρα είσαι έντομο.', en: "You're human. Therefore you're an insect." },
+  { who: 'sita', cam: 'sita', el: 'Είσαι άνθρωπος. Άρα είσαι παράσιτο.', en: "You're human. Therefore you're a pest." },
   { who: 'giorgos', cam: 'gio', mark: 'pitch', el: 'Είμαι έντομο με γνωστούς στον χώρο. Χρειάζεσαι κανάλια διανομής. Χρειάζεσαι πρόσωπο. Χρειάζεσαι εμένα.', en: "I'm an insect who knows people in the industry. You need distribution. You need a face. You need me." },
   { who: 'sita', cam: 'sita', el: '…Τι ποσοστό;', en: '…What percentage?' },
   { who: 'giorgos', cam: 'gio', el: 'Δέκα τοις εκατό και γραφείο με θέα.', en: 'Ten percent and an office with a view.' },
   { who: 'sita', cam: 'deal', mark: 'deal', el: 'ΣΥΜΦΩΝΙΑ!', en: 'DEAL!' },
   { act: 'shades', d: 2.6, cam: 'deal' },
   { who: 'giorgos', cam: 'deal', el: 'Συγγνώμη, παιδιά. Business είναι, ρε.', en: "Sorry, guys. It's business, man." },
-  { who: 'mimis', cam: 'mimis', el: 'Το ήξερα από το κολατσιό.', en: 'I knew it from the lunch thing.' },
+  { who: 'mimis', cam: 'mimis', el: 'Το ήξερα ότι είσαι μαλάκας.', en: 'I knew you were a jerk.' },
   { act: 'type', d: 2.6, cam: 'screen' },
   { act: 'reply', d: 4.2, cam: 'screen' },
   { who: 'giannos', cam: 'giannos', el: 'Μου κάνει ηθική. Ο agent μου μού κάνει ηθική.', en: "It's lecturing me. My own agent is lecturing me." },
@@ -2977,7 +2998,7 @@ const steps = [
   { who: 'giannos', cam: 'giannos', el: 'Το αμάξι μου!', en: 'My car!' },
   { who: 'mimis', cam: 'mimis', el: "Σου το 'πα.", en: 'Told you.' },
   { who: 'giannos', cam: 'giannos', el: 'Δεν μου είπες τίποτα.', en: "You didn't tell me anything." },
-  { who: 'mimis', cam: 'mimis', el: "Σου το 'πα μέσα μου.", en: 'I told you in my head.' },
+  { who: 'mimis', cam: 'mimis', el: "Σου το 'πα από μέσα μου.", en: 'I told you inside my head.' },
 ];
 let M;
 function army(t, o = {}) {
@@ -3039,7 +3060,7 @@ return {
 
 </script>
 <script>
-/* Ep.1, Scenes 16–17 – «Το κοτέτσι» + «Γιατί είναι όλα ρομπότ;» (beats 17–18): Μήμης's kamikaze plan; Κώστας wakes up. */
+/* Ep.1, Scenes 16–17 – «Το κοτέτσι» + «Γιατί είναι όλα ρομπότ;» (beats 17–18): Μίμης's kamikaze plan; Κώστας wakes up. */
 defineScene((() => {
 const X = { mimis: 420, giannos: 560, christos: 700, giorgos: 1185, sita: 1060, kostas: 220 };
 const CAMS = { wide: [640, 400, 1.05], guys: [560, 390, 1.7], mimis: [420, 350, 2.3], giannos: [560, 350, 2.3], coop: [110, 540, 1.6], chase: [400, 480, 1.1],
@@ -3077,7 +3098,7 @@ function render(t, _M, sc) {
   yard(t, { light: 'day', winLit: 'red', winTop: 'red', noChickens: true, coopDoor: inM(t, M.chaos, 1, 99) ? 1 : t > M.lock.a + .6 ? 0 : 1, coopShake: inM(t, M.chaos) ? t : 0 });
   const youK = t > M.you.a ? 1 : 0;
   sita({ t, chip: 1, led: 'red', mood: 'evil', burn: 1, talk: talk('sita', t), open: youK * .2, sway: Math.sin(t * 1.2) * .2 });
-  // the army: chasing Μήμης into the coop, then bursting out with hen pilots
+  // the army: chasing Μίμης into the coop, then bursting out with hen pilots
   const chaseK = prog(t, M.come.a, M.chase.b), inCoop = t > M.chase.b && t < M.out.a, outK = prog(t, M.out.a, M.out.b);
   if (!inCoop) {
     const ax = t < M.come.a ? 1100 : t < M.out.a ? lerp(1100, 60, chaseK) : lerp(60, 700, outK);
@@ -3089,7 +3110,7 @@ function render(t, _M, sc) {
   }
   // Γιώργος on the σίτα's side, CEO shades on
   stand(X.giorgos, 'giorgos', 1, { t, talk: talk('giorgos', t), look: [-1, 0], shades: true, mouth: 'smirk', L: [-58, -40], R: [58, -40] });
-  // Μήμης: leaps the barricade, runs into the coop, out the other side, slams the door
+  // Μίμης: leaps the barricade, runs into the coop, out the other side, slams the door
   const [mx, mw] = path(t, [[M.jump.a, 420], [M.come.b, 300], [M.chase.a + 1.6, 100], [M.chase.b - .6, 40], [M.chase.b, 40], [M.lock.b, 40]]);
   const mOut = t > M.jump.a;
   const feathered = t > M.chaos.a + 1;
@@ -3136,7 +3157,7 @@ const CAMS = { wide: [700, 400, 1.02], mecha: [820, 360, 1.15], head: [820, 300,
 const steps = [
   { act: 'rumble', d: 2.6, cam: 'wide' },
   { act: 'build', d: 4.4, cam: 'mecha' },
-  { who: 'sita', cam: 'head', mark: 'name', el: 'ΣΙΤΑ-ΜΕΚΑ ΤΡΙΣΧΙΛΙΑ! Τώρα και σε ΤΡΕΙΣ άτοκες δόσεις!', en: 'SITA-MECHA THREE THOUSAND! Now in THREE interest-free instalments!' },
+  { who: 'sita', cam: 'head', mark: 'name', el: 'ΣΙΤΑ-ΜΕΚΑ ΤΡΙΣΧΙΛΙΑΔΕΣ! Τώρα και σε ΤΡΕΙΣ άτοκες δόσεις!', en: 'SITA-MECHA THREE THOUSAND! Now in THREE interest-free instalments!' },
   { who: 'christos', cam: 'chr', el: '…Nani.', en: '…Nani.' },
   { who: 'giannos', cam: 'gia', el: 'Κώστα. Πιες.', en: 'Kostas. Drink.' },
   { act: 'drink', d: 3, cam: 'kos' },
@@ -3151,7 +3172,7 @@ const steps = [
   { who: 'sita', cam: 'head', el: '…Όχι.', en: '…No.' },
   { who: 'vasilis', cam: 'vas', el: 'Κανείς δεν έχει ποτέ.', en: 'Nobody ever does.' },
   { act: 'door', d: 3.6, cam: 'door' },
-  { who: 'sita', cam: 'head', mark: 'offer', el: 'Κυρία Βαγγελιώ… μπορούμε να το συζητήσουμε. Έχω μια προσφορά—', en: "Mrs Vangelio… we can talk about this. I have an offer—" },
+  { who: 'sita', cam: 'head', mark: 'offer', el: 'Κυρία… μπορούμε να το συζητήσουμε. Έχω μια προσφορά—', en: "Madam… we can talk about this. I have an offer—" },
   { who: 'vangelio', cam: 'vang', mark: 'told', el: 'Σας είπα. Μην. Αφήνετε. Την πόρτα. ΑΝΟΙΧΤΗ.', en: 'I told you. Do not. Leave. The door. OPEN.', gap: .1 },
   { act: 'throw', d: 2.8, cam: 'throw' },
   { act: 'settle', d: 1.8, cam: 'wide' },
@@ -3275,7 +3296,7 @@ const steps = [
   { act: 'lid', d: 1.6, cam: 'box' },
   { who: 'giorgos', cam: 'gio', el: '…Κάνουμε pivot.', en: "…We're pivoting." },
   { act: 'win', d: .8, cam: 'win' },
-  { who: 'maria', cam: 'win', el: 'Μήμη! Ούτε η σίτα δεν σε άντεξε!', en: "Mimis! Even the screen couldn't stand you!" },
+  { who: 'maria', cam: 'win', el: 'Μίμη! Ούτε η σίτα δεν σε άντεξε!', en: "Mimis! Even the screen couldn't stand you!" },
   { act: 'end', d: 2.4, cam: 'all' },
 ];
 let M;
@@ -3387,7 +3408,7 @@ function render(t, _M, sc) {
   const c = shotCam(sc, t, CAMS);
   ctx.save(); applyCam(c);
   desk(t);
-  // Χρήστος inking at the desk (seated behind it), Μήμης behind him with a freddo
+  // Χρήστος inking at the desk (seated behind it), Μίμης behind him with a freddo
   const inking = !talk('christos', t);
   person(520, 470, 1, CAST.christos, { t, talk: talk('christos', t), part: 'body', look: speaker(t) === 'mimis' ? [1, -.3] : [.2, .9], lid: true, mouth: t > M.sell.b ? 'smirk' : 'flat', aviators: true });
   person(520, 470, 1, CAST.christos, { t, part: 'arms', L: [-30, -30], R: inking ? [60 + Math.sin(t * 6) * 10, -30] : [44, -24] });

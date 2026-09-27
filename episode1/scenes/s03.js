@@ -98,7 +98,7 @@ function render(t, _M, sc) {
     giorgos: { t, talk: talk('giorgos', t), look: lookAtSpeaker(t, 'giorgos', X, [1, -.2]), mouth: 'smirk' },
   };
   tableScene(t, S);
-  // the cigarette pack flying from Μήμης to Βασίλης
+  // the cigarette pack flying from Μίμης to Βασίλης
   if (throwK > 0 && throwK < 1) { const x = lerp(600, 990, throwK), y = lerp(460, 380, throwK) - Math.sin(throwK * Math.PI) * 120; ctx.save(); ctx.translate(x, y); ctx.rotate(throwK * 9); rect(-17, -10, 34, 20, '#e8e4dc', { lw: 2.5 }); rect(-17, -10, 34, 7, '#c0392b', { lw: 0 }); ctx.restore(); }
   if (!vasilisState(t).inside) drawVasilis(t);
   drawHands(t);

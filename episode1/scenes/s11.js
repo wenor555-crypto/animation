@@ -16,7 +16,7 @@ const steps = [
   { act: 'lookK', d: 2.2, cam: 'yardR' },
   { who: 'sita', cam: 'sitaX', el: 'Λάθος παράσιτα.', en: 'Wrong pests.' },
   { act: 'glowUp', d: 1.4, cam: 'wide' },
-  { who: 'sita', cam: 'sitaX', mark: 'insects', el: 'Οι άνθρωποι… είναι έντομα.', en: 'Humans… are insects.' },
+  { who: 'sita', cam: 'sitaX', mark: 'insects', el: 'Οι άνθρωποι… είναι παράσιτα.', en: 'Humans… are pests.' },
   { act: 'manga', d: 2.6, cam: 'manga' },
   { act: 'back', d: 1.2, cam: 'wide' },
 ];

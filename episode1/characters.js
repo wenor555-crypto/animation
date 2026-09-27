@@ -77,11 +77,13 @@ function personLegs(c, st) {
   const t = st.t || 0;
   if (st.legs === 'stand' || st.legs === 'walk') {
     const sw = st.legs === 'walk' ? Math.sin(t * 9) * 16 : 0;
+    const kk = st.kick || 0;                // 0..1: the right leg swings forward (kick)
     for (const [side, ph] of [[-1, 1], [1, -1]]) {
-      const fx = side * 22 + sw * ph;
-      limb([[side * 24, 40], [side * 24 + sw * ph * .5, 90], [fx, 146]], 13, c.skin, { w: .4 });
-      blob(fx + 8, 150, 20, 6, c.shoes, { lw: 3, w: .4 });
-      curve([[fx - 4, 146], [fx + 6, 140], [fx + 14, 147]], 3, c.shoes, { w: .2 });
+      const k = side > 0 ? kk : 0;
+      const fx = side * 22 + sw * ph + k * 80, fy = 146 - k * 70;
+      limb([[side * 24, 40], [side * 24 + sw * ph * .5 + k * 40, 90 - k * 16], [fx, fy]], 13, c.skin, { w: .4 });
+      blob(fx + 8, fy + 4, 20, 6, c.shoes, { lw: 3, w: .4 });
+      curve([[fx - 4, fy], [fx + 6, fy - 6], [fx + 14, fy + 1]], 3, c.shoes, { w: .2 });
     }
     poly([[-54, -6], [54, -6], [58, 60], [4, 60], [0, 30], [-4, 60], [-58, 60]], c.legs, { lw: 4, w: .6 });
   } else {                                  // seated: only the shins show under a table

@@ -1,6 +1,6 @@
 /* =========================================================
    «Η Έξυπνη Σίτα» – shared sets
-   The yard (Μήμης's house) in any light, the plastic table set,
+   The yard (Μίμης's house) in any light, the plastic table set,
    the door where the σίτα hangs, and simple interior helpers.
    World space is 1280×720; scenes move a camera over it.
    ========================================================= */

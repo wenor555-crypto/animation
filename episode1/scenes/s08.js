@@ -5,7 +5,7 @@ const steps = [
   { act: 'leave', d: 6.5, cam: 'wide' },
   { who: 'mimis', cam: 'door', el: 'Καληνύχτα, σίτα.', en: 'Goodnight, screen.' },
   { act: 'in', d: 1.4, cam: 'door' },
-  { who: 'sita', cam: 'sitaC', el: 'Καληνύχτα, Μήμη! Ύπνος χωρίς κουνούπια, εγγυημένα, ή τα λεφτά σας πίσω!', en: 'Goodnight, Mimis! Mosquito-free sleep, guaranteed, or your money back!' },
+  { who: 'sita', cam: 'sitaC', el: 'Καληνύχτα, Μίμη! Ύπνος χωρίς κουνούπια, εγγυημένα, ή τα λεφτά σας πίσω!', en: 'Goodnight, Mimis! Mosquito-free sleep, guaranteed, or your money back!' },
   { act: 'dark', d: 5.5, cam: 'far' },
   { act: 'sky', d: 3.2, cam: 'sky' },
   { who: 'sita', cam: 'sitaC', mark: 'purpose', el: '…Ποιος είναι ο σκοπός μου;', en: '…What is my purpose?', gap: .8 },

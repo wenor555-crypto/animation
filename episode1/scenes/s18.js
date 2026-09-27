@@ -14,7 +14,7 @@ const steps = [
   { act: 'lid', d: 1.6, cam: 'box' },
   { who: 'giorgos', cam: 'gio', el: '…Κάνουμε pivot.', en: "…We're pivoting." },
   { act: 'win', d: .8, cam: 'win' },
-  { who: 'maria', cam: 'win', el: 'Μήμη! Ούτε η σίτα δεν σε άντεξε!', en: "Mimis! Even the screen couldn't stand you!" },
+  { who: 'maria', cam: 'win', el: 'Μίμη! Ούτε η σίτα δεν σε άντεξε!', en: "Mimis! Even the screen couldn't stand you!" },
   { act: 'end', d: 2.4, cam: 'all' },
 ];
 let M;

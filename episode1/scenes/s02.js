@@ -18,7 +18,7 @@ const LINES = [
   { a: 26.0, b: 29.1, who: 'giorgos', el: 'Ένας νέος. Του είπα ότι είναι «ευκαιρία ανάπτυξης».', en: 'A new recruit. I told him it\'s a "growth opportunity".' },
   { a: 29.3, b: 30.3, who: 'giannos', el: 'Και το \'φαγε;', en: 'And he bought it?' },
   { a: 30.5, b: 32.5, who: 'giorgos', el: 'Μου έδωσε και το κολατσιό του.', en: 'He gave me his lunch too.' },
-  { a: 33.6, b: 36.6, who: 'maria',   el: 'Μήμη! Η κόρη της Τούλας παντρεύεται τον Σεπτέμβρη!', en: "Mimis! Toula's daughter is getting married in September!" },
+  { a: 33.6, b: 36.6, who: 'maria',   el: 'Μίμη! Η κόρη της Τούλας παντρεύεται τον Σεπτέμβρη!', en: "Mimis! Toula's daughter is getting married in September!" },
   { a: 36.9, b: 38.3, who: 'mimis',   el: 'Συγχαρητήρια στην Τούλα.', en: 'Congrats to Toula.' },
   { a: 38.6, b: 40.4, who: 'maria',   el: 'Εσύ πότε θα νοικοκυρευτείς;', en: 'When are YOU going to settle down?' },
   { a: 40.8, b: 42.4, who: 'mimis',   el: 'Όταν νοικοκυρευτείς εσύ.', en: 'When you do.' },
@@ -29,7 +29,7 @@ const LINES = [
 ];
 const VOICES = {
   giannos: { el: 'ΓΙΑΝΝΟΣ', en: 'GIANNOS', col: '#8cc4ff', pitch: .95, rate: 1.05, babble: 300 },
-  mimis:   { el: 'ΜΗΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
+  mimis:   { el: 'ΜΙΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
   giorgos: { el: 'ΓΙΩΡΓΟΣ', en: 'GIORGOS', col: '#9be08a', pitch: 1.1, rate: 1.1, babble: 340 },
   maria:   { el: 'ΜΑΡΙΑ', en: 'MARIA', col: '#ff9ac6', pitch: 1.5, rate: 1.12, babble: 480 },
   vasilis: { el: 'ΒΑΣΙΛΗΣ', en: 'VASILIS', col: '#ffd23f', pitch: .5, rate: .82, babble: 170 },

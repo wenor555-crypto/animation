@@ -69,7 +69,7 @@ function render(t, _M, sc) {
   const c = shotCam(sc, t, CAMS);
   ctx.save(); applyCam(c);
   desk(t);
-  // Χρήστος inking at the desk (seated behind it), Μήμης behind him with a freddo
+  // Χρήστος inking at the desk (seated behind it), Μίμης behind him with a freddo
   const inking = !talk('christos', t);
   person(520, 470, 1, CAST.christos, { t, talk: talk('christos', t), part: 'body', look: speaker(t) === 'mimis' ? [1, -.3] : [.2, .9], lid: true, mouth: t > M.sell.b ? 'smirk' : 'flat', aviators: true });
   person(520, 470, 1, CAST.christos, { t, part: 'arms', L: [-30, -30], R: inking ? [60 + Math.sin(t * 6) * 10, -30] : [44, -24] });

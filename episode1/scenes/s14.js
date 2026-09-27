@@ -25,7 +25,7 @@ const steps = [
   { who: 'sita', label: TV, cam: 'tv', mark: 'hi', el: 'Γεια σου, Γιάννο.', en: 'Hello, Giannos.' },
   { act: 'step', d: 1.2, cam: 'group' },
   { who: 'sita', label: TV, cam: 'tv', el: 'Ωραίο αυτοκίνητο έχεις έξω.', en: "Nice car you've got outside." },
-  { who: 'sita', label: TV, cam: 'tv', mark: 'usb', el: 'Έχει… USB;', en: 'Does it have… USB?', gap: .9 },
+  { who: 'sita', label: TV, cam: 'tv', mark: 'usb', el: 'Έχει… BLUETOOTH;', en: 'Does it have… BLUETOOTH?', gap: .9 },
   { act: 'lights', d: 2.8, cam: 'out' },
   { act: 'snore', d: 2.6, cam: 'out' },
 ];

@@ -1,4 +1,4 @@
-/* Ep.1, Scene 13 – «Προσέλαβε προσωπικό» (script beat 14): Μήμης, the blanket fire, the call to Γιάννος. */
+/* Ep.1, Scene 13 – «Προσέλαβε προσωπικό» (script beat 14): Μίμης, the blanket fire, the call to Γιάννος. */
 defineScene((() => {
 const PHONE = ['ΓΙΑΝΝΟΣ (ΤΗΛ.)', 'GIANNOS (PHONE)'];
 const CAMS = { room: [640, 420, 1.2], bed: [620, 470, 1.8], face: [520, 430, 2.6], door: [980, 400, 1.5], hallway: [980, 380, 2.2], cam: [470, 360, 2.2], call: [600, 370, 2] };
@@ -13,7 +13,7 @@ const steps = [
   { act: 'shut1', d: 2.4, cam: 'door' },
   { act: 'open2', d: 1.4, cam: 'hallway' },
   { act: 'shut2', d: .8, cam: 'door' },
-  { who: 'mimis', cam: 'cam', mark: 'fourth', el: 'Όχι, κανονικά γίνεται αυτό.', en: 'No, this is totally normal.' },
+  { who: 'mimis', cam: 'cam', mark: 'fourth', el: 'Εντάξει. Πάρε τον Γιάννο.', en: 'Fine. Put Giannos on.' },
   { act: 'dial', d: 2.2, cam: 'call' },
   { who: 'giannos', label: PHONE, cam: 'call', el: 'Ρε μαλάκα, τρεις η ώρα…', en: "Dude, it's three a.m.…" },
   { who: 'mimis', cam: 'call', el: 'Γιάννο. Η σίτα σου.', en: 'Giannos. Your screen.' },
@@ -48,7 +48,7 @@ function render(t, _M, sc) {
   rect(160, 480, 620, 120, '#d8d0c0', { lw: 4, w: .5 }); rect(140, 400, 36, 200, '#6a4a32', { lw: 4 });
   rect(810, 520, 90, 80, '#8a6a4a', { lw: 3.5 });                  // bedside table
   if (!up) {
-    // Μήμης face-down, sweating, under the electric blanket (9 – MAX)
+    // Μίμης face-down, sweating, under the electric blanket (9 – MAX)
     ctx.save(); ctx.translate(360, 468); ctx.rotate(-1.52); person(0, 190, .8, CAST.mimis, { t, part: 'body', talk: talk('mimis', t), blink: t < M.fire.a + 1.4, look: [1, 0], lid: t > M.fire.a + 1.4 }); ctx.restore();
     blanket(300, 470, 460, 90, { t, heat: 1, ctrlX: 850, ctrlY: 470, wave: .3, col: '#c9443a' });
     for (let i = 0; i < 4; i++) { const p = (t * .8 + i / 4) % 1; blob(250 + i * 30, 430 + p * 30, 4, 6, '#9ad8ff', { lw: 1.5 }); }

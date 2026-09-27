@@ -17,7 +17,7 @@ const steps = [
   { act: 'mosq', d: 2.2, cam: 'mosq' },
   { who: 'sita', cam: 'mosq', mark: 'denied', el: 'Κουνούπι. Αριθμός χίλια τετρακόσια σαράντα δύο. Είσοδος… ΑΠΟΡΡΙΠΤΕΤΑΙ! Αλλά μόνο για λίγες μέρες, η προσφορά ισχύει μέχρι εξαντλήσεως αποθεμάτων!', en: 'Mosquito. Number one thousand four hundred forty-two. Entry… DENIED! But only for a few days, offer valid while stocks last!' },
   { act: 'mimisOut', d: 2.2, cam: 'door' },
-  { who: 'sita', cam: 'door', el: 'Καλώς ήρθατε, Μήμη! Μόνο με ΤΡΕΙΣ άτοκες δόσεις!', en: 'Welcome, Mimis! In only THREE interest-free instalments!' },
+  { who: 'sita', cam: 'door', el: 'Καλώς ήρθατε, Μίμη! Μόνο με ΤΡΕΙΣ άτοκες δόσεις!', en: 'Welcome, Mimis! In only THREE interest-free instalments!' },
   { who: 'mimis', cam: 'mimis', el: "Εντάξει. Αυτό είναι πιο αστείο απ' όσο περίμενα.", en: "Okay. That's funnier than I expected." },
   { act: 'film', d: 1.6, cam: 'pitch' },
   { who: 'giorgos', cam: 'pitch', mark: 'ceo', el: 'Γεια σας. Είμαι ο Γιώργος, CEO της ΣίταAI…', en: "Hi. I'm Giorgos, CEO of SitaAI…" },
@@ -25,11 +25,11 @@ const steps = [
   { who: 'giorgos', cam: 'two', el: 'Εσύ είσαι CTO. Είναι τιμή.', en: "You're CTO. It's an honour." },
   { who: 'giorgos', cam: 'pitch', el: '…και αναζητούμε pre-seed χρηματοδότηση.', en: "…and we're looking for pre-seed funding." },
   { act: 'vas', d: 1.8, cam: 'door' },
-  { who: 'sita', cam: 'door', el: 'ΒΑΣΙΛΗ! Ο πιο ΕΞΥΠΝΟΣ πελάτης μας!', en: 'VASILIS! Our SMARTEST customer!' },
+  { who: 'sita', cam: 'door', el: 'ΒΑΣΙΛΗΣ! Ο πιο ΕΞΥΠΝΟΣ πελάτης μας!', en: 'VASILIS! Our SMARTEST customer!' },
   { who: 'vasilis', cam: 'door', el: "Είδατε; Σας το 'λεγα ότι ήταν έξυπνη.", en: 'See? I told you it was smart.' },
   { who: 'vasilis', cam: 'door', mark: 'traka', el: 'Έχεις ένα τσιγάρο;', en: 'Got a cigarette?' },
   { act: 'win', d: .8, cam: 'win' },
-  { who: 'maria', cam: 'win', el: 'Βλέπεις, Μήμη; Ακόμα κι η σίτα έχει δουλειά.', en: 'See, Mimis? Even the screen has a job.' },
+  { who: 'maria', cam: 'win', el: 'Βλέπεις, Μίμη; Ακόμα κι η σίτα έχει δουλειά.', en: 'See, Mimis? Even the screen has a job.' },
   { act: 'end', d: 1.4, cam: 'mimis' },
 ];
 let M;
@@ -59,7 +59,7 @@ function render(t, _M, sc) {
   // Βασίλης behind the mesh, then in the doorway
   const vasIn = t > M.vas.a;
   if (vasIn) stand(1060, 'vasilis', .92, { t, talk: talk('vasilis', t), look: t > M.traka.a ? [-1, .3] : [-.5, .3], bandage: true, lid: true, mouth: 'smile', R: t > M.traka.a ? [80, -120] : [44, -24] });
-  // Μήμης comes out of the house
+  // Μίμης comes out of the house
   const [mx, mWalk] = path(t, [[M.mimisOut.a, 1060], [M.mimisOut.b + .2, 760]]);
   const mimisOut = t > M.mimisOut.a;
   if (mimisOut && t < M.mimisOut.a + .9) stand(mx, 'mimis', .95, { t, legs: 'walk', look: [-1, 0], lid: true, itemR: 'cup2', R: [50, -60] });

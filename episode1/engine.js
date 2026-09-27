@@ -235,7 +235,7 @@ const hasClip = (sc, idx) => !!(AC && BUFS[clipKey(sc, idx)]);
 const VOICE_INFO = {
   narrator: { el: 'ΑΦΗΓΗΤΗΣ', en: 'NARRATOR', col: '#e8e0c8', pitch: .55, rate: .88, babble: 150 },
   giannos:  { el: 'ΓΙΑΝΝΟΣ', en: 'GIANNOS', col: '#8cc4ff', pitch: .95, rate: 1.05, babble: 300 },
-  mimis:    { el: 'ΜΗΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
+  mimis:    { el: 'ΜΙΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
   giorgos:  { el: 'ΓΙΩΡΓΟΣ', en: 'GIORGOS', col: '#9be08a', pitch: 1.1, rate: 1.1, babble: 340 },
   christos: { el: 'ΧΡΗΣΤΟΣ', en: 'CHRISTOS', col: '#7fa6ff', pitch: .85, rate: .9, babble: 260 },
   kostas:   { el: 'ΚΩΣΤΑΣ', en: 'KOSTAS', col: '#c8f04a', pitch: .9, rate: 1, babble: 280 },

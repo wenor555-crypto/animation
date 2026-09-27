@@ -294,7 +294,7 @@ const hasClip = (sc, idx) => !!(AC && BUFS[clipKey(sc, idx)]);
 const VOICE_INFO = {
   narrator: { el: 'ΑΦΗΓΗΤΗΣ', en: 'NARRATOR', col: '#e8e0c8', pitch: .55, rate: .88, babble: 150 },
   giannos:  { el: 'ΓΙΑΝΝΟΣ', en: 'GIANNOS', col: '#8cc4ff', pitch: .95, rate: 1.05, babble: 300 },
-  mimis:    { el: 'ΜΗΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
+  mimis:    { el: 'ΜΙΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
   giorgos:  { el: 'ΓΙΩΡΓΟΣ', en: 'GIORGOS', col: '#9be08a', pitch: 1.1, rate: 1.1, babble: 340 },
   christos: { el: 'ΧΡΗΣΤΟΣ', en: 'CHRISTOS', col: '#7fa6ff', pitch: .85, rate: .9, babble: 260 },
   kostas:   { el: 'ΚΩΣΤΑΣ', en: 'KOSTAS', col: '#c8f04a', pitch: .9, rate: 1, babble: 280 },
@@ -593,11 +593,13 @@ function personLegs(c, st) {
   const t = st.t || 0;
   if (st.legs === 'stand' || st.legs === 'walk') {
     const sw = st.legs === 'walk' ? Math.sin(t * 9) * 16 : 0;
+    const kk = st.kick || 0;                // 0..1: the right leg swings forward (kick)
     for (const [side, ph] of [[-1, 1], [1, -1]]) {
-      const fx = side * 22 + sw * ph;
-      limb([[side * 24, 40], [side * 24 + sw * ph * .5, 90], [fx, 146]], 13, c.skin, { w: .4 });
-      blob(fx + 8, 150, 20, 6, c.shoes, { lw: 3, w: .4 });
-      curve([[fx - 4, 146], [fx + 6, 140], [fx + 14, 147]], 3, c.shoes, { w: .2 });
+      const k = side > 0 ? kk : 0;
+      const fx = side * 22 + sw * ph + k * 80, fy = 146 - k * 70;
+      limb([[side * 24, 40], [side * 24 + sw * ph * .5 + k * 40, 90 - k * 16], [fx, fy]], 13, c.skin, { w: .4 });
+      blob(fx + 8, fy + 4, 20, 6, c.shoes, { lw: 3, w: .4 });
+      curve([[fx - 4, fy], [fx + 6, fy - 6], [fx + 14, fy + 1]], 3, c.shoes, { w: .2 });
     }
     poly([[-54, -6], [54, -6], [58, 60], [4, 60], [0, 30], [-4, 60], [-58, 60]], c.legs, { lw: 4, w: .6 });
   } else {                                  // seated: only the shins show under a table
@@ -722,7 +724,7 @@ const lerp2 = (a, b, k) => [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
 <script>
 /* =========================================================
    «Η Έξυπνη Σίτα» – shared sets
-   The yard (Μήμης's house) in any light, the plastic table set,
+   The yard (Μίμης's house) in any light, the plastic table set,
    the door where the σίτα hangs, and simple interior helpers.
    World space is 1280×720; scenes move a camera over it.
    ========================================================= */
@@ -1268,7 +1270,7 @@ const LINES = [
   { a: 26.0, b: 29.1, who: 'giorgos', el: 'Ένας νέος. Του είπα ότι είναι «ευκαιρία ανάπτυξης».', en: 'A new recruit. I told him it\'s a "growth opportunity".' },
   { a: 29.3, b: 30.3, who: 'giannos', el: 'Και το \'φαγε;', en: 'And he bought it?' },
   { a: 30.5, b: 32.5, who: 'giorgos', el: 'Μου έδωσε και το κολατσιό του.', en: 'He gave me his lunch too.' },
-  { a: 33.6, b: 36.6, who: 'maria',   el: 'Μήμη! Η κόρη της Τούλας παντρεύεται τον Σεπτέμβρη!', en: "Mimis! Toula's daughter is getting married in September!" },
+  { a: 33.6, b: 36.6, who: 'maria',   el: 'Μίμη! Η κόρη της Τούλας παντρεύεται τον Σεπτέμβρη!', en: "Mimis! Toula's daughter is getting married in September!" },
   { a: 36.9, b: 38.3, who: 'mimis',   el: 'Συγχαρητήρια στην Τούλα.', en: 'Congrats to Toula.' },
   { a: 38.6, b: 40.4, who: 'maria',   el: 'Εσύ πότε θα νοικοκυρευτείς;', en: 'When are YOU going to settle down?' },
   { a: 40.8, b: 42.4, who: 'mimis',   el: 'Όταν νοικοκυρευτείς εσύ.', en: 'When you do.' },
@@ -1279,7 +1281,7 @@ const LINES = [
 ];
 const VOICES = {
   giannos: { el: 'ΓΙΑΝΝΟΣ', en: 'GIANNOS', col: '#8cc4ff', pitch: .95, rate: 1.05, babble: 300 },
-  mimis:   { el: 'ΜΗΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
+  mimis:   { el: 'ΜΙΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
   giorgos: { el: 'ΓΙΩΡΓΟΣ', en: 'GIORGOS', col: '#9be08a', pitch: 1.1, rate: 1.1, babble: 340 },
   maria:   { el: 'ΜΑΡΙΑ', en: 'MARIA', col: '#ff9ac6', pitch: 1.5, rate: 1.12, babble: 480 },
   vasilis: { el: 'ΒΑΣΙΛΗΣ', en: 'VASILIS', col: '#ffd23f', pitch: .5, rate: .82, babble: 170 },

@@ -31,11 +31,11 @@ VOICES = {
     'vangelio': 'pFZP5JQG7iQjIQuC4Bku',  # Lily: velvety, confident (iron-hand mother)
     'maria': 'FGY2WhTYpPnrIDTdsKH5',     # Laura: quirky, sassy
     'myrsini': 'hpp4J3VqNfWAUOO0d1Us',   # Bella: bright, warm (the nice hostess)
-    'sita': 'EXAVITQu4vr4xnSDxMaL',      # Sarah: entertainment/TV (hyper TV-shop presenter)
+    'sita': '0oYUKTNPbymIKVAkDQqh',      # Sofia: native Greek, TV spots / telemarketing (Voice Library)
 }
 # per-character delivery. eleven_v3 only takes stability 0 (creative), .5 (natural) or 1 (robust).
 SETTINGS = {'default': {'stability': .5, 'similarity_boost': .8},
-            'sita': {'stability': 0, 'similarity_boost': .8},
+            'sita': {'stability': .45, 'similarity_boost': .8, 'style': .5},
             'panik': {'stability': 0, 'similarity_boost': .8},
             'narrator': {'stability': .5, 'similarity_boost': .8}}
 FORMAT = 'mp3_44100_64'   # small files: the whole episode is embedded in one HTML page

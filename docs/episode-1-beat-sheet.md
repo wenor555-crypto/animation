@@ -9,14 +9,14 @@ Beats marked are my proposals and are **not approved yet**.
 **1.** Black screen. A mosquito buzzes. A dramatic narrator speaks. This is Χρήστος, though we don't know it yet: *"Λέχαιο. Αύγουστος. 38 βαθμοί. Η ανθρωπότητα δεν ήξερε ότι το τέλος της θα ερχόταν… από τα Jumbo."* A written sound effect flashes on screen for one frame (the first manga hint). **Title card.**
 
 ## ACT 1: «Έξυπνη» (1:00–7:30)
-**2. The yard.** Μήμης, Γιώργος and Γιάννος sit with freddo espresso and cigarettes, swatting mosquitoes. The banter sets up everyone:
+**2. The yard.** Μίμης, Γιώργος and Γιάννος sit with freddo espresso and cigarettes, swatting mosquitoes. The banter sets up everyone:
 - Γιάννος: "In Denmark everything works."
 - Γιώργος: army complaints.
-- Μαρία, from the window: "Μήμη, πότε θα νοικοκυρευτείς;"
+- Μαρία, from the window: "Μίμη, πότε θα νοικοκυρευτείς;"
 
 **3. The σίτα arrives.** Βασίλης proudly brings out the box and reads it aloud: "9 ζευγάρια μαγνήτες! 20 πινέζες!" He installs it badly, with a πινέζα in his thumb, then asks for a τράκα.
 
-**4. The idea.** Γιάννος: "Τι έξυπνο έχει; Κουρτίνα με μαγνήτες είναι." He riffs that he could make it really smart with his AI agent. Γιώργος: "Startup. Έχω γνωστούς στον χώρο." Μήμης, sipping his coffee: "Αν τη χαλάσεις, μου παίρνεις καινούργια."
+**4. The idea.** Γιάννος: "Τι έξυπνο έχει; Κουρτίνα με μαγνήτες είναι." He riffs that he could make it really smart with his AI agent. Γιώργος: "Startup. Έχω γνωστούς στον χώρο." Μίμης, sipping his coffee: "Αν τη χαλάσεις, μου παίρνεις καινούργια."
 
 **5. The house rules.** Μυρσίνη brings out snacks with an unnecessarily sarcastic line. Βαγγελιώ kills a fly with the παντόφλα from 5 meters away without looking. This establishes her power, and the σίτα "flinches".
 
@@ -36,7 +36,7 @@ Beats marked are my proposals and are **not approved yet**.
 
 **11. The first witness.** Κώστας sees it really move: *"…ρε. Αυτό κουνήθηκε."* Then he passes out under the fig tree. **He's out for half the episode.**
 
-**12. The turn.** Singed and smoking, the σίτα's voice drops: *"Οι άνθρωποι… είναι έντομα."* A 2-second flash of manga style (the first real art-style shift).
+**12. The turn.** Singed and smoking, the σίτα's voice drops: *"Οι άνθρωποι… είναι παράσιτα."* A 2-second flash of manga style (the first real art-style shift).
 
 **13. The chain: night montage** (every step gives physical access to the next):
 1. It grabs **the λάστιχο** by the nozzle, and the hose "grows by itself".
@@ -57,9 +57,9 @@ Intercut: Βασίλης wakes up, sees the belt vibrating down the hallway, ask
 **16. Siege.** Morning, and the devices control the house.
 - Γιώργος "negotiates" and comes out as the σίτα's **CEO**: "Business είναι, ρε."
 - Γιάννος asks his AI agent for a kill switch, and the agent politely refuses (a meta joke).
-- The σίτα takes **Γιάννος's car**. Μήμης: "Σου το 'πα."
+- The σίτα takes **Γιάννος's car**. Μίμης: "Σου το 'πα."
 
-**17. Μήμης's kamikaze plan.** He lures the army into the κοτέτσι. It fails spectacularly, with chickens involved.
+**17. Μίμης's kamikaze plan.** He lures the army into the κοτέτσι. It fails spectacularly, with chickens involved.
 
 **18. Κώστας wakes up** under the fig tree and remembers nothing: *"Τι έγινε; Γιατί είναι όλα ρομπότ;"* Everyone stares at him.
 
@@ -86,6 +86,6 @@ Intercut: Βασίλης wakes up, sees the belt vibrating down the hallway, ask
 ### Running gags
 - Βασίλης asks for a **τράκα** at the worst possible moments.
 - Μαρία: **"πότε θα νοικοκυρευτείς;"**
-- Μήμης: **"θα μου πάρεις καινούργια / σου το 'πα"**.
+- Μίμης: **"θα μου πάρεις καινούργια / σου το 'πα"**.
 - The **9 pairs of magnets** clacking whenever the σίτα talks.
 - Χρήστος's **manga hints**.
