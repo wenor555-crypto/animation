@@ -1,4 +1,4 @@
-# Episode 3: «Σίταdel»: Beat Sheet (DRAFT v1, for the creator to lock)
+# Episode 3: «Σίταdel»: Beat Sheet (DRAFT v2, after the interview)
 
 Target runtime **~22 min**. The most spectacular episode so far: clean scenes (see `docs/production-guide.md`), caustic humour, more depth.
 **Structure:** a build-up and origin episode. Five threads are cut together, and each one "arms" one camp for the coming war:
@@ -53,11 +53,26 @@ Timeline: from the night Ep. 2 ends, over about **two months** (end of August �
   - **uproots a STOP sign** because it doesn't need to be there, and takes it home («Το σύστημα μου λέει να σταματήσω. Ο Panik δεν σταματάει.»)
   - the STOP stays in the background for the rest of the season
 
-## Open questions (for the lock)
-1. **Title:** «Σίταdel», or «Μαρμοκοτρόκο»?
-2. **Βαγγελιώ** comes back from Τήνος with a bag of **blessed slippers** (a small scene; setup for the war). OK?
-3. **The Shaolin master:** he speaks **Greek**, voiced by the Narrator's voice (Theos), serious like a kung-fu movie. Or should he speak Japanese with subtitles?
-4. **Γιάννος's agent:** replies only as **text on screen** (no voice). OK?
+## Interview answers (v2)
+- **Title:** «Σίταdel».
+- **Βαγγελιώ** comes back from Τήνος with **three pairs of blessed slippers**. Γιάννος borrows one «για την εθνική άμυνα».
+- **The Shaolin master** speaks **Greek**, serious like a dubbed kung-fu movie, with the Narrator's voice.
+- **Γιάννος's agent** writes only text on screen all episode long. It speaks **for the first time at the very end**, a warning, and **it has the last line of the episode**.
+- **The σίτα:** a villain with small cracks. One or two moments where you feel sorry for her («Με έφτιαξαν να φοβάμαι…»), then straight back to the joke.
+- **Runtime:** ~22 min.
+- **Panik** also breaks:
+  - **the village pump** («μας ψεκάζουν με 5G»)
+  - **Γιώργος's pyramid poster**, which he rips because «πυραμίδα, το ήξερα» (by chance, he's right)
+- **MINER FARM:** somewhere far away, and a secret. We never say where («ΤΟΠΟΘΕΣΙΑ: ΑΠΟΡΡΗΤΗ»).
+- **The pyramid peaks and doesn't collapse**; the collapse is kept for a later episode.
+- **Running gag: Γιώργος's «γνωστοί στον χώρο»**, and every time we see the pyramid one more of them is inside:
+  - **the λοχίας**: «Εσύ δεν υποτίθεται ότι είσαι σκοπιά;», a callback to Ep. 1
+  - **the minister from Ep. 2**: «επενδύω ιδιωτικά… με ιδιωτικά λεφτά του Δημοσίου»
+  - **a regional governor** who cuts a ribbon
+  - **Χαμάντ**, the nephew of a sheikh from Qatar and Γιώργος's classmate in finance in London. Just as clueless; he doesn't understand the scheme, which will come in handy when it collapses.
+- **Κώστας's language:** μαρμοκοτρόκο, σικαρέλο, κούκι τρας, πεπερίλο, τρουμπουλέκο, μπαμπαλίκι σκρατς.
+- **Κώστας's new voice:** young (~25), cynical, not deep. **The same voice for Κώστας and Panik**; as Panik it has a slight drunken slur. An audition is under way.
+- **Μίμης:** 2–3 cameos.
 
 ---
 
@@ -157,7 +172,7 @@ Timeline: from the night Ep. 2 ends, over about **two months** (end of August �
 - Κώστας: «Καλά, άμα πάρουν τηλέφωνο, πες ότι λείπω.»
 - Γιάννος to the gang: «Να δείτε. Δεν έχουμε τελειώσει με τη σίτα.» Μίμης (cameo): «Εντάξει.»
 
-**16. (Γ) Panik and STOP.**
+**16. (Γ) Panik and STOP.** He also closes and bends the village pump («Μας ψεκάζουν. Με 5G.») and rips Γιώργος's poster («Πυραμίδα. Το ήξερα.»).
 - The same night. Κώστας goes past the third can and becomes Panik (quick manga transformation).
 - Conspiracy theories: «Τα περιστέρια είναι drones της ΔΕΗ.»
 - He breaks a mirror of a parked car for no reason.
@@ -180,14 +195,21 @@ Timeline: from the night Ep. 2 ends, over about **two months** (end of August �
 - In orbit the σίτες lock together, KLAK KLAK, into a star fortress.
 - The σίτα on her throne in the central module; the Earth below.
 
-**20. (Β) The top of the pyramid.**
+**20. (Β) The top of the pyramid.** The regional governor cuts the ribbon, and the minister from Ep. 2 joins by video call.
 - Γιώργος gives a TED-style talk to the whole village: «Η ΣίταAI δεν είναι εταιρεία. Είναι… κίνημα.»
 - The νέος has 40 νέοι under him.
 - Γιώργος looks at the sky for a second (a flash, the Σίταdel?), then shrugs.
 
-## TAG (21:00–22:00): «Κούκι τρας»
+## TAG (21:00–22:30): «Κούκι τρας» + «Ο agent»
 **21.** The last morning.
 - Κώστας sober, coffee, the STOP sign propped up in his living room.
 - SMS: «ΕΙΜΑΙ ΠΑΝΩ ΑΠΟ ΤΟ ΚΕΦΑΛΙ ΣΟΥ.» He looks at the ceiling. He looks at the STOP. He types: «Κούκι τρας.»
 - Cut to the Σίταdel: alarms, «ΑΝΑΛΥΣΗ…». The σίτα, in orbit, looks down at Λέχαιο: «Τι ξέρεις… Κώστα;»
-- On the last frame, a tiny figure appears on the Earth below: Βαγγελιώ, holding a slipper. The σίτα **shivers**. Black. KLAK.
+- On the last frame, a tiny figure appears on the Earth below: Βαγγελιώ, holding a slipper. The σίτα **shivers**.
+
+**22. (Δ) The agent speaks.**
+- Γιάννος's room at night: the gadgets, and Βαγγελιώ's slipper in a display case.
+- In the sky, a small red star that doesn't twinkle like the others.
+- Γιάννος: «Θα τα καταφέρουμε;»
+- The agent speaks aloud for the first time: «Εκείνη μαθαίνει από μένα. Εγώ μαθαίνω από σένα. …Κι εσύ κοιμάσαι οχτώ ώρες.»
+- Γιάννος puts the coffee down and opens a new file. Black. KLAK.
