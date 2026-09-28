@@ -105,6 +105,7 @@ const ITEM_HOOK = {};
 function person(x, y, s, c, st = {}) {
   const t = st.t || 0, tk = st.talk || 0, part = st.part || 'all', has = p => part === 'all' || part === p;
   ctx.save(); ctx.translate(x, y); ctx.scale(s * (st.dir || 1), s);
+  if (has('legs') && CLEAN && (st.legs === 'stand' || st.legs === 'walk') && !st.noShadow) blob(0, 150, 64, 10, 'rgba(20,10,20,.16)', { lw: 0, noqa: 1 });   // contact shadow
   if (has('legs')) personLegs(c, st);
   if (has('body')) { personBody(c, st); personHead(c, st); }
   if (has('arms')) personArms(c, st);
@@ -165,6 +166,8 @@ function personHead(c, st) {
   if (c.hair === 'long') blob(0, -8, rx + 8, ry + 6, c.hairCol, { lw: 3.5, w: .6 });
   blob(-rx + 1, 4, 9, 13, c.skin, { lw: 3.5, w: .4 }); blob(rx - 1, 4, 9, 13, c.skin, { lw: 3.5, w: .4 });
   blob(0, 0, rx, ry, c.skin, { lw: 4, w: .7 });
+  if (CLEAN) { ctx.save(); ctx.beginPath(); ctx.ellipse(0, 0, rx - 2, ry - 2, 0, 0, TAU); ctx.clip();       // soft shade on the far side of the face
+    ctx.fillStyle = 'rgba(90,30,40,.09)'; ctx.beginPath(); ctx.ellipse(rx * .75, ry * .25, rx * .8, ry * 1.1, 0, 0, TAU); ctx.fill(); ctx.restore(); }
   // hair
   if (c.hair === 'bald') blob(-16, -36, 13, 6, 'rgba(255,255,255,.5)', { lw: 0, rot: -.3 });
   if (c.hair === 'swoop') {   // styled, side part, volume swept to one side
@@ -217,10 +220,11 @@ function personArms(c, st) {
   const t = st.t || 0, sleeve = c.top === 'hoodie' ? c.topCol : c.skin;
   const L = st.L || [-44, -24], R = st.R || [44, -24];
   const arm = (sh, h, side, item) => {
+    { const dx = h[0] - sh[0], dy = h[1] - sh[1], d = Math.hypot(dx, dy), max = 190; if (d > max) h = [sh[0] + dx * max / d, sh[1] + dy * max / d]; }
     const mid = [(sh[0] + h[0]) / 2 + side * 20, (sh[1] + h[1]) / 2 + 16];
     if (item === 'cup') freddo(h[0], h[1] - 4);
     limb([sh, mid, h], 12, sleeve, { w: .5 });
-    if (c.top === 'tee') blob(sh[0] + side * 4, sh[1] + 8, 16, 18, c.topCol, { lw: 3.5, w: .4 });
+    if (c.top === 'tee') { const e = lerp2(sh, mid, .5); limb([[sh[0] + side * 2, sh[1] + 4], e], 20, c.topCol, { w: .3 }); }   // short sleeve down the upper arm
     if (c.top === 'hoodie') blob(h[0], h[1] + 2, 10, 7, c.topCol, { lw: 3, w: .3 });
     blob(h[0], h[1], 9, 8, c.skin, { lw: 3, w: .4 });
     if (c.rings) { blob(h[0] - 3, h[1] - 5, 3, 3, '#d8dbe0', { lw: 1.5 }); blob(h[0] + 4, h[1] - 4, 3, 3, '#d8dbe0', { lw: 1.5 }); }
@@ -246,6 +250,11 @@ function personArms(c, st) {
     }
   };
   arm([-52, -118], L, -1, st.itemL); arm([52, -118], R, 1, st.itemR ?? (st.itemL === 'sketch' ? 'pencil' : null));   // a sketchbook comes with a pencil
+}
+/* world point on a character drawn with person(x, y, s, …): 'forehead' 'face' 'cheek' 'chest' 'belly' 'hand' (right hand at st.R) */
+function anchor(x, y, s, where, st = {}) {
+  const d = st.dir || 1, P = { forehead: [0, -240], face: [0, -205], cheek: [-22, -190], chest: [10, -90], belly: [0, -40], hand: st.R || [44, -24] }[where] || [0, -120];
+  return [x + P[0] * s * d, y + P[1] * s];
 }
 // hand motion helpers
 const slapK = (t, times) => { for (const s of times) if (t >= s && t < s + .35) return Math.sin(prog(t, s, s + .35) * Math.PI); return 0; };

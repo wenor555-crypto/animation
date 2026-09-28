@@ -25,12 +25,14 @@ function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s 
 /* ---------- wobbly primitives (line boil at 8fps) ---------- */
 let SEED = 0, BOIL = 0;
 const jit = (sd, i, k) => CLEAN ? 0 : (hash(sd * 12.9898 + i * 78.233 + BOIL * 37.719 + k * 3.3) - .5) * 2;
+/* outlines keep (roughly) the same on-screen weight when the camera pushes in, instead of getting fat in close-ups */
+function zoomComp() { if (!CLEAN) return 1; const m = ctx.getTransform(), z = Math.hypot(m.a, m.b) / RES; return z > 1 ? Math.pow(z, -.6) : 1; }
 function finish(fill, o) {
   ctx.save();
   if (o.alpha != null) ctx.globalAlpha *= o.alpha;
   if (o.glow) { ctx.shadowColor = o.glow; ctx.shadowBlur = (o.gb || 20) * RES; }
   if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-  if (o.lw !== 0) { ctx.lineWidth = (o.lw || 4) * (CLEAN && fill ? OUTLINE : 1); ctx.strokeStyle = o.sc || INK; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(); }
+  if (o.lw !== 0) { ctx.lineWidth = (o.lw || 4) * (CLEAN && fill ? OUTLINE * zoomComp() : 1); ctx.strokeStyle = o.sc || INK; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(); }
   ctx.restore();
 }
 function blob(x, y, rx, ry, fill, o = {}) {
@@ -60,7 +62,7 @@ function curve(pts, lw = 4, col = INK, o = {}) {
   else for (let i = 1; i < L - 1; i++) { const e = i === L - 2; ctx.quadraticCurveTo(P[i][0], P[i][1], e ? P[i + 1][0] : (P[i][0] + P[i + 1][0]) / 2, e ? P[i + 1][1] : (P[i][1] + P[i + 1][1]) / 2); }
   finish(null, { ...o, lw, sc: col });
 }
-function limb(pts, lw, col, o = {}) { curve(pts, lw + 6, INK, o); SEED--; curve(pts, lw, col, o); }
+function limb(pts, lw, col, o = {}) { curve(pts, lw + 6 * OUTLINE * zoomComp(), INK, o); SEED--; curve(pts, lw, col, o); }
 function rect(x, y, w, h, fill, o = {}) { poly([[x, y], [x + w, y], [x + w, y + h], [x, y + h]], fill, o); }
 function txt(s, x, y, size, col, o = {}) {
   ctx.font = `${o.style || ''} ${o.weight || 700} ${size}px ${o.font || 'Comfortaa, sans-serif'}`;
@@ -386,7 +388,8 @@ function runEpisode(list, opts = {}) {
   const draw = (t) => {
     const sc = SCENE, lt = t - sc.off;
     SEED = 0; BOIL = Math.floor(lt * 8);
-    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.filter = 'none';
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.filter = 'none'; ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = window.CLEAR_COL || '#000'; ctx.fillRect(0, 0, W, H);          // every frame starts from a clean canvas: nothing leaks from the previous one
     sc.render(lt, sc.M, sc);
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1;
     if (sc.fade) {

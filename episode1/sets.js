@@ -132,7 +132,7 @@ const SKY = {
 };
 function sky(light, t) {
   const s = SKY[light] || SKY.day, g = ctx.createLinearGradient(0, -200, 0, 420); g.addColorStop(0, s[0]); g.addColorStop(1, s[1]);
-  ctx.fillStyle = g; ctx.fillRect(-600, -500, 2800, 1000);
+  ctx.fillStyle = g; ctx.fillRect(-1200, -900, 4000, 2200);
   if (light === 'night' || light === 'blue') {
     for (let i = 0; i < 70; i++) { const tw = .5 + .5 * Math.sin(t * 2 + i * 7); blob(-300 + hash(i) * 1900, -200 + hash(i + 50) * 480, 1.6 + tw, 1.6 + tw, '#fff8d8', { lw: 0, n: 6 }); }
     blob(1180, 20, 34, 34, '#fff6d6', { lw: 0, glow: '#fff6d6', gb: 40 });
