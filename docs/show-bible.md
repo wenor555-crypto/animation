@@ -98,7 +98,7 @@ The designs are cartoon caricatures based on the real friends. The photo itself 
 | Character | Visual traits to carry into the design |
 |---|---|
 | **Χρήστος** | Aviator sunglasses, short dark hair, moustache and chin beard, slightly smug half-frown. Blue knit hoodie. |
-| **Κώστας** | Neon lime-green hoodie with the hood up, black wayfarer-style sunglasses, thin moustache. Chunky silver rings, including a skull ring, and a beaded bracelet. |
+| **Κώστας** | Neon lime-green hoodie with the hood up, black wayfarer-style sunglasses, thin moustache. Chunky silver rings, including a skull ring, and a beaded bracelet. Always has a **beer** (a can) in one hand and an **IQOS ILUMA** (heated tobacco: a slim holder with a TEREA stick, charged in a pocket charger; it has Bluetooth and an app) in the other. No τσίπουρο, no souvlaki. |
 | **Γιάννος** | Short dark hair styled up, full short beard, strong eyebrows, serious "I've got a plan" stare. Dark grey hoodie. |
 | **Μίμης** | Shaved bald head, goatee and moustache, lip piercing, ear piercing, big grin. Black graphic hoodie with an ornate print. Pointing up, cocky. |
 | **Γιώργος** | Neatly trimmed beard, styled dark hair, heavy brows, a cool, slightly aloof "I'm above this" look. Reference: graduation gown and mortarboard, a maroon tie and a glass of champagne. Design idea: even in army fatigues he carries himself like a CEO at a gala. |
@@ -119,6 +119,7 @@ The designs are cartoon caricatures based on the real friends. The photo itself 
   - υπερηχητικός ποντικοδιώκτης
   - σφουγγαρίστρα που στύβει μόνη της
   - ηλεκτρική ρακέτα για κουνούπια
+  - **Κώστας's IQOS**: taken as revenge for the fire (it has Bluetooth). He gets it back when the ΣΙΤΑ-ΜΕΚΑ falls apart.
 - **Χρήστος's manga framing:** small hints throughout, plus a switch to manga art style in the sci-fi scenes, so attentive viewers catch on.
 
 ### Escalation, climax & ending (LOCKED direction)
@@ -126,9 +127,18 @@ The designs are cartoon caricatures based on the real friends. The photo itself 
 2. **Climax:** a manga-style mecha battle against the σίτα, now a giant built from all the devices. The final blow is Βαγγελιώ's παντόφλα.
 3. **Resolution:** Βασίλης calls the hotline for "επιστροφή χρημάτων, είχε εγγύηση 14 ημερών". Then comes the reveal: Χρήστος at his desk, and what "really" happened was much dumber. Final tag: the σίτα clacks "ΤΗΛΕΦΩΝΗΣΤΕ... ΤΩΡΑ" (in the trash, or at the factory in China).
 
+### The laser (LOCKED)
+Γιάννος adds a small **5 mW laser** to the σίτα's design (scene 4) to burn mosquitoes mid-air; on a person it "just stings". It is set up and paid off through the episode:
+- scene 6: the diode goes on next to the chip; the build log says the power limit is "editable".
+- scene 7: it burns mosquito 1442 at «ΑΠΟΡΡΙΠΤΕΤΑΙ».
+- scene 10: a warning dot on Panik's chest, then it burns a fly on his beer and stings his hand («Άου.»). He still sets it on fire.
+- scene 11: a red beam pairs with the IQOS in the passed-out Κώστας's pocket («Κι εσύ, μικρέ… έχεις Bluetooth.»).
+- scenes 15–16: dots on Γιώργος's forehead during the deal, and on Μίμης when he offers himself as bait.
+- scene 17: the ΣΙΤΑ-ΜΕΚΑ fires it at Panik (he keeps charging) and at Βαγγελιώ (she doesn't even notice).
+
 ### Recruitment mechanic (LOCKED)
 The σίτα recruits by hacking devices **one by one**. Each hacked device gives it **physical access** to the next one. The recruitment chain is a heist in steps. The exact chain is still being worked out.
-- **Κώστας:** he notices first that the σίτα is really alive, right after he sets it on fire. Being drunk, he passes out and misses half the episode, after making the σίτα furious and starting the spiral. He comes back the next day when he wakes up, and remembers nothing.
+- **Κώστας:** he notices first that the σίτα is really alive, right after he sets it on fire (a sip of beer, a lighter, a fire-breath). Being drunk, he passes out and misses half the episode, after making the σίτα furious and starting the spiral. He comes back the next day when he wakes up, and remembers nothing.
 
 **Round 4: LOCKED.** Next: Round 5, the beat sheet (`episode-1-beat-sheet.md`).
 

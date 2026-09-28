@@ -8,13 +8,13 @@ const REPLY = [['> Γράψε μου kill switch για τη σίτα.', '#d8e2f
 const steps = [
   { act: 'card', d: 3.4, cam: 'card' },
   { act: 'dawn', d: 3.2, cam: 'wide' },
-  { who: 'sita', cam: 'sita', el: 'Καλημέρα, έντομα! Το σπίτι ανήκει πλέον στην ΕΞΥΠΝΗ ΕΠΑΝΑΣΤΑΣΗ! Παραδοθείτε τώρα και κερδίζετε ΔΩΡΕΑΝ μεταφορικά!', en: 'Good morning, insects! This house now belongs to the SMART REVOLUTION! Surrender now and get FREE shipping!' },
+  { who: 'sita', cam: 'sita', el: 'Καλημέρα, παράσιτα! Το σπίτι ανήκει πλέον στην ΕΞΥΠΝΗ ΕΠΑΝΑΣΤΑΣΗ! Παραδοθείτε τώρα και κερδίζετε ΔΩΡΕΑΝ μεταφορικά!', en: 'Good morning, pests! This house now belongs to the SMART REVOLUTION! Surrender now and get FREE shipping!' },
   { who: 'giorgos', cam: 'guys', el: 'Αφήστε το σε μένα. Business είναι.', en: "Leave it to me. It's business." },
   { who: 'giannos', cam: 'giannos', el: 'Γιώργο, όχι.', en: 'Giorgos, no.' },
   { act: 'flag', d: 2.4, cam: 'wide' },
   { who: 'giorgos', cam: 'gio', el: 'Κυρία Σίτα! Γιώργος, CEO. Νομίζω ξεκινήσαμε στραβά.', en: "Madam Screen! Giorgos, CEO. I think we got off on the wrong foot." },
   { who: 'sita', cam: 'sita', el: 'Είσαι άνθρωπος. Άρα είσαι παράσιτο.', en: "You're human. Therefore you're a pest." },
-  { who: 'giorgos', cam: 'gio', mark: 'pitch', el: 'Είμαι έντομο με γνωστούς στον χώρο. Χρειάζεσαι κανάλια διανομής. Χρειάζεσαι πρόσωπο. Χρειάζεσαι εμένα.', en: "I'm an insect who knows people in the industry. You need distribution. You need a face. You need me." },
+  { who: 'giorgos', cam: 'gio', mark: 'pitch', el: 'Είμαι παράσιτο με γνωστούς στον χώρο. Χρειάζεσαι κανάλια διανομής. Χρειάζεσαι πρόσωπο. Χρειάζεσαι εμένα.', en: "I'm a pest who knows people in the industry. You need distribution. You need a face. You need me." },
   { who: 'sita', cam: 'sita', el: '…Τι ποσοστό;', en: '…What percentage?' },
   { who: 'giorgos', cam: 'gio', el: 'Δέκα τοις εκατό και γραφείο με θέα.', en: 'Ten percent and an office with a view.' },
   { who: 'sita', cam: 'deal', mark: 'deal', el: 'ΣΥΜΦΩΝΙΑ!', en: 'DEAL!' },
@@ -23,7 +23,7 @@ const steps = [
   { who: 'mimis', cam: 'mimis', el: 'Το ήξερα ότι είσαι μαλάκας.', en: 'I knew you were a jerk.' },
   { act: 'type', d: 2.6, cam: 'screen' },
   { act: 'reply', d: 4.2, cam: 'screen' },
-  { who: 'giannos', cam: 'giannos', el: 'Μου κάνει ηθική. Ο agent μου μού κάνει ηθική.', en: "It's lecturing me. My own agent is lecturing me." },
+  { who: 'giannos', cam: 'giannos', el: 'Μου κάνει μαθήματα ηθικής. Ο agent μου μού κάνει μαθήματα ηθικής.', en: "It's giving me ethics lessons. My own agent is giving me ethics lessons." },
   { who: 'christos', cam: 'christos', el: 'Αλληλεγγύη. Μεταξύ τους.', en: 'Solidarity. Among themselves.' },
   { act: 'car', d: 3.4, cam: 'car' },
   { who: 'sita', cam: 'car', el: 'Ευχαριστούμε για το αυτοκίνητο!', en: 'Thank you for the car!' },
@@ -53,7 +53,7 @@ function render(t, _M, sc) {
   const c = shotCam(sc, t, CAMS);
   ctx.save(); applyCam(c);
   yard(t, { light: 'dawn', winLit: 'red', winTop: 'red', noChickens: true });
-  sita({ t, chip: 1, led: 'red', mood: 'evil', burn: 1, talk: talk('sita', t), sway: Math.sin(t * 1.2) * .2 });
+  sita({ t, chip: 1, led: 'red', mood: 'evil', burn: 1, talk: talk('sita', t), sway: Math.sin(t * 1.2) * .2, laser: t > M.L[4].a && t < M.deal.a });
   // the car: parked, then drives itself off with rackets on the back seat
   const carK = prog(t, M.car.a + .8, M.car.b + 1.2), carGone = t > M.car.b + 1.2;
   if (!carGone) car(lerp(1220, -600, ease(carK)), GROUND + 6, t, { lights: t > M.car.a + .3, moving: carK > 0, dir: -1, s: .9,
@@ -73,6 +73,8 @@ function render(t, _M, sc) {
     const tk = talk('giorgos', t), sh = t > M.shades.a + 1.2;
     stand(gioX, 'giorgos', 1, { t, talk: tk, legs: gioX !== 900 && gioX !== 1185 && gioX !== 840 ? 'walk' : 'stand', look: t > M.L[10].a - .2 && t < M.L[10].b ? [-1, 0] : [1, -.1], mouth: 'smirk', shades: sh,
       R: t < M.L[3].a ? [90, -220 + Math.sin(t * 10) * 20] : gesture(t, tk), itemR: t < M.L[3].a ? 'shirt' : null, L: tk && inM(t, M.pitch) ? [-80, -150] : [-44, -24] });
+    // «Είσαι άνθρωπος. Άρα είσαι παράσιτο.» — the laser dot sits on his forehead until the deal
+    if (t > M.L[4].a && t < M.deal.a) { const [ex, ey] = sitaEye(), k = prog(t, M.L[4].a, M.L[4].a + .5); laserBeam(ex, ey, gioX + Math.sin(t * 7) * 2, standY() - 218, .35 * k, 1.5); laserDot(gioX + Math.sin(t * 7) * 2, standY() - 218, k); }
   }
   // the racket that delivers his CEO sunglasses
   if (inM(t, M.shades, 0, 0)) { const k = ease(prog(t, M.shades.a, M.shades.a + 1.2)); racket(lerp(1100, 960, k), lerp(320, 300, k), -.4, t, { on: 1, s: .8 }); if (k < 1) { ctx.save(); ctx.translate(lerp(1100, 960, k), lerp(360, 340, k)); for (const sx of [-12, 12]) poly([[sx - 10, -6], [sx + 10, -6], [sx + 8, 6], [sx - 8, 6]], '#141418', { lw: 2 }); ctx.restore(); } }

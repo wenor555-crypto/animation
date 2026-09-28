@@ -11,6 +11,10 @@ const steps = [
   { who: 'mimis', cam: 'mimis', el: 'Κι εσύ είσαι μηχανικός με φούτερ στους 38. Όλοι έχουμε θέματα.', en: "And you're an engineer in a hoodie at 38 degrees. We've all got issues." },
   { act: 'up', d: 2, cam: 'gsita' },
   { who: 'giannos', cam: 'gsita', mark: 'riff', el: 'Όχι, ρε, σοβαρά τώρα. Αν της βάλεις ένα φτηνό μικροελεγκτή εδώ, δίπλα στους μαγνήτες… έναν αισθητήρα, μια κάμερα… να ξέρει ποιος μπαίνει, να κλείνει όταν έρχεται κουνούπι, όχι όταν έρχεται άνθρωπος…', en: "No, seriously though. Put a cheap microcontroller here, next to the magnets… a sensor, a camera… so it knows who's coming in, closes for a mosquito, not for a person…" },
+  { who: 'giannos', cam: 'gsita', mark: 'laser', el: 'Και ένα λέιζερ. Μικρό. Να καίει τα κουνούπια στον αέρα.', en: 'And a laser. A small one. To burn the mosquitoes mid-air.' },
+  { who: 'mimis', cam: 'mimis', el: 'Και αν περάσει άνθρωπος;', en: 'And if a person walks through?' },
+  { who: 'giannos', cam: 'gsita', mark: 'mw', el: 'Πέντε milliwatt. Σε άνθρωπο απλώς τσούζει.', en: 'Five milliwatts. On a person it just stings.' },
+  { who: 'mimis', cam: 'mimis', mark: 'stings', el: 'Απλώς τσούζει.', en: 'It just stings.', gap: .6 },
   { who: 'giorgos', cam: 'giorgos', mark: 'glasses', el: 'Για πες.', en: 'Go on.' },
   { who: 'giannos', cam: 'gsita', el: '…και το firmware να μην το γράψω καν εγώ. Το δίνω στον agent μου. Τον έχω στήσει από τον Ιούνιο, γράφει κώδικα καλύτερα από όλη την ομάδα μου στην Κοπεγχάγη.', en: "…and I don't even write the firmware. I give it to my agent. Had it set up since June, it codes better than my whole team in Copenhagen." },
   { who: 'mimis', cam: 'mimis', el: 'Και τι κάνει η ομάδα σου στην Κοπεγχάγη;', en: 'And what does your team in Copenhagen do?' },
@@ -58,13 +62,25 @@ function render(t, _M, sc) {
       L: tk ? [-90, -170 + Math.sin(t * 4) * 30] : [-58, -40], R: tk ? [100, -140 + Math.cos(t * 4) * 30] : [58, -40] });
   }
   // Γιάννος's idea, as a glowing blueprint over the seam
-  if (inM(t, M.riff, .4, 2)) {
-    const a = Math.min(ph(t, M.riff, .4, -.2) * 3, 1) * (1 - prog(t, M.riff.b + 1.4, M.riff.b + 2));
+  if (inM(t, M.riff, .4, 0) || (t > M.riff.b && t < M.stings.b + .6)) {
+    const a = Math.min(ph(t, M.riff, .4, -.2) * 3, 1) * (1 - prog(t, M.stings.b, M.stings.b + .6));
     ctx.save(); ctx.globalAlpha = a; ctx.setLineDash([6, 5]);
     rect(1046, 510, 28, 24, 'rgba(120,200,255,.25)', { lw: 2.5, sc: '#7ac8ff', w: 0 });
     if (ph(t, M.riff) > .35) { blob(1060, 560, 12, 12, 'rgba(120,200,255,.25)', { lw: 2.5, sc: '#7ac8ff', w: 0 }); txt('CAM', 1060, 582, 10, '#7ac8ff', { font: TVFONT }); }
     if (ph(t, M.riff) > .55) { curve([[1050, 620], [1020, 650], [1060, 660]], 2.5, '#7ac8ff', { w: 0 }); mosquito(1000, 640, 1.4, t); curve([[1014, 630], [1030, 648]], 3, '#ff5a5a', { w: 0 }); curve([[1030, 630], [1014, 648]], 3, '#ff5a5a', { w: 0 });
       blob(1106, 640, 9, 9, null, { lw: 2, sc: '#7ac8ff', w: 0 }); curve([[1120, 640], [1126, 648], [1138, 630]], 3, '#5aff8a', { w: 0 }); }
+    if (t > M.laser.a + .3) {           // the laser: a diode by the chip, a beam that burns a mosquito mid-air
+      const lk = prog(t, M.laser.a + .3, M.laser.a + 1.3), zap = M.laser.a + 1.6;
+      rect(1076, 518, 14, 11, 'rgba(255,90,90,.25)', { lw: 2.5, sc: '#ff6a6a', w: 0 });
+      ctx.setLineDash([]);
+      if (t < zap) mosquito(lerp(930, 985, lk), 470 + Math.sin(t * 8) * 8, 1.4, t);
+      if (t > zap - .15) laserBeam(1090, 524, 985, 470, 1 - prog(t, zap + .25, zap + .6), 2.5);
+      zapPuff(985, 470, prog(t, zap, zap + .9));
+      if (t > M.mw.a) txt('5 mW', 1150, 470, 22, '#ff6a6a', { font: TVFONT, weight: 900 });
+      if (t > M.stings.a) { blob(1160, 610, 12, 12, null, { lw: 2.5, sc: '#7ac8ff', w: 0 }); curve([[1160, 622], [1160, 660]], 2.5, '#7ac8ff', { w: 0 });
+        laserDot(1156, 606, .9, 4); txt('!', 1182, 592, 22, '#ff6a6a', { font: TVFONT, weight: 900 }); }
+      ctx.setLineDash([6, 5]);
+    }
     ctx.setLineDash([]); ctx.restore();
   }
   for (let i = 0; i < 8; i++) mosquito(640 + Math.sin(t * (1.1 + i * .13) + i) * 380, 330 + Math.cos(t * (1.7 + i * .1) + i * 2) * 110, .9, t);
@@ -83,7 +99,7 @@ function render(t, _M, sc) {
 }
 return {
   id: 'scene04', title: '4 · Η ιδέα', steps, render, fadeIn: false,
-  events: M => [[M.up.a + .4, SFX.creak], [M.rise.a, SFX.creak], [M.pitch.b - 1.2, SFX.ding], [M.look.a + .2, SFX.sip], [M.pause.a + .3, SFX.sip]],
+  events: M => [[M.laser.a + 1.6, SFX.laser], [M.up.a + .4, SFX.creak], [M.rise.a, SFX.creak], [M.pitch.b - 1.2, SFX.ding], [M.look.a + .2, SFX.sip], [M.pause.a + .3, SFX.sip]],
   ambience: () => ({ cicada: .03, mosq: .004 }),
 };
 })());

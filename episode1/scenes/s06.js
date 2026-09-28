@@ -5,8 +5,8 @@ const CAMS = {
   wide: [700, 380, 1.05], work: [930, 470, 1.8], gio: [720, 360, 2.2], two: [830, 420, 1.45], chip: [1060, 520, 3.4],
   chr: [540, 360, 2.1], three: [720, 420, 1.2], screen: [0, 0, 1], led: [1060, 525, 4],
 };
-const PROMPT = [['> Φτιάξε firmware για αυτή τη σίτα.', '#d8e2f0'], ['  Να γίνει πραγματικά έξυπνη.', '#d8e2f0'], ['  Χωρίς λάθη.', '#ffd23f']];
-const BUILD = [['✓ Firmware compiled.', '#5dff8a'], ['✓ Personality module loaded', '#5dff8a'], ['  (14.212 ώρες τηλεπωλήσεων)', '#9aa7bd'], ['⚠ Safety checks: skipped', '#ffb23a'], ['  (user said "no mistakes")', '#ffb23a']];
+const PROMPT = [['> Φτιάξε firmware για αυτή τη σίτα.', '#d8e2f0'], ['  Να γίνει πραγματικά έξυπνη.', '#d8e2f0'], ['  Και το λέιζερ μόνο για κουνούπια.', '#d8e2f0'], ['  Χωρίς λάθη.', '#ffd23f']];
+const BUILD = [['✓ Firmware compiled.', '#5dff8a'], ['✓ Personality module loaded', '#5dff8a'], ['  (14.212 ώρες τηλεπωλήσεων)', '#9aa7bd'], ['✓ Laser: 5 mW (target: παράσιτα)', '#5dff8a'], ['  (όριο ισχύος: επεξεργάσιμο)', '#ffb23a'], ['⚠ Safety checks: skipped', '#ffb23a'], ['  (user said "no mistakes")', '#ffb23a']];
 const steps = [
   { act: 'open', d: 2.4, cam: 'wide' },
   { who: 'giannos', cam: 'work', el: 'Ψηλότερα.', en: 'Higher.' },
@@ -50,7 +50,7 @@ function render(t, _M, sc) {
   if (shot === 'screen') {
     if (t < M.yt.a) laptopScreen(PROMPT, prog(t, M.prompt.a + .3, M.prompt.b - .6));
     else if (t < M.enter.a) youtube(prog(t, M.yt.a, M.yt.b));
-    else laptopScreen([...PROMPT, ['', '#fff'], ...BUILD], prog(t, M.enter.a, M.enter.b - .8) * .5 + .5, { size: 26 });
+    else laptopScreen([...PROMPT, ['', '#fff'], ...BUILD], prog(t, M.enter.a, M.enter.b - .8) * .5 + .5, { size: 22 });
     if (t > M.enter.a + 1 && t < M.enter.b) { ctx.fillStyle = '#28c840'; ctx.fillRect(110, 620, 1060 * prog(t, M.enter.a + 1, M.enter.b - .5), 16); }
     return;
   }

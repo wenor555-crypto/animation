@@ -41,6 +41,6 @@ To re-record a line, delete its mp3 and run `gen_voices.py` again. Voice ids per
 |---|---|---|
 | 1 | Cold open | 1 |
 | 2–8 | The yard → the σίτα arrives → the idea → the slipper → the upgrade → it wakes up → «Ποιος είναι ο σκοπός μου;» | 2–8 (Act 1) |
-| 9–14 | Panik → «Δικαιοσύνη» → «Οι άνθρωποι είναι έντομα» → the chain montage → «Προσέλαβε προσωπικό» → the broadcast | 9–15 (Act 2) |
+| 9–14 | Panik → «Δικαιοσύνη» → «Οι άνθρωποι είναι παράσιτα» → the chain montage → «Προσέλαβε προσωπικό» → the broadcast | 9–15 (Act 2) |
 | 15–18 | Siege → the coop / Κώστας wakes → ΣΙΤΑ-ΜΕΚΑ 3000 (manga) → the 14-day warranty | 16–20 (Act 3) |
 | 19–20 | Tag: Χρήστος's manga, what really happened → the factory in China | 21–22 |

@@ -150,6 +150,7 @@ const SFX = {
   whoosh: () => noise(.5, .35, 900, .6, 'bandpass'),
   fire: () => { noise(1.2, .4, 600); noise(1.2, .2, 2000, .5, 'bandpass', .1); },
   spark: () => { noise(.12, .3, 5000, 1, 'highpass'); tone(3000, .08, 'square', .04, .3); },
+  laser: () => { tone(3200, .09, 'square', .035, .35); tone(1600, .14, 'sine', .05, .5, .03); noise(.1, .18, 4500, 1, 'highpass', .06); },   // «τσσπ»
   zap: () => { for (let i = 0; i < 5; i++) { noise(.05, .3, 6000, 1, 'highpass', i * .06); tone(180, .05, 'sawtooth', .06, 1, i * .06); } },
   buzz: (d = .8) => { tone(110, d, 'sawtooth', .05, 1.02); tone(113, d, 'square', .03, .98); },
   boot: () => [0, 7, 12, 16].forEach((s, i) => tone(392 * 2 ** (s / 12), .7, 'sine', .06, 0, i * .18)),

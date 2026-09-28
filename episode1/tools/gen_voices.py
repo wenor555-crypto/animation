@@ -58,7 +58,9 @@ STRESS = {''.join(c for c in unicodedata.normalize('NFD', w) if unicodedata.cate
     ηλεκτρικά αυγά μέκα τρισχιλιάδες""".split()}
 # spoken form for things TTS might read oddly (the script and subtitles keep the written form)
 SAY = {'38': 'τριάντα οχτώ', '9,90': 'εννιά και ενενήντα', 'ΣίταAI': 'Σίτα Έι Άι',
-       'Ωραία σίτα.': 'Ωραία… σίτα.'}   # «ωραία σίτα» runs together into «ωραία είσαι τα»
+       'Ωραία σίτα.': 'Ωραία… σίτα.',   # «ωραία σίτα» runs together into «ωραία είσαι τα»
+       'Jumbo': 'Τζάμπο',               # the shop, said the Greek way (not «Τζούμπο»)
+       'IQOS': 'Άικος'}                 # the heated-tobacco device, as Greeks say it
 
 
 def req(path, body=None, accept='application/json'):
@@ -141,7 +143,8 @@ def tts_text(text, lex):
         return acc.upper() if acc else w
     text = re.sub(r'\w+', fix, clean(text))
     for k, v in SAY.items():
-        text = re.sub(r'(?<![\d,])' + re.escape(k) + r'(?![\d,])', v, text)
+        guard = k[0].isdigit()   # numbers must not match inside other numbers («38» in «138», «9,90» in «19,90»)
+        text = re.sub((r'(?<![\d,])' if guard else '') + re.escape(k) + (r'(?![\d,])' if guard else ''), v, text)
     return text
 
 
@@ -221,6 +224,7 @@ def lev(a, b):
 # how the STT writes «Σίτα» when it hears it next to English words («CEO της ΣίταAI» -> "Theta AI"). Said in
 # isolation the same voice is heard as «Σίτα» / "Sita AI", so these are the transcriber's spelling, not the voice.
 ALIASES = [r'\btheta\b', r'\bθήτα\b', r'\bsita\b', r'\bcita\b', r'(?<=της )ήτα\b', r'(?<=της )ίτα\b']
+BRANDS = {r'\biqos\b': 'άικος'}   # brand names the STT writes in Latin letters although it heard them said the Greek way
 
 
 FINAL_N = {'δεν', 'μην', 'τον', 'την', 'στον', 'στην', 'ποιον', 'εναν', 'αυτον', 'αυτην', 'κανεναν'}
@@ -239,6 +243,8 @@ def check(said, heard):
     """(error rate on the Greek words, words stressed on the wrong syllable, allowance for the line's English words)"""
     for alias in ALIASES:                         # names the STT spells its own way (checked by ear/isolation)
         heard = re.sub(alias, 'σίτα', heard, flags=re.I)
+    for pat, greek in BRANDS.items():
+        heard = re.sub(pat, greek, heard, flags=re.I)
     ref, hyp = greek_words(said), greek_words(heard)
     latin = lambda x: [w for w in re.findall(r'[a-z]+', x.lower()) if len(w) > 1]
     # STT sometimes writes a Greek word in Latin letters («βέλκρο» -> "velcro"): map those back by sound

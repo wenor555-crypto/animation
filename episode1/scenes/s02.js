@@ -11,7 +11,7 @@ const LINES = [
   { a: 11.5, b: 12.9, who: 'mimis',   el: 'Σε τρώει η κατάθλιψη.', en: 'Depression does.' },
   { a: 13.3, b: 14.6, who: 'giannos', el: '…Δεν είναι το ίδιο.', en: "…That's not the same." },
   { a: 15.6, b: 16.8, who: 'mimis',   el: 'Είναι χειρότερο.', en: "It's worse." },
-  { a: 17.2, b: 20.5, who: 'giorgos', el: 'Ρε σεις, αν με πάρει τηλέφωνο ο λοχίας, είμαι στο νοσοκομείο.', en: "Guys, if the sergeant calls, I'm in the hospital." },
+  { a: 17.2, b: 20.5, who: 'giorgos', el: 'Να ξέρετε, αν με πάρει τηλέφωνο ο λοχίας, είμαι στο νοσοκομείο.', en: "Just so you know, if the sergeant calls, I'm in the hospital." },
   { a: 20.7, b: 21.9, who: 'giannos', el: 'Δεν είσαι σε έξοδο;', en: "Aren't you on leave?" },
   { a: 22.1, b: 24.3, who: 'giorgos', el: 'Τυπικά, αυτή τη στιγμή είμαι σκοπιά.', en: "Technically, right now I'm on guard duty." },
   { a: 24.5, b: 25.7, who: 'mimis',   el: 'Και ποιος φυλάει;', en: "So who's guarding?" },
@@ -25,7 +25,7 @@ const LINES = [
   { a: 44.7, b: 45.3, who: 'giorgos', el: 'Ωχ.', en: 'Oof.' },
   { a: 45.7, b: 47.8, who: 'mimis',   el: 'Ήξερε τι έκανε όταν ρώτησε.', en: 'She knew what she was doing when she asked.' },
   { a: 52.1, b: 54.6, who: 'vasilis', el: 'Παιδιά. Τελείωσε το μαρτύριο.', en: 'Boys. The torment is over.' },
-  { a: 55.0, b: 56.4, who: 'mimis',   el: 'Πέθανε η θεία;', en: 'Did auntie die?' },
+  { a: 55.0, b: 56.4, who: 'mimis',   el: 'Πέθανε η γιαγιά;', en: 'Did grandma die?' },
 ];
 const VOICES = {
   giannos: { el: 'ΓΙΑΝΝΟΣ', en: 'GIANNOS', col: '#8cc4ff', pitch: .95, rate: 1.05, babble: 300 },

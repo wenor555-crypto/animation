@@ -55,6 +55,8 @@ function sita(st = {}) {
     rect(cx - 14 + sx, ey - 12, 28, 24, '#2f8a4a', { lw: 2.5, w: .3 });
     rect(cx - 20 + sx, ey - 4, 40, 9, 'rgba(60,60,66,.9)', { lw: 1.5, w: .4 });           // μονωτική ταινία
     for (let i = 0; i < 4; i++) curve([[cx - 12 + i * 7 + sx, ey + 12], [cx - 12 + i * 7 + sx, ey + 17]], 1.5, '#d8c060', { w: .1 });
+    // the 5 mW laser diode Γιάννος taped next to the chip
+    rect(cx + 15 + sx, ey + 2, 9, 7, '#2a2a30', { lw: 1.5, w: .1 }); blob(cx + 24 + sx, ey + 5.5, 2, 2, st.laser ? '#ff3030' : '#7a2a2a', { lw: 0, glow: st.laser ? '#ff2020' : null, gb: 10 });
     const led = st.led || 'off', col = led === 'red' ? '#ff2a2a' : led === 'green' ? '#44ff7a' : '#335';
     const on = led !== 'off' && !(st.flicker && Math.sin(t * 40) > .2);
     blob(cx + sx, ey - 1, 7, 7, on ? col : '#2a2a33', { lw: 2.5, glow: on ? col : null, gb: 22 });
@@ -254,3 +256,25 @@ function laptopScreen(rows, k = 1, o = {}) {
   if (o.extra) o.extra();
   ctx.restore();
 }
+
+/* the σίτα's laser: a thin red beam (k 0..1 fades it), a dot where it lands, and the «τσσπ» puff */
+function laserBeam(x1, y1, x2, y2, k = 1, w = 3) {
+  if (k <= 0) return;
+  ctx.save(); ctx.globalAlpha = k; ctx.globalCompositeOperation = 'lighter';
+  ctx.strokeStyle = 'rgba(255,40,40,.35)'; ctx.lineWidth = w * 4; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  ctx.strokeStyle = '#ff5050'; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  ctx.restore();
+  laserDot(x2, y2, k);
+}
+function laserDot(x, y, k = 1, r = 5) {
+  if (k <= 0) return;
+  ctx.save(); ctx.globalAlpha = k; blob(x, y, r, r, '#ff3030', { lw: 0, glow: '#ff2020', gb: 16 }); blob(x, y, r * .4, r * .4, '#fff0f0', { lw: 0 }); ctx.restore();
+}
+function zapPuff(x, y, k) {             // k 0..1 after the hit
+  if (k <= 0 || k >= 1) return;
+  for (let i = 0; i < 5; i++) blob(x + Math.cos(i * 1.3) * 14 * k, y - 10 * k - Math.sin(i * 1.3) * 10 * k, 5 + 8 * k, 5 + 7 * k, `rgba(90,90,95,${.6 * (1 - k)})`, { lw: 0 });
+  if (k < .3) blob(x, y, 10, 10, '#ffd23f', { lw: 0, glow: '#ff8a2a', gb: 20 });
+}
+/* where the σίτα's diode is, for a σίτα hung on DOOR (or given x/top/h like the mecha head) */
+function sitaEye(st = {}) { const cx = st.x ?? DOOR.x, top = st.top ?? DOOR.top, h = st.h ?? DOOR.h; return [cx + 24, top + h * .2 + 5.5]; }

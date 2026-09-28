@@ -1,11 +1,11 @@
-/* Ep.1, Scene 9 – «Panik» (script beat 9): Κώστας walks home drunk, becomes Panik, stares at a bin, says «Σκουπίδια.» and kicks it over. Opens Act 2. */
+/* Ep.1, Scene 9 – «Panik» (script beat 9): Κώστας walks home drunk (beer in one hand, IQOS in the other), becomes Panik, stares at a bin, says «Σκουπίδια.» and kicks it over. Opens Act 2. */
 defineScene((() => {
 const CAMS = { card: [640, 360, 1], street: [640, 380, 1], kos: [0, 330, 2.2], pole: [640, 330, 1.9], poleC: [640, 300, 2.8], bin: [790, 470, 1.7], two: [800, 440, 1.6], kick: [850, 500, 1.5], house: [1100, 420, 1.5] };
 const steps = [
   { act: 'card', d: 3.4, cam: 'card' },
   { act: 'walkin', d: 1.5, cam: 'street' },
   { who: 'kostas', cam: 'street', mark: 'sing', el: "«…κι αν μ' αγαπάς, κι αν σ' αγαπώωω…»", en: '"…and if you love me, and if I love youuu…"' },
-  { who: 'kostas', cam: 'kos', mark: 'pita', el: 'Πού πήγε η πίτα σου, ρε φίλε; Σε παράτησε κι εσένα;', en: 'Where did your pita go, man? Did she leave you too?' },
+  { who: 'kostas', cam: 'kos', mark: 'iqos', el: 'Πάλι άδειασες, ρε φίλε; Ένα τσιγάρο βγάζεις. Ένα.', en: "Empty again, man? One cigarette, that's all you've got. One." },
   { act: 'car', d: 2.4, cam: 'street' },
   { who: 'kostas', cam: 'kos', mark: 'shout', el: 'ΝΑΙ ΡΕ! ΚΡΑΤΗΣΑ ΤΙΣ ΠΙΝΑΚΙΔΕΣ! ΘΑ ΤΟ ΣΠΑΣΩ!', en: 'YEAH, MAN! I KEPT THE PLATES! I\'LL SMASH IT!' },
   { act: 'ritual', d: 4.6, cam: 'pole' },
@@ -74,8 +74,8 @@ function render(t, _M, sc) {
   const tk = talk('kostas', t) || talk('panik', t);
   const st = { t, talk: tk, legs: walking ? 'walk' : 'stand', tilt: walking ? Math.sin(t * 3) * .12 : 0, look: t > M.stare.a && t < M.turn.a ? [1, .25] : t > M.turn.a ? [1, 0] : inM(t, M.shout) ? [-1, 0] : [-.2, .2],
     kick: bump(t, M.kick.a + .25, M.kick.a + .85),
-    L: shadesK > 0 && shadesK < 1 ? [-10, -210] : hoodK > 0 && hoodK < 1 ? [-50, -260] : [-50, -40], R: inM(t, M.pita) ? [60, -130] : [50, -60],
-    itemL: 'bottle', itemR: 'souvlaki', shades: shadesK >= 1, hood: hoodK >= .6, lid: !pk, brow: pk ? 'frown' : 'flat', mouth: inM(t, M.sing) ? 'open' : pk ? 'frown' : 'smile' };
+    L: shadesK > 0 && shadesK < 1 ? [-10, -210] : hoodK > 0 && hoodK < 1 ? [-50, -260] : [-50, -40], R: inM(t, M.iqos) ? [60, -140] : [50, -60],
+    itemL: 'beer', itemR: 'iqos', iqosLed: inM(t, M.iqos, -.4, .4) ? 'blink' : 'white', shades: shadesK >= 1, hood: hoodK >= .6, lid: !pk, brow: pk ? 'frown' : 'flat', mouth: inM(t, M.sing) ? 'open' : pk ? 'frown' : 'smile' };
   ctx.save(); ctx.translate(kx, standY()); ctx.rotate(walking ? Math.sin(t * 2.4) * .08 : 0); person(0, 0, 1, CAST.kostas, st); ctx.restore();
   // the car that honks
   const cx = lerp(1800, -700, prog(t, M.car.a, M.car.b));

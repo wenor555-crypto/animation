@@ -45,6 +45,41 @@ function laptop(x, y, s = 1, screen = '#1d2a36', open = 1) {
   if (open > .5) poly([[-50, -6], [50, -6], [48, -70], [-48, -70]], screen, { lw: 0, w: .2 });
   ctx.restore();
 }
+/* Κώστας's beer: a plain can (no brand), silver with an amber band */
+function beerCan(x, y, s = 1, rot = 0) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s, s);
+  rect(-11, -34, 22, 44, '#c9ced6', { lw: 3, w: .3 });
+  rect(-11, -24, 22, 22, '#d9a62b', { lw: 2, w: .2 });
+  txt('ΜΠΥΡΑ', 0, -13, 5.5, '#fff', { font: TVFONT, weight: 900 });
+  blob(0, -34, 11, 3, '#e6e9ee', { lw: 2.5, w: .2 }); blob(3, -35, 3, 1.4, '#555', { lw: 0 });
+  ctx.restore();
+}
+/* IQOS ILUMA: the slim holder with a TEREA stick in it, LED ring near the top.
+   led: 'white' (on), 'blink' (battery empty), 'red' (hacked by the σίτα), 'off' */
+function iqos(x, y, s = 1, rot = 0, led = 'white', t = 0) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s, s);
+  rect(-3.5, -46, 7, 14, '#efe6cf', { lw: 2, w: .1 });                 // TEREA stick
+  rect(-3.5, -40, 7, 3, '#c8a24a', { lw: 0 });                           // its coloured band
+  poly([[-6, -32], [6, -32], [6, 14], [-6, 14]], '#4a5058', { lw: 2.5, w: .2 });   // holder
+  blob(0, 14, 6, 2, '#3a3f46', { lw: 2, w: .1 });
+  const on = led === 'red' || led === 'white' || (led === 'blink' && Math.sin(t * 9) > 0);
+  const col = led === 'red' ? '#ff2a2a' : '#f4f6ff';
+  if (led !== 'off') curve([[-5, -26], [5, -26]], 2.5, on ? col : '#2a2e34', { w: 0 });
+  if (on && led !== 'off') blob(0, -26, 3, 2, col, { lw: 0, glow: col, gb: led === 'red' ? 18 : 8 });
+  ctx.restore();
+}
+/* IQOS ILUMA pocket charger (the holder slides into it) */
+function iqosCharger(x, y, s = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  rect(-15, -30, 30, 56, '#4a5058', { lw: 3, w: .3 }); curve([[-9, -24], [9, -24]], 2, '#8a9098', { w: 0 });
+  ctx.restore();
+}
+function pencil(x, y, rot = -2.3) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  rect(0, -3, 30, 6, '#f2c230', { lw: 2, w: .1 }); poly([[30, -3], [38, 0], [30, 3]], '#e8c89a', { lw: 1.8 }); blob(38, 0, 1.4, 1.4, '#222', { lw: 0 });
+  rect(-4, -3, 4, 6, '#e8878a', { lw: 1.5 });
+  ctx.restore();
+}
 function lighter(x, y, lit = 0) { rect(x - 5, y - 12, 10, 18, '#d8392b', { lw: 2, w: .2 }); if (lit) blob(x, y - 20, 4, 9 * lit, '#ffb23a', { lw: 0, glow: '#ff8a2a', gb: 16 }); }
 
 function freddo(x, y, s = 1) {
@@ -191,6 +226,9 @@ function personArms(c, st) {
     if (item === 'cig') cigarette(h[0] + side * 4, h[1] - 4, side > 0 ? -.4 : Math.PI + .4, t, side);
     if (item === 'phone') phone(h[0], h[1] - 10);
     if (item === 'bottle') tsipouro(h[0], h[1] - 6, .9, st.bottleFill ?? .5);
+    if (item === 'beer') beerCan(h[0], h[1] - 4, .95);
+    if (item === 'iqos') iqos(h[0] + side * 2, h[1] - 10, 1, side * .15, st.iqosLed || 'white', t);
+    if (item === 'pencil') pencil(h[0] - 2, h[1] - 6);
     if (item === 'sketch') sketchbook(h[0] + side * 6, h[1] - 18, side * .2);
     if (item === 'slipper') slipper(h[0], h[1] - 14, -1.2 * side, 1);
     if (item === 'lighter') lighter(h[0], h[1] - 8, st.lit || 0);
@@ -204,7 +242,7 @@ function personArms(c, st) {
       for (let i = 0; i < 6; i++) blob(bx - 10 + (i % 3) * 10 + hash(i) * 3, by + 14 + Math.floor(i / 3) * 10, 6, 5, i % 2 ? '#5f8a3a' : '#7aa84a', { lw: 1.8 });
     }
   };
-  arm([-52, -118], L, -1, st.itemL); arm([52, -118], R, 1, st.itemR);
+  arm([-52, -118], L, -1, st.itemL); arm([52, -118], R, 1, st.itemR ?? (st.itemL === 'sketch' ? 'pencil' : null));   // a sketchbook comes with a pencil
 }
 // hand motion helpers
 const slapK = (t, times) => { for (const s of times) if (t >= s && t < s + .35) return Math.sin(prog(t, s, s + .35) * Math.PI); return 0; };

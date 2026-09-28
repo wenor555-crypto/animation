@@ -67,7 +67,7 @@ function render(t, _M, sc) {
   const passK = Math.max(bump(t, M.mimisOut.a, M.mimisOut.a + 1.4), inM(t, M.vas, .2) || t > M.vas.b ? .8 : 0);
   const mosqK = prog(t, M.mosq.a, M.mosq.a + 1.4);
   const vault = inM(t, M.mosq, 1.2, 0) ? .3 * bump(t, M.mosq.a + 1.2, M.mosq.b) : 0;
-  sita({ t, chip: 1, led: 'green', mood: inM(t, M.denied) ? 'evil' : 'happy', talk: tk, pass: passK, flapL: vault, sway: Math.sin(t * 1.1) * .15 + (inM(t, M.jingle) ? Math.sin(t * 30) * .6 : 0),
+  sita({ t, chip: 1, led: 'green', mood: inM(t, M.denied) ? 'evil' : 'happy', talk: tk, laser: t > M.denied.a + 2.3 && t < M.denied.a + 3, pass: passK, flapL: vault, sway: Math.sin(t * 1.1) * .15 + (inM(t, M.jingle) ? Math.sin(t * 30) * .6 : 0),
     flapR2: 0, flapR: tk ? Math.abs(Math.cos(t * 3)) * .6 : 0 });
   tableScene(t, {}, {});
   rect(770, GROUND - 90, 90, 90, '#b58a5a', { lw: 3.5, w: .5 }); laptop(815, GROUND - 90, .7, '#1d2a36');
@@ -84,7 +84,11 @@ function render(t, _M, sc) {
   stand(520, 'christos', 1.05, { t, talk: talk('christos', t), look: [.3, .9], L: [-30, -110], R: [30 + Math.sin(t * fast) * 8, -100], itemL: 'sketch' });
   if (mimisOut && t >= M.mimisOut.a + .9) stand(mx, 'mimis', .95, { t, talk: talk('mimis', t), legs: mWalk ? 'walk' : 'stand', look: lookAtSpeaker(t, 'mimis', X, [1, 0]), lid: true, mouth: 'smirk', itemR: 'cup2', R: [50, -60] });
   // mosquito 1442 → the door slams like a vault
-  if (inM(t, M.mosq, 0, 3)) { mosquito(lerp(1300, 1110, mosqK) + (mosqK >= 1 ? Math.sin(t * 9) * 12 - 20 : 0), lerp(420, 560, mosqK) + (mosqK >= 1 ? Math.cos(t * 7) * 10 : 0), 2.6, t); }
+  const zapT = M.denied.a + 2.4, bounce = ease(prog(t, M.mosq.a + 1.5, M.mosq.a + 2.4)),   // bounces off the slammed door, hovers a little way off
+    mqx = lerp(lerp(1300, 1110, mosqK), 1215, bounce) + (mosqK >= 1 ? Math.sin(t * 9) * 12 - 20 : 0), mqy = lerp(lerp(420, 560, mosqK), 470, bounce) + (mosqK >= 1 ? Math.cos(t * 7) * 10 : 0);
+  if (t > M.mosq.a && t < zapT) mosquito(mqx, mqy, 2.6, t);
+  if (t > zapT - .1 && t < zapT + .6) { const [ex, ey] = sitaEye(); laserBeam(ex, ey, mqx, mqy, 1 - prog(t, zapT + .2, zapT + .6), 3); }
+  zapPuff(mqx, mqy, prog(t, zapT, zapT + 1));
   ctx.restore();
   applyLight('blue');
   ctx.save(); applyCam(c); sitaGlow({ t, led: 'green' }, .6);
@@ -100,7 +104,7 @@ function render(t, _M, sc) {
 }
 return {
   id: 'scene07', title: '7 · Ξύπνησε', steps, render,
-  events: M => [[M.jingle.a, SFX.jingle], [M.jingle.a + .4, () => SFX.clacks(3)], [M.jingle.a + .3, SFX.thud], [M.mosq.a + 1.4, () => { SFX.slam(); SFX.clack(); }],
+  events: M => [[M.jingle.a, SFX.jingle], [M.jingle.a + .4, () => SFX.clacks(3)], [M.jingle.a + .3, SFX.thud], [M.mosq.a + 1.4, () => { SFX.slam(); SFX.clack(); }], [M.denied.a + 2.4, SFX.laser],
     [M.denied.a + 2.5, SFX.thud], [M.mimisOut.a + .1, SFX.clack], [M.film.a + .6, SFX.pop], [M.vas.a + .3, SFX.jingle], [M.win.a, SFX.creak]],
   ambience: () => ({ cricket: .02, cicada: .004, mosq: .004 }),
 };

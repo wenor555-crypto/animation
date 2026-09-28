@@ -53,8 +53,8 @@ function render(t, _M, sc) {
         ctx.save(); ctx.translate(0, 80); ctx.rotate(-1.3); sita({ x: 0, top: -105, w: 110, h: 210 }); ctx.restore();
         for (let j = 0; j < 3; j++) curve([[-110 + j * 20, -310], [-112 + j * 20, -270]], 3, '#f4f2ea');
         txt('38°C', 180, -300, 40, '#e8392b', { font: TVFONT, weight: 900 });
-      } else if (i === 1) {        // Κώστας with a lighter… asleep
-        ctx.save(); ctx.translate(0, 120); ctx.rotate(-1.4); person(0, -150, 1, CAST.kostas, { legs: 'stand', blink: true, mouth: 'open', R: [60, -60], itemR: 'lighter' }); ctx.restore();
+      } else if (i === 1) {        // Κώστας with a beer and a dead IQOS… asleep
+        ctx.save(); ctx.translate(0, 120); ctx.rotate(-1.4); person(0, -150, 1, CAST.kostas, { legs: 'stand', blink: true, mouth: 'open', L: [-60, -40], itemL: 'beer', R: [60, -60], itemR: 'iqos', iqosLed: 'off' }); ctx.restore();
         txt('Zzz', 120, -200, 50, '#555', { font: TVFONT });
       } else {                     // Βασίλης asking for a τράκα
         person(0, -20, 1, CAST.vasilis, { legs: 'stand', lid: true, R: [80, -130], bandage: true });
@@ -72,7 +72,7 @@ function render(t, _M, sc) {
   // Χρήστος inking at the desk (seated behind it), Μίμης behind him with a freddo
   const inking = !talk('christos', t);
   person(520, 470, 1, CAST.christos, { t, talk: talk('christos', t), part: 'body', look: speaker(t) === 'mimis' ? [1, -.3] : [.2, .9], lid: true, mouth: t > M.sell.b ? 'smirk' : 'flat', aviators: true });
-  person(520, 470, 1, CAST.christos, { t, part: 'arms', L: [-30, -30], R: inking ? [60 + Math.sin(t * 6) * 10, -30] : [44, -24] });
+  person(520, 470, 1, CAST.christos, { t, part: 'arms', L: [-30, -30], R: inking ? [60 + Math.sin(t * 6) * 10, -30] : [44, -24], itemR: 'pencil' });
   if (t > M.wall.a + 1) stand(820, 'mimis', 1, { t, talk: talk('mimis', t), look: [-1, .4], lid: true, mouth: 'smirk', itemR: 'cup2', R: [50, -60] });
   ctx.restore();
   applyLight('night', .5);
