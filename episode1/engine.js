@@ -6,6 +6,12 @@
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const W = 1280, H = 720, TAU = Math.PI * 2, INK = '#241d22';
 const TVFONT = '"Noto Sans", sans-serif';
+/* clean look: the scenes draw in 1280×720 units, the canvas renders them at RES× (1920×1080) for crisp lines,
+   and CLEAN turns off the hand-drawn wobble and the 8 fps line boil (smooth ellipses, straight edges). */
+const RES = 1.5, CLEAN = true, OUTLINE = .8;   // OUTLINE: thinner ink around filled shapes
+cv.width = W * RES; cv.height = H * RES;
+{ const st = ctx.setTransform.bind(ctx); ctx.setTransform = (a, b, c, d, e, f) => st(a * RES, b * RES, c * RES, d * RES, e * RES, f * RES); }
+ctx.setTransform(1, 0, 0, 1, 0, 0);
 
 /* ---------- math ---------- */
 const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
@@ -18,18 +24,19 @@ function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s 
 
 /* ---------- wobbly primitives (line boil at 8fps) ---------- */
 let SEED = 0, BOIL = 0;
-const jit = (sd, i, k) => (hash(sd * 12.9898 + i * 78.233 + BOIL * 37.719 + k * 3.3) - .5) * 2;
+const jit = (sd, i, k) => CLEAN ? 0 : (hash(sd * 12.9898 + i * 78.233 + BOIL * 37.719 + k * 3.3) - .5) * 2;
 function finish(fill, o) {
   ctx.save();
   if (o.alpha != null) ctx.globalAlpha *= o.alpha;
-  if (o.glow) { ctx.shadowColor = o.glow; ctx.shadowBlur = o.gb || 20; }
+  if (o.glow) { ctx.shadowColor = o.glow; ctx.shadowBlur = (o.gb || 20) * RES; }
   if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-  if (o.lw !== 0) { ctx.lineWidth = o.lw || 4; ctx.strokeStyle = o.sc || INK; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(); }
+  if (o.lw !== 0) { ctx.lineWidth = (o.lw || 4) * (CLEAN && fill ? OUTLINE : 1); ctx.strokeStyle = o.sc || INK; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(); }
   ctx.restore();
 }
 function blob(x, y, rx, ry, fill, o = {}) {
   const sd = ++SEED, n = o.n || 24, w = o.w ?? 1.2, rot = o.rot || 0, cr = Math.cos(rot), sr = Math.sin(rot);
   ctx.beginPath();
+  if (CLEAN) { ctx.ellipse(x, y, Math.abs(rx), Math.abs(ry), rot, 0, TAU); finish(fill, o); return; }
   for (let i = 0; i < n; i++) {
     const a = i / n * TAU, j = jit(sd, i, 0) * w, px = Math.cos(a) * (rx + j), py = Math.sin(a) * (ry + j);
     const X = x + px * cr - py * sr, Y = y + px * sr + py * cr; i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y);
@@ -322,10 +329,10 @@ function drawSubs(t) {
 let _buf = null;
 function mangaize(k = 1, border = true) {
   if (k <= 0) return;
-  if (!_buf) { _buf = document.createElement('canvas'); _buf.width = W; _buf.height = H; }
-  const b = _buf.getContext('2d'); b.setTransform(1, 0, 0, 1, 0, 0); b.clearRect(0, 0, W, H); b.drawImage(cv, 0, 0);
+  if (!_buf) { _buf = document.createElement('canvas'); _buf.width = cv.width; _buf.height = cv.height; }
+  const b = _buf.getContext('2d'); b.setTransform(1, 0, 0, 1, 0, 0); b.clearRect(0, 0, _buf.width, _buf.height); b.drawImage(cv, 0, 0);
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = k;
-  ctx.filter = 'grayscale(1) contrast(2.2) brightness(1.1)'; ctx.drawImage(_buf, 0, 0); ctx.filter = 'none';
+  ctx.filter = 'grayscale(1) contrast(2.2) brightness(1.1)'; ctx.drawImage(_buf, 0, 0, W, H); ctx.filter = 'none';
   ctx.globalAlpha = k * .35; ctx.fillStyle = INK;
   for (let y = 0; y < H; y += 10) for (let x = (y / 10) % 2 ? 5 : 0; x < W; x += 10) { const r = .6 + Math.hypot(x - 640, y - 360) / 520; ctx.fillRect(x, y, r, r); }
   ctx.globalAlpha = k;

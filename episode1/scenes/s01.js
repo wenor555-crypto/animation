@@ -50,7 +50,7 @@ function pharmacy(x, y, t) {
   limb([[x + 190, y - 150], [x + 226, y - 150]], 4, '#9a9a9a', { w: .3 });
   ctx.save(); ctx.translate(x + 246, y - 150);
   poly([[-40, -40], [40, -40], [40, 40], [-40, 40]], '#1d1d1d', { lw: 3.5 });
-  ctx.shadowColor = '#3dff6e'; ctx.shadowBlur = 16; ctx.fillStyle = '#3dff6e';
+  ctx.shadowColor = '#3dff6e'; ctx.shadowBlur = 16 * RES; ctx.fillStyle = '#3dff6e';
   if (Math.floor(t / 1.6) % 2 === 0) { ctx.fillRect(-10, -32, 20, 64); ctx.fillRect(-32, -10, 64, 20); }
   else { ctx.font = `900 30px ${TVFONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('38°', 0, 2); }
   ctx.restore();
