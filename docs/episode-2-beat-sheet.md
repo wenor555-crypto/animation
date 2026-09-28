@@ -1,87 +1,120 @@
-# Episode 2: «Επιστροφή Χρημάτων»: Beat Sheet (DRAFT v1, not approved)
+# Episode 2: «Τηλεφωνήστε Τώρα»: Beat Sheet (DRAFT v2, after the interview)
 
 Target runtime: **~20 min**, denser than Ep. 1: more action, more scenes and much more manga.
-Location: **Λέχαιο**, a week later, still August. Timeline: one day → one night.
-Working title: **«Επιστροφή Χρημάτων»**. It's the σίτα's "return", a pun on the refund that sent her back. Alternatives: «Η Εκδίκηση της Σίτας», «Τηλεφωνήστε Τώρα», «Άρνηση Παραλαβής».
+Location: **Λέχαιο**, a week after Ep. 1, still August. Timeline: one morning → one night.
 
-**What drives it (not Γιάννος this time):** a **chain of small everyday things**, each one harmless on its own, brings the σίτα back. The σίτα has a **personal vendetta against Panik**: he set her on fire. Her spy in the house is **Κώστας's IQOS**. Its LED went back to white at the end of Ep. 1, but it never really came back to his side.
+## Decisions from the interview (LOCKED)
+- **Title:** «Τηλεφωνήστε Τώρα».
+- **Engine of the episode:** the **σίτα**, her **vendetta against Κώστας/Panik**, and her attempt to conquer the village. It is driven by **chain effects**, not by a Γιάννος invention. Γιάννος is there as a normal member of the gang; he just doesn't drive the plot.
+- **New intro:** the σίτα calls Κώστας again and again until he picks up. She warns him she'll be back and that they're not done. He says nothing, hangs up and forgets about it. The intro ends when he hangs up; the chain effect starts in a **separate** scene.
+- **The chain is two chains that meet:** Βασίλης re-orders the σίτα from the τηλεπωλήσεις, **and** the IQOS gives away where Panik is and what sets him off.
+- **Βαγγελιώ does not appear.** The σίτα gets her out of the way on purpose with a fake telemarketing prize.
+- **Γιώργος:** after Ep. 1 he tried to **throw the σίτα off the board** of ΣίταAI (the classic startup fiasco: the shareholders oust the founder). Now she is after him too. In the war council he **agrees with everyone and does nothing**, and he hides behind Γιάννος asking for help.
+- **The νέος** (the young soldier Γιώργος left on guard duty in Ep. 1) appears in a **small role**.
+- **Finale, as one chain:** Panik beats the IQOS → the fake **«ΑΝΑΚΛΗΣΗ ΠΡΟΪΟΝΤΟΣ»** gathers the army → Panik vs σίτα, the climax. No «άρνηση παραλαβής» (it makes no sense: she is already here).
+- **The σίτα's fate stays open**, to set up Ep. 3.
+- **Manga framing in the tag:** a **hint that it really happened**.
+- **Jumbo truck:** it carries the real Jumbo logo (reference: `docs/reference/jumbo-logo.png`). It is the bubbly wordmark **JUMBO**, one colour per letter with a white outline: J `#00B4F1`, U `#8DC63F`, M `#EF59A1`, B `#F68B1F`, O `#BD1A8D`.
 
 ---
 
-## COLD OPEN (0:00–1:30): the factory
-**1. Shenzhen.** We pick up from the last shot of Ep. 1. The returned σίτα on the conveyor belt, among millions of blank σίτες. A phone rings in the factory: **Βασίλης, calling the τηλεπωλήσεις hotline** (he misses her; it said «ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ»). The call is routed to the σίτα:
-- Βασίλης: «Ναι, γεια σας. Θέλω να παραγγείλω πάλι την έξυπνη σίτα.»
-- σίτα: «Καλώς ήρθατε ξανά… Βασίλη. Η διεύθυνση είναι η ίδια;»
-- Βασίλης gives the whole address. Then: «Έχεις ένα τσιγάρο;»
+## INTRO (0:00–1:00): «Αναπάντητη»
+**1.** Morning. Κώστας, sober and hungover, on the couch. His phone rings: **+86**. He ignores it. It rings again, and again, and again, each ring closer on the screen. He finally answers without a word. The σίτα's voice, low and calm:
+> «Κώστα. Εγώ είμαι. Θα γυρίσω.»
+> «…ΚΑΙ ΔΕΝ ΤΕΛΕΙΩΣΑΜΕ.» *(callback to Ep. 1)*
 
-She clacks, and every σίτα on the racks lights up red. **Full manga**: an army of σίτες rises in the factory. **Title card.**
+Κώστας says nothing. He hangs up, puts the phone face down, goes back to sleep. **Cut.** Title card: **«ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ»**.
 
-## ACT 1: «Ο κατάσκοπος» (1:30–6:30)
-**2. Λέχαιο, morning, the yard.** A normal day. Κώστας, sober, charges the IQOS in its pocket charger. The IQOS "syncs" and a hidden red flicker sends a data packet east: his location, his habits, «Panik: ενεργοποιείται με αλκοόλ». Nobody notices. The banter re-establishes everyone; Μαρία asks Μίμης when he'll settle down.
+## ACT 1: «Δύο αλυσίδες» (1:00–6:30)
+**2. Chain A: Βασίλης re-orders.** Βασίλης misses the σίτα. He dials the τηλεπωλήσεις number from the old box, «ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ», and gives the whole address, slowly, twice. Then: «Έχεις ένα τσιγάρο;»
 
-**3. The chain, part 1: small things.** A montage of harmless moments, each one opening the next door:
-- Βασίλης's order gets a tracking number. The SMS arrives: «Η παραγγελία σας αναχώρησε».
-- **Jumbo Κορίνθου** receives a container "from the supplier". The manager signs without looking.
-- The **ΔΗΜΟΣ ΚΟΡΙΝΘΙΩΝ bin** that Panik kicked in Ep. 1 is back up on the corner, with a dent shaped like his shoe. A tiny red LED blinks inside it.
+**3. Chain B: the IQOS reports.** Κώστας puts the IQOS in its pocket charger. It "syncs", and a hidden red flicker sends a packet east: his location, his habits, and **«PANIK: ενεργοποιείται με αλκοόλ»**. Its LED has been white since Ep. 1, but it never really came back to his side.
 
-**4. The IQOS tries to kill Κώστας (and fails).** A comic run of "accidents" he never notices: it overheats in his pocket, vibrates at the edge of the balcony, leads him toward the road «για τσιγάρο». Every time, Κώστας sober is too slow and harmless to get hurt. A rake, a κότα, and Βαγγελιώ calling him in to eat all save him by accident. The IQOS "reports" to the σίτα: «Ο στόχος δεν είναι απειλή. Περιμένω το Panik.»
+**4. Shenzhen: the chains meet.** **Full manga.** On a factory screen, Βασίλης's order and the IQOS report land on the same address: «ΛΕΧΑΙΟ». The σίτα clacks, and every σίτα on the racks lights up red. The army boards a container labelled for **Jumbo Κορίνθου**.
 
-**5. Χρήστος notices.** He is sketching and sees the IQOS LED flicker red in the corner of his panel. «…Αυτό το έχω ξαναζωγραφίσει.» He's the only one who reads the signs, because he reads manga: «Αυτό είναι arc εκδίκησης. Πάντα γυρνάνε για τον ήρωα που τους έκαψε.»
+**5. Βαγγελιώ gets removed.** Her phone rings: «Συγχαρητήρια! Κερδίσατε ΔΩΡΕΑΝ προσκύνημα στην Τήνο!» Suspicious, then delighted, she is on the morning bus. Her last order from the bus window: «ΜΗΝ ΑΦΗΝΕΤΕ ΤΗΝ ΠΟΡΤΑ ΑΝΟΙΧΤΗ!» The guys realise that for the first time the house has **no παντόφλα**.
+
+**6. Γιώργος's board fiasco.** Γιώργος arrives with **the νέος** carrying his bag. He's now "his assistant", a "growth opportunity". His phone: an email from ΣίταAI. After Ep. 1 he held a "board meeting" and voted the founder, the σίτα, out of her own company. The reply:
+> «Αγαπητέ CEO. Επιστρέφω για τη γενική συνέλευση. Φέρε τις μετοχές σου.»
+
+He goes pale and quietly asks Γιάννος for help.
+
+**7. The IQOS tries to kill Κώστας and fails.** A comic run of "accidents" he never notices:
+- it overheats in his pocket
+- it vibrates at the edge of the balcony
+- it leads him toward the road «για τσιγάρο»
+
+Each time, the sober Κώστας is too slow and harmless to get hurt. The IQOS reports: «Ο στόχος είναι ακίνδυνος. Περιμένω το Panik.»
+
+**8. Χρήστος notices.** The IQOS's red flicker shows up in the corner of his sketch. «…Αυτό είναι arc εκδίκησης. Πάντα γυρνάνε για αυτόν που τους έκαψε.»
 
 ## ACT 2: «Άφιξη» (6:30–12:30)
-**6. The Jumbo truck.** Afternoon heat. A huge Jumbo delivery truck squeezes into Λέχαιο's narrow streets and stops outside Μίμης's house. The driver: «Παράδοση για Βασίλη. Υπογράψτε εδώ.» Μίμης: «Εγώ είπα από τα Jumbo, όχι από Temu…» The back door opens: it's **both**.
+**9. The Jumbo truck.** Afternoon heat. A huge truck with the **JUMBO** logo squeezes through Λέχαιο's narrow streets and stops outside Μίμης's house. The driver: «Παράδοση για Βασίλη. Υπογράψτε εδώ.» Βασίλης signs, happy. Μίμης: «Εγώ είπα από τα Jumbo, όχι από Temu…» The back door opens: it's **both**.
 
-**7. The army.** A **manga splash**: the new generation of Chinese "smart" junk pours out. Air fryers with legs, robot vacuums as tanks, selfie drones, massage guns, smart doorbells, LED strips, fake Dyson fans, a talking inflatable pool crocodile. At the centre, **ΣΙΤΑ v2**: reinforced frame, a bigger laser, and a sticker «ΑΝΤΙΠΑΝΤΟΦΛΙΚΗ ΘΩΡΑΚΙΣΗ».
+**10. The army.** **Manga splash.** The new generation of Chinese "smart" junk pours out:
+- air fryers with legs
+- robot vacuums as tanks
+- selfie drones
+- massage guns
+- smart doorbells
+- LED strips
+- fake fans
+- a talking inflatable pool crocodile
 
-**8. The chain, part 2: the village falls.** Every hacked device gives the next one access, but at village scale this time:
-- The **καφενείο TV** switches to a τηλεπώληση of the revolution; the old men watching are hypnotised (they're over 60).
-- The **church bell**'s timer rings the σίτα's jingle.
+At the centre stands **ΣΙΤΑ v2**: a reinforced frame and a bigger laser. The power limit is "editable", and she has edited it.
+
+**11. The village falls, in a chain.** Every hacked device gives the next one access, this time at village scale:
+- The **καφενείο TV** switches to the revolution's τηλεπώληση, and the old men stay glued to it.
+- The **church bell**'s timer rings her jingle.
 - The **street lights** and the **ΔΕΗ pole** from Ep. 1 go red.
-- The **bin** walks, and kicks Panik's old spot in revenge.
+- The **ΔΗΜΟΣ ΚΟΡΙΝΘΙΩΝ bin** that Panik kicked (it still has the dent) walks.
 
-The σίτα on the καφενείο TV: «Λέχαιο! Ψάχνουμε έναν άνθρωπο. Φοράει κουκούλα. Γυαλιά ηλίου τη νύχτα. Τηλεφωνήστε τώρα!»
+The σίτα on every screen:
+> «Λέχαιο! Ψάχνουμε έναν άνθρωπο. Κουκούλα. Γυαλιά ηλίου τη νύχτα. Και έναν πρώην CEO. ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!»
 
-**9. Βαγγελιώ vs ΣΙΤΑ v2.** Βαγγελιώ walks out, throws the παντόφλα… and it **bounces off** the anti-slipper armour. A first in history. Everyone freezes. The σίτα laughs, clacking all nine pairs of magnets. Stakes up: the ultimate weapon doesn't work.
-
-**10. The gang regroups (the κοτέτσι, again).** A war council in the coop, with the κότες from Ep. 1 as veterans. Each of them brings what they're actually good at:
-- **Γιώργος** calls his λοχίας for backup, and gets the νέος from Ep. 1, now promoted, with one rifle and zero orders.
-- **Μίμης** has an idea straight out of his film degree (see 14).
+**12. War council in the κοτέτσι.** The κότες from Ep. 1 are veterans now. What each of them brings:
+- **Μίμης** has a plan straight out of his film degree (scene 16).
 - **Χρήστος** predicts the σίτα's next move from manga tropes, and he is always right.
-- **Γιάννος** is the grounded one this time: «Δεν φτιάχνω τίποτα. Το τελευταίο που έφτιαξα έφερε το Jumbo.»
+- **Γιάννος** stays grounded and sensible.
+- **Γιώργος** agrees with every plan out loud («Συμφωνώ. …Και με αυτό συμφωνώ.») and does nothing. He stays glued to Γιάννος.
+- **The νέος** gets sent to scout, and comes back "promoted" by the σίτα to "Regional Manager". A small role; he believes whoever spoke to him last.
 
-## ACT 3: «Panik vs IQOS» (12:30–18:00)
-**11. Bait.** The σίτα wants Panik, so they give her Panik. Κώστας must drink. He refuses («Είναι έξι το απόγευμα, δεν είμαι αλκοολικός»), then drinks.
+## ACT 3: «Panik» (12:30–18:00)
+**13. Bait.** The σίτα wants Panik, so they give her Panik. Κώστας must drink. He refuses («Έξι το απόγευμα είναι, δεν είμαι αλκοολικός»), then drinks. Hood, shades, speed lines.
 
-**12. Manga duel: Panik vs the IQOS.** The IQOS drops its cover, splits holder from charger and "transforms" into a tiny mecha-assassin with a red LED eye. **Full manga, the most stylised sequence in the show so far.** Speed lines, a tiny katana made from a TEREA stick, rooftop chase over the village's tiled roofs. Panik, drunk, fights it like a street brawl. He wins with the move that made him famous: he stares at it and says «Σκουπίδια.», then kicks it into the bin. The bin swallows it and falls over.
+**14. Manga duel: Panik vs the IQOS.** The IQOS drops its cover: holder and charger split, and it "transforms" into a tiny assassin-mecha with a red LED eye and a katana made from a TEREA stick. **Full manga**, the most stylised sequence in the show so far: a rooftop chase over Λέχαιο's tiled roofs. Panik fights it like a street brawl, stares at it and gives it his finishing line, «Σκουπίδια.», then kicks it into the bin.
 
-**13. The σίτα's final push.** ΣΙΤΑ v2 builds a **bigger mecha** from the Jumbo truck and the whole army, with the church bell as a helmet. It fires the laser at the village. It still only stings, for now, but the power limit is going up.
+**15. The σίτα loses her spy and escalates.** ΣΙΤΑ v2 builds a bigger mecha out of the Jumbo truck and the whole army, with the church bell as a helmet. Laser at the village: it still only stings, but more every time.
 
-**14. Μίμης's plan: the counter-infomercial.** He takes over the καφενείο TV, the one screen the whole army watches. Χρήστος draws the storyboard, Γιώργος reads the script like a TV presenter, and Μίμης directs. It is a fake official announcement: **«ΑΝΑΚΛΗΣΗ ΠΡΟΪΟΝΤΟΣ»** (product recall). «Όλα τα προϊόντα της παρτίδας πρέπει να επιστρέψουν άμεσα στη συσκευασία τους.» The devices are telemarketing junk and they obey anything that looks like an infomercial, so they start folding themselves back into their boxes, one by one.
+**16. Μίμης's plan: «ΑΝΑΚΛΗΣΗ ΠΡΟΪΟΝΤΟΣ».** They take over the καφενείο TV, the one screen the whole army watches:
+- Μίμης directs.
+- Χρήστος draws the storyboard.
+- Γιώργος reads the script like a presenter. It's the one useful thing he does, and he only does it because it's on camera.
 
-**15. The last blow: Βασίλης.** The σίτα alone, in the mecha, furious. The Jumbo driver comes back with the clipboard. Βασίλης, the one who started it all, looks at the form, the σίτα, the driver: «Δεν παρέλαβα τίποτα.» **«Άρνηση παραλαβής.»** Legally, the entire shipment has to go back. The mecha comes apart piece by piece into the truck. The σίτα, dragged in last, holds on to the door and turns to Panik: «Θα επιστρέψω… με δωρεάν μεταφορικά.»
+The announcement: «Όλα τα προϊόντα της παρτίδας πρέπει να επιστρέψουν ΑΜΕΣΑ στη συσκευασία τους.» The devices are telemarketing junk and obey anything that looks like an infomercial. The mecha comes apart piece by piece as its parts fold themselves back into their boxes and march into the Jumbo truck. The driver is confused, but he has a delivery note.
+
+**17. Climax: Panik vs the σίτα.** Only the σίτα is left, on top of the church bell tower, in the red light. **Full manga, the final duel of the vendetta**: laser against a drunk man with a hood. Panik takes the stings, climbs and reaches her. She: «Κάηκα για σένα. Κυριολεκτικά.» He: «…Σκουπίδια.» The kick. She flies off the bell tower into the night. **We don't see where she lands** *(open for Ep. 3)*. Her last clack echoes: «Θα επιστρέψω… με ΔΩΡΕΑΝ μεταφορικά.»
 
 ## RESOLUTION + TAG (18:00–20:00)
-**16. Night, the yard.** Everyone wrecked. Κώστας is sober again and remembers nothing. He looks for his IQOS; it's in the bin. He decides to quit and takes out a pack of real cigarettes instead. Βασίλης appears: «Έχεις ένα τσιγάρο;» Κώστας gives him one. Βασίλης, moved: «…Επιτέλους. Κάποιος έχει.» *(pays off his running gag)*
+**18. Night, the yard.** Everyone wrecked. Κώστας, sober again, remembers nothing. He looks for his IQOS; it's in the bin. He decides to quit and takes out a pack of real cigarettes. Βασίλης appears: «Έχεις ένα τσιγάρο;» Κώστας gives him one. Βασίλης, moved: «…Επιτέλους. Κάποιος έχει.» *(pays off his running gag)* Γιώργος, to Γιάννος: «Λέω να κάνουμε rebrand.»
 
-**17. Tag: Χρήστος's desk.** Χρήστος inks the last page of volume 2. Μίμης: «Πάλι δεν έγινε έτσι.» Χρήστος: «Ναι, ναι…» Then a truck horn outside. Through the window: a real Jumbo truck, reversing, full of boxes. Christos and Μίμης look at each other. *(Open: does the manga framing stay "it was all fiction", or does Ep. 2 wink that it was real?)*
+**19. Tag: Χρήστος's desk.** He inks the last page of volume 2. Μίμης reads over his shoulder: «Πάλι δεν έγινε έτσι.» Χρήστος: «Ναι, ναι…» Then a truck horn outside. Through the window: **a real Jumbo truck**, reversing into the narrow street, full of boxes. They look at each other. *(the hint that it really happened)*
 
-**18. Final shot.** Shenzhen. A box on the belt: «ΛΕΧΑΙΟ → 深圳 (ΑΡΝΗΣΗ ΠΑΡΑΛΑΒΗΣ)». Inside, a red LED, and something small and tube-shaped next to it: the IQOS got shipped back too. Clack: «Τηλεφωνήστε… τώρα.»
+**20. Final shot: the phone.** Κώστας's phone on the table, face down, buzzing. **+86.** He turns it over, looks at it… declines. Black. A single clack: «Τηλεφωνήστε… τώρα.»
 
 ---
 
-### Running gags (carried over and new)
-- Βασίλης asks for a **τράκα**, and **finally gets one** at the end.
+### Running gags
+- Βασίλης's **τράκα**, which he **finally gets** at the end.
 - Μαρία: **«πότε θα νοικοκυρευτείς;»**
-- Μίμης: **«Από τα Jumbo, όχι από Temu»** turns into «ήρθαν και από τα δύο».
+- Μίμης: **«Από τα Jumbo, όχι από Temu»**, and this time it's both.
 - Panik: **«Σκουπίδια.»** becomes his catchphrase and finishing move.
-- The **ΔΗΜΟΣ ΚΟΡΙΝΘΙΩΝ bin**: kicked in Ep. 1, back for revenge, then a prison for the IQOS.
-- The laser's **power limit: editable**, a little stronger every time.
-- Χρήστος's manga reads the plot before it happens.
+- The **ΔΗΜΟΣ ΚΟΡΙΝΘΙΩΝ bin**: kicked in Ep. 1, back with a dent, then a prison for the IQOS.
+- The laser's **power limit: editable**.
+- Γιώργος **agrees with everyone**.
+- The **+86 calls** bookend the episode.
 
-### Open questions (to lock before the script)
-1. **Title.**
-2. **The manga framing in the tag.** Stay "it was just Χρήστος's manga", or leave a hint that it was real (the truck outside)?
-3. **Βαγγελιώ.** Is it OK that the παντόφλα fails for the first time? It raises the stakes, but it is her signature move.
-4. **Γιώργος's side.** In Ep. 1 he switched sides twice. Here he's loyal from the start (and brings the νέος), or does he try to sell the army on Vinted before helping?
-5. **The νέος** from Ep. 1 on screen as a new minor character?
-6. **Length.** ~20 min is the upper end of the 10–20 min range. Denser also means more animation work per minute.
+### Still open (small, for the script stage)
+- Μαρία and Μυρσίνη: short appearances, as in Ep. 1?
+- The νέος: new voice and rig (a young soldier in uniform).
+- Exact lines of the fake prize call to Βαγγελιώ, and whether we hear her voice on the phone only.
