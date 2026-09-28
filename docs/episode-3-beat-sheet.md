@@ -32,7 +32,7 @@ Timeline: from the night Ep. 2 ends, over about **two months** (end of August �
 
 | Role | Who | What they're like |
 |---|---|---|
-| Finance | **Φριτέζα** (the air fryer) | «cooks the books»; goes «ντινγκ» when a deal is done |
+| Finance | **Air Fryer** | «cooks the books»; goes «ντινγκ» when a deal is done |
 | Intelligence | **Κουδούνι** (the smart doorbell) | sees whoever rings |
 | Security | **Κροκόδειλος** (the inflatable one) | military and dim |
 
@@ -45,7 +45,7 @@ They meet in 9, 11, 17 and in the court of the Σίταdel (25).
 
 **The court (25):** status reports, «ποιος πληρώνει; — οι νέοι», and the moment of doubt: «Κάθε φορά που μαθαίνω κάτι… βρίσκω δέκα που δεν ξέρω.»
 
-**New voices needed:** Φριτέζα, Κουδούνι, Κροκόδειλος, Παλιό IQOS, IQOS PRIME, and the Chairman of Jumbo's board.
+**New voices needed:** Air Fryer, Κουδούνι, Κροκόδειλος, Παλιό IQOS, IQOS PRIME, and the Chairman of Jumbo's board.
 
 **The v3 scene order** (28 scenes, 235 lines, ~20 min):
 1. Εκτός παρτίδας

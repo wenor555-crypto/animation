@@ -76,6 +76,7 @@ SAY = {'38': 'τριάντα οχτώ', '9,90': 'εννιά και ενενήν�
        'Ωραία σίτα.': 'Ωραία… σίτα.',   # «ωραία σίτα» runs together into «ωραία είσαι τα»
        'Jumbo': 'Τζάμπο',               # the shop, said the Greek way (not «Τζούμπο»)
        'Temu': 'Τέμου',                 # the app, as Greeks say it
+       'air fryer': 'έαρ φράιερ',       # nobody says «φριτέζα αέρος»: the English name, the Greek way
        'μια συκιά': 'μια σικιά',        # v3 swallows the unstressed υ and says «σκιά» (shade) instead of «συκιά» (fig tree)
        'IQOS': 'Άικος',                 # the heated-tobacco device, as Greeks say it
        'ΤΟ AI ΣΑΣ': 'ΤΟ ΈΙ-ΆΙ ΣΑΣ'}     # «AI» the way Greeks say it
