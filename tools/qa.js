@@ -97,7 +97,8 @@ const fs = require('fs'), path = require('path');
   });
   for (const n of nondet) findings.push({ kind: 'NONDET', scene: n.scene, who: '-', what: 'differs when seeked', t0: n.t, t1: n.t, x: 640, y: 360, n: 1 });
   // allow-list
-  let allow = []; try { allow = JSON.parse(fs.readFileSync(path.join(path.dirname(page), 'qa-allow.json'), 'utf8')); } catch (e) {}
+  let allow = []; const dir = path.dirname(page), allowDir = path.basename(dir) === 'dist' ? path.dirname(dir) : dir;   // dist/ pages use the episode's list
+  try { allow = JSON.parse(fs.readFileSync(path.join(allowDir, 'qa-allow.json'), 'utf8')); } catch (e) {}
   for (const f of findings) f.allowed = allow.some(a => a.scene === f.scene && (!a.kind || a.kind === f.kind) && (!a.fill || (f.what || '').startsWith(a.fill)) && (!a.who || a.who === f.who) && f.t0 >= (a.t0 ?? 0) && f.t1 <= (a.t1 ?? 1e9));
   // crops for review
   let i = 0;
