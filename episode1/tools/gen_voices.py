@@ -55,7 +55,7 @@ SETTINGS = {'default': {'stability': .5, 'similarity_boost': .8},
 SHOUTY = {'sita', 'tv'}   # stability 0 for lines with '!' or CAPS (the 200% TV-shop voice), .5 for the cold, quiet ones
 # per-episode cast changes: <episode>/voices.json = {"voices": {who: voice_id}, "prefix": {who: "[slurring] "}, "shouty": [who, ...]}
 # (a prefix is an eleven_v3 audio tag sent before the text; it is not spoken and not part of the speech-to-text check)
-PREFIX, SIMPLE = {}, set()
+PREFIX, SIMPLE, LINE_TAG = {}, set(), {}
 if (HERE / 'voices.json').exists():
     _ep = json.loads((HERE / 'voices.json').read_text(encoding='utf-8'))
     VOICES.update(_ep.get('voices', {})); PREFIX.update(_ep.get('prefix', {})); SHOUTY |= set(_ep.get('shouty', []))
@@ -116,7 +116,11 @@ def scene_lines(page):
         e = re.search(r"\bel:\s*" + STR, line)
         if w and e:
             text = e.group(1) if e.group(1) is not None else e.group(2)
-            out.append((w.group(1), text.replace("\\'", "'").replace('\\"', '"')))
+            text = text.replace("\\'", "'").replace('\\"', '"')
+            out.append((w.group(1), text))
+            tag = re.search(r"\btag:\s*'([^']*)'", line)   # a per-line eleven_v3 audio tag, e.g.  tag: '[whispers] '
+            if tag:
+                LINE_TAG[(w.group(1), text)] = tag.group(1)
     return out
 
 
@@ -392,7 +396,7 @@ def main():
         best = None
         for take in range(1, MAX_TAKES + 1):
             audio = req(f'/text-to-speech/{vid}?output_format={FORMAT}',
-                        {'text': PREFIX.get(who, '') + (phonetic(STRATEGY[take](said)) if who in SIMPLE else STRATEGY[take](said)), 'model_id': MODEL, 'language_code': LANGUAGE,
+                        {'text': LINE_TAG.get((who, text), PREFIX.get(who, '')) + (phonetic(STRATEGY[take](said)) if who in SIMPLE else STRATEGY[take](said)), 'model_id': MODEL, 'language_code': LANGUAGE,
                          'voice_settings': settings(who, text)}, 'audio/mpeg')
             v = verdict(said, audio)
             if best is None or v['score'] < best[1]['score']:
@@ -406,7 +410,7 @@ def main():
         record(key, dict(who=who, text=said, sent=STRATEGY[take](said), takes=take, **v))
         log('wrote', f.relative_to(HERE), f'ok (take {take})' if v['ok'] else f'BEST OF {MAX_TAKES}, CHECK BY EAR: heard «{v["heard"]}»')
 
-    with ThreadPoolExecutor(4) as ex:   # a few clips at a time
+    with ThreadPoolExecutor(int(os.environ.get('THREADS', 2))) as ex:   # a few clips at a time (more hits the rate limit)
         list(ex.map(one, todo))
     bad = [k for k, r in rep.items() if not r['ok']]
     if bad:

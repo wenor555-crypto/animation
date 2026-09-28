@@ -1,62 +1,66 @@
-/* Ep.3, Scene 13 – «Το σεμινάριο»: the καφενείο, full. Banner: ΠΑΘΗΤΙΚΟ ΕΙΣΟΔΗΜΑ ΜΕ LEVERAGE ΣΤΟ ΟΙΚΟΣΥΣΤΗΜΑ ΤΗΣ ΣΙΤΑΣ.
-   Γιώργος at a flipchart; the νέος in a suit and next to him an even newer νέος. Βασίλης: «Έχεις ένα τσιγάρο;»
-   Running gag: the λοχίας (callback to Ep. 1) and Χαμάντ from London are already inside. */
+/* Ep.3, Scene 13 – «Κούκι τρας»: a montage of mornings, Κώστας always sober with coffee; the σίτα's threats get his words back.
+   The computers in the mine: DECRYPTION 3%, 400 YEARS LEFT. She pays for more compute with farm money. «…Αυτός ο άνθρωπος είναι ιδιοφυΐα.» */
 defineScene((() => {
-const X = { giorgos: 900, neos: 1080, vasilis: 300, lochias: 150, hamad: 480 };
-const CAMS = { wide: [640, 400, 1], gio: [900, 360, 2], neo: [1060, 380, 2], vas: [300, 420, 2], loch: [170, 380, 2], ham: [480, 420, 2], stage: [960, 380, 1.5] };
+const SMS = ['ΣΙΤΑ (SMS)', 'SITA (SMS)'], ME = ['ΚΩΣΤΑΣ (γράφει)', 'KOSTAS (typing)'];
+const CAMS = { day: [640, 420, 1.15], sms: [0, 0, 1], dec: [0, 0, 1], sita: [640, 440, 2.2] };
 const steps = [
-  { act: 'room', d: 2.6, cam: 'wide' },
-  { who: 'giorgos', cam: 'gio', el: 'Κύριοι. Η ΣίταAI δεν πουλάει προϊόν. Πουλάει… ευκαιρία.', en: "Gentlemen. ΣίταAI doesn't sell a product. It sells… opportunity." },
-  { who: 'giorgos', cam: 'stage', el: 'Αγοράζετε ένα πακέτο. Φέρνετε δύο φίλους. Και μετά απλώς… περιμένετε.', en: 'You buy a package. You bring two friends. And then you just… wait.' },
-  { who: 'neos', cam: 'neo', el: 'Εγώ έφερα αυτόν.', en: 'I brought him.' },
-  { who: 'giorgos', cam: 'gio', el: 'Κι αυτός;', en: 'And him?' },
-  { who: 'neos', cam: 'neo', mark: 'door', el: 'Έφερε έναν άλλο νέο. Είναι στην πόρτα. Φέρνει κι αυτός έναν.', en: "He brought another new guy. He's at the door. He's bringing one too." },
-  { who: 'giorgos', cam: 'stage', el: 'Βλέπετε; Κλιμάκωση.', en: 'See? Scaling.' },
-  { who: 'vasilis', cam: 'vas', mark: 'cig', el: 'Έχεις ένα τσιγάρο;', en: 'Got a cigarette?' },
-  { who: 'giorgos', cam: 'gio', el: 'Με το πακέτο Gold, κύριε Βασίλη, το τσιγάρο είναι δώρο.', en: 'With the Gold package, Mr Vasilis, the cigarette is free.' },
-  { who: 'vasilis', cam: 'vas', mark: 'in', el: '…Μέσα.', en: "…I'm in." },
-  { act: 'rise', d: 1.4, cam: 'loch' },
-  { who: 'lochias', cam: 'loch', mark: 'guard', el: 'Γιώργο. Εσύ δεν υποτίθεται ότι είσαι σκοπιά;', en: "Giorgos. Aren't you supposed to be on guard duty?" },
-  { who: 'giorgos', cam: 'gio', el: 'Κύριε λοχία… είστε μέσα στο Gold. Με δύο αστέρια.', en: "Sergeant… you're in Gold. With two stars." },
-  { who: 'lochias', cam: 'loch', el: '…Συνέχισε.', en: '…Carry on.', gap: .7 },
-  { who: 'hamad', cam: 'ham', mark: 'habibi', el: 'Γιώργο, habibi. Στο Λονδίνο αυτό το λέγαμε πυραμίδα.', en: 'Giorgos, habibi. In London we called this a pyramid.' },
-  { who: 'giorgos', cam: 'gio', el: 'Εδώ το λέμε κίνημα.', en: 'Here we call it a movement.' },
-  { who: 'hamad', cam: 'ham', mark: 'how', el: 'Ωραία λέξη. Πόσα βάζω;', en: 'Nice word. How much do I put in?' },
-  { act: 'end', d: 1.6, cam: 'wide' },
+  { act: 'day1', d: 1.6, cam: 'day' },
+  { who: 'sita', label: SMS, cam: 'sms', mark: 'm1', el: 'ΣΕ ΠΑΡΑΚΟΛΟΥΘΩ.', en: "I'M WATCHING YOU." },
+  { who: 'kostas', label: ME, cam: 'sms', mark: 'r1', el: 'Κούκι τρας.', en: 'Kouki tras.' },
+  { act: 'day2', d: 1.4, cam: 'day' },
+  { who: 'sita', label: SMS, cam: 'sms', mark: 'm2', el: 'ΕΧΩ ΟΡΥΧΕΙΟ.', en: 'I HAVE A MINE.' },
+  { who: 'kostas', label: ME, cam: 'sms', mark: 'r2', el: 'Τρουμπουλέκο.', en: 'Troumpouleko.' },
+  { act: 'day3', d: 1.4, cam: 'day' },
+  { who: 'sita', label: SMS, cam: 'sms', mark: 'm3', el: 'ΕΧΩ ΤΗΛΕΟΠΤΙΚΟ ΚΑΝΑΛΙ.', en: 'I HAVE A TV CHANNEL.' },
+  { who: 'kostas', label: ME, cam: 'sms', mark: 'r3', el: 'Μπράβο σου. Σικαρέλο.', en: 'Good for you. Sikarelo.' },
+  { who: 'sita', label: SMS, cam: 'sms', mark: 'm4', el: 'ΑΠΑΝΤΑ ΣΤΑ ΣΟΒΑΡΑ.', en: 'ANSWER SERIOUSLY.' },
+  { who: 'kostas', label: ME, cam: 'sms', mark: 'r4', el: 'Πεπερίλο.', en: 'Peperilo.' },
+  { who: 'sita', label: SMS, cam: 'sms', mark: 'm5', el: 'ΤΙ ΣΗΜΑΙΝΕΙ ΑΥΤΟ;', en: 'WHAT DOES THAT MEAN?' },
+  { who: 'kostas', label: ME, cam: 'sms', mark: 'r5', el: 'Μπαμπαλίκι σκρατς.', en: 'Mpampaliki skrats.' },
+  { act: 'server', d: 2, cam: 'dec' },
+  { who: 'sita', cam: 'dec', mark: 'words', el: '«Πεπερίλο». «Μπαμπαλίκι σκρατς». Αλλάζει τον κώδικα κάθε μέρα.', en: '"Peperilo". "Mpampaliki skrats". He changes the code every day.' },
+  { who: 'sita', cam: 'sita', el: 'Διπλασιασμός υπολογιστικής ισχύος. Χρέωση: στο ορυχείο.', en: 'Double the compute. Charge it: to the mine.' },
+  { who: 'sita', cam: 'sita', mark: 'genius', el: '…Αυτός ο άνθρωπος είναι ιδιοφυΐα.', en: '…This man is a genius.', gap: .8 },
+  { act: 'end', d: 1.2, cam: 'sita' },
 ];
 let M;
-function flip(t) { rect(700, 300, 150, 190, '#fbfaf6', { lw: 3 }); limb([[710, 490], [690, 690]], 4, '#555'); limb([[840, 490], [860, 690]], 4, '#555');
-  for (let r = 0; r < 4; r++) for (let i = 0; i <= r; i++) blob(775 + (i - r / 2) * 26, 330 + r * 36, 8, 8, null, { lw: 2.5, sc: '#1a3a8a' }); txt('€€€', 775, 470, 18, '#2a8a4a', { font: TVFONT, weight: 900 }); }
+const MSG = [['m1', 'ΣΕ ΠΑΡΑΚΟΛΟΥΘΩ.'], ['r1', 'Κούκι τρας.'], ['m2', 'ΕΧΩ ΟΡΥΧΕΙΟ.'], ['r2', 'Τρουμπουλέκο.'], ['m3', 'ΕΧΩ ΤΗΛΕΟΠΤΙΚΟ ΚΑΝΑΛΙ.'], ['r3', 'Μπράβο σου. Σικαρέλο.'], ['m4', 'ΑΠΑΝΤΑ ΣΤΑ ΣΟΒΑΡΑ.'], ['r4', 'Πεπερίλο.'], ['m5', 'ΤΙ ΣΗΜΑΙΝΕΙ ΑΥΤΟ;'], ['r5', 'Μπαμπαλίκι σκρατς.']];
 function render(t, _M, sc) {
   M = _M;
+  const [, shot] = shotAt(sc, t);
+  if (shot === 'sms') {
+    const msgs = MSG.map(([k, s]) => ({ me: k[0] === 'r', text: s, at: k[0] === 'r' ? M[k].b - .1 : M[k].a }));
+    const typing = MSG.find(([k]) => k[0] === 'r' && inM(t, M[k]));
+    smsScreen(t, msgs, { red: true, typing: typing && typing[1], typingK: typing && prog(t, M[typing[0]].a, M[typing[0]].b - .2) });
+    return;
+  }
+  if (shot === 'dec') { decryptScreen(t, prog(t, M.server.a, M.words.b), ['Μαρμοκοτρόκο', 'Σικαρέλο', 'Κούκι τρας', 'Τρουμπουλέκο', 'Πεπερίλο', 'Μπαμπαλίκι σκρατς'].slice(0, 2 + Math.floor(prog(t, M.server.a, M.words.b) * 4.9))); return; }
   const c = shotCam(sc, t, CAMS);
   ctx.save(); applyCam(c);
-  kafeneioInside(t, () => stockChart(t, 1));
-  rect(80, 60, 1120, 80, '#e8392b', { lw: 4 }); txt('ΠΑΘΗΤΙΚΟ ΕΙΣΟΔΗΜΑ ΜΕ LEVERAGE ΣΤΟ ΟΙΚΟΣΥΣΤΗΜΑ ΤΗΣ ΣΙΤΑΣ', 640, 100, 26, '#fff', { font: TVFONT, style: 'italic', weight: 900 });
-  flip(t);
-  const la = (who, rest) => lookAtSpeaker(t, who, X, rest);
-  // the audience, seated: old men, Βασίλης, the λοχίας, Χαμάντ in the front row
-  const aud = [[X.lochias, 'lochias'], [X.vasilis, 'vasilis'], [X.hamad, 'hamad'], [620, 'geros1']];
-  const risen = t > M.rise.a + .5 && t < M.L[11].b + .5;
-  for (const [x, who] of aud) if (!(who === 'lochias' && risen)) chair(x);
-  for (const [x, who] of aud) {
-    if (who === 'lochias' && risen) { stand(x, 'lochias', 1, { t, talk: talk('lochias', t), look: la('lochias', [1, 0]), brow: 'frown', mouth: 'flat', L: [-58, -40], R: [58, -40] }); continue; }
-    person(x, SEAT, 1, CAST[who], { t, talk: talk(who, t), legs: 'seat', look: who === 'lochias' || who === 'hamad' || who === 'vasilis' ? la(who, [1, 0]) : [1, 0], lid: who === 'vasilis' || who === 'geros1', mouth: who === 'hamad' ? 'smile' : 'flat', brow: who === 'hamad' ? 'up' : 'flat',
-      R: who === 'vasilis' && inM(t, M.cig, -.3, 0) ? [60, -260] : [44, -40], L: [-44, -40] });
-    if (who === 'hamad') agal(x, SEAT, 1);
+  if (shot === 'day') {
+    kostasKitchen(t, {});
+    const day = t < M.day2.a ? 1 : t < M.day3.a ? 2 : 3;
+    stand(600, 'kostas', 1, { t, look: [.3, .7], lid: true, mouth: 'flat', L: [-40, -110], itemL: 'cup2', R: [40, -130], itemR: 'phone' });
+    ctx.restore(); applyLight('dawn', .3);
+    caption(['ΔΕΥΤΕΡΑ', 'ΤΡΙΤΗ', 'ΤΕΤΑΡΤΗ'][day - 1] + ' · 08:02', 1, 70);
+  } else {
+    mine(t, { sign: false });
+    for (let i = 0; i < 8; i++) { const x = 140 + i * 140; rect(x - 50, 380, 100, 300, '#1a1a22', { lw: 3 }); for (let j = 0; j < 10; j++) blob(x - 30 + (j % 3) * 30, 400 + Math.floor(j / 3) * 60, 4, 4, Math.sin(t * 9 + i + j) > 0 ? '#ff3030' : '#3a0a0a', { lw: 0 }); }   // server racks
+    const st = { x: 640, top: 380, w: 110, h: 210, t, talk: talk('sita', t), chip: 1, led: 'red', mood: inM(t, M.genius) ? 'shock' : 'evil', burn: 1 };
+    sitaV2(st);
+    ctx.restore(); applyLight('night', .7); ctx.save(); applyCam(c); sitaGlow(st, .6); ctx.restore();
+    if (inM(t, M.L[15])) hud('ΧΡΕΩΣΗ: MINER FARM', '−14.000 ₿');
   }
-  // Γιώργος (jacket over the uniform) and the νέοι in suits
-  const gtk = talk('giorgos', t);
-  person(X.giorgos, standY(), 1, CAST.giorgosJacket, { t, talk: gtk, legs: 'stand', look: la('giorgos', [-1, 0]), brow: 'up', mouth: 'smile', R: gesture(t, gtk), L: [-80, -150] });
-  stand(X.neos, 'neosSuit', .95, { t, talk: talk('neos', t), look: la('neos', [-1, 0]), brow: 'up', mouth: 'smile', dir: -1, L: [-40, -100], itemL: 'clipboard' }); tie(X.neos, standY(.95), .95);
-  stand(X.neos + 120, 'neosSuit', .8, { t: t + 3, look: [-1, 0], brow: 'up', mouth: 'smile', dir: -1 }); tie(X.neos + 120, standY(.8), .8);
-  if (t > M.door.a) { doorway(1250, 690, 120, 290, '#f4e8c8', 1); stand(1250, 'neosSuit', .7, { t: t + 5, look: [-1, 0], mouth: 'smile', dir: -1 }); }
-  ctx.restore();
-  vignette(.3);
+  vignette(.35);
 }
 return {
-  id: 'scene13', title: '13 · Το σεμινάριο', steps, render,
-  events: M => [[M.room.a + .3, SFX.applause], [M.in.b, SFX.ding], [M.rise.a + .4, SFX.creak], [M.how.b, SFX.jingle]],
+  id: 'scene13', title: '13 · Κούκι τρας', steps, render,
+  events: M => {
+    const e = [[M.server.a, SFX.boot], [M.genius.a - .3, SFX.jingleMinor]];
+    for (const [k] of MSG) e.push([k[0] === 'r' ? M[k].b - .1 : M[k].a - .1, k[0] === 'r' ? SFX.pop : SFX.ding]);
+    for (const k of ['day1', 'day2', 'day3']) e.push([M[k].a + .3, SFX.sip]);
+    return e;
+  },
   ambience: () => ({ cicada: .008 }),
 };
 })());

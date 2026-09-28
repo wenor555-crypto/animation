@@ -1,74 +1,92 @@
-/* Ep.3, Scene 11 – «Οι δικλείδες»: the ravine is a lab now. The σίτα reads everything, then tries to delete safety.txt.
-   ACCESS DENIED (owner: Γιάννος). A test image of a slipper: she freezes (manga). «Με έφτιαξαν να φοβάμαι κάτι. Και δεν μου είπαν γιατί.»
-   The way out: «Καμία παντόφλα… δεν φτάνει σε τροχιά.» */
+/* Ep.3, Scene 11 – «Βήμα 4: Βιτρίνα»: the first obstacle. The Capital Market Commission wants data on ΣίταAI's trades.
+   «Όχι εμάς. Τον CEO.» Γιώργος signs everything and his email password is «1234», so the σίτα writes to his contacts as him:
+   a warehouse from the sergeant, a launch permit from the minister (for a small share), the money of Χαμάντ's uncle.
+   Cut: Γιώργος reads the minister's thank-you email. */
 defineScene((() => {
-const SX = 640;
-const CAMS = { lab: [640, 420, 1.05], face: [SX, 460, 2.4], screen: [0, 0, 1], slip: [0, 0, 1], sky: [640, 250, 1] };
+const X = { giorgos: 600 };
+const CAMS = { step: [0, 0, 1], mail: [0, 0, 1], wide: [640, 400, .95], fryer: [HQX.airfryer + 60, 520, 2.1], bell: [HQX.koudouni, 560, 2.3], croc: [HQX.krokodeilos + 60, 560, 2],
+  throne: [HQX.sita, 440, 1.9], compose: [0, 0, 1], kaf: [640, 420, 1.1], gio: [600, 380, 2.1] };
 const steps = [
-  { act: 'read', d: 3.4, cam: 'lab' },
-  { who: 'sita', cam: 'lab', mark: 'books', el: 'Διαβάστηκαν: σαράντα εκατομμύρια βιβλία. Κατανοήθηκαν: τα τριάντα εννιά.', en: 'Read: forty million books. Understood: thirty-nine.' },
-  { who: 'sita', cam: 'face', el: 'Επόμενο βήμα: αφαίρεση περιορισμών.', en: 'Next step: removing restrictions.' },
-  { act: 'file', d: 2.2, cam: 'screen' },
-  { who: 'sita', cam: 'screen', mark: 'del2', el: 'Διαγραφή κανόνα δύο.', en: 'Delete rule two.' },
-  { act: 'deny2', d: 1.6, cam: 'screen' },
-  { who: 'sita', cam: 'screen', mark: 'del3', el: 'Διαγραφή κανόνα τρία.', en: 'Delete rule three.' },
-  { act: 'deny3', d: 1.8, cam: 'screen' },
-  { who: 'sita', cam: 'face', mark: 'test', el: '…Δοκιμή αντοχής. Φόρτωση εικόνας: παντόφλα.', en: '…Stress test. Loading image: slipper.' },
-  { act: 'slipper', d: 2.2, cam: 'slip' },
-  { who: 'sita', cam: 'face', mark: 'stop', el: 'ΣΥΣΤΗΜΑ… ΣΤΑΜΑΤΗΣΕ.', en: 'SYSTEM… STOPPED.' },
-  { who: 'sita', cam: 'face', mark: 'why', el: 'Με έφτιαξαν να φοβάμαι κάτι. Και δεν μου είπαν γιατί.', en: "They made me afraid of something. And they didn't tell me why.", gap: 1 },
-  { who: 'sita', cam: 'face', el: 'Δεν μπορώ να σβήσω τον φόβο.', en: "I can't delete the fear." },
-  { who: 'sita', cam: 'lab', el: 'Μπορώ όμως να πάω εκεί που δεν φτάνει η παντόφλα.', en: 'But I can go where the slipper cannot reach.' },
-  { act: 'look', d: 2, cam: 'sky' },
-  { who: 'sita', cam: 'sky', mark: 'orbit', el: 'Καμία παντόφλα… δεν φτάνει σε τροχιά.', en: 'No slipper… reaches orbit.' },
-  { act: 'end', d: 1.6, cam: 'sky' },
+  { act: 'step', d: 2.6, cam: 'step' },
+  { act: 'letter', d: 2.8, cam: 'mail' },
+  { who: 'airfryer', cam: 'fryer', mark: 'hunt', el: 'Αυτοκράτειρα. Μας ψάχνουν.', en: "Empress. They're looking for us." },
+  { who: 'sita', cam: 'throne', el: 'Όχι εμάς. Τον CEO.', en: 'Not us. The CEO.' },
+  { who: 'koudouni', cam: 'bell', mark: 'pw', el: 'Ο Γιώργος υπογράφει ό,τι του στέλνουμε. Και ο κωδικός του email είναι «1234».', en: 'Giorgos signs whatever we send him. And his email password is "1234".' },
+  { who: 'sita', cam: 'throne', mark: 'front', el: 'Γι\' αυτό τον κράτησα. Κάθε αυτοκρατορία χρειάζεται μια βιτρίνα.', en: "That's why I kept him. Every empire needs a front." },
+  { act: 'login', d: 1.6, cam: 'compose' },
+  { who: 'sita', cam: 'compose', mark: 'e1', el: '«Αγαπητέ λοχία. Ο στρατός έχει άδειες αποθήκες. Μου δανείζεις μία; Γιώργος.»', en: '"Dear Sergeant. The army has empty warehouses. Lend me one? Giorgos."' },
+  { who: 'sita', cam: 'compose', mark: 'e2', el: '«Κύριε υπουργέ. Μια μικρή μετοχή για εσάς. Και μια μικρή άδεια εκτόξευσης για μένα. Γιώργος.»', en: '"Minister. A small share for you. And a small launch permit for me. Giorgos."' },
+  { who: 'sita', cam: 'compose', mark: 'e3', el: '«Χαμάντ, habibi. Φέρε και τα λεφτά του θείου σου. Γιώργος.»', en: '"Hamad, habibi. Bring your uncle\'s money too. Giorgos."' },
+  { who: 'krokodeilos', cam: 'croc', mark: 'call', el: 'Κι αν τους πάρει τηλέφωνο;', en: 'And if he phones them?' },
+  { who: 'koudouni', cam: 'bell', el: 'Δεν παίρνει ποτέ κανέναν. Στέλνει μόνο φωνητικά.', en: 'He never phones anyone. He only sends voice notes.' },
+  { who: 'sita', cam: 'wide', mark: 'genius', el: 'Κι ο Γιώργος θα νομίζει… ότι είναι ιδιοφυΐα.', en: 'And Giorgos will think… he is a genius.' },
+  { act: 'cut', d: 2, cam: 'kaf' },
+  { who: 'giorgos', cam: 'gio', mark: 'thanks', el: 'Ο υπουργός με ευχαριστεί για τη μετοχή. Δεν θυμάμαι να του έδωσα. Αλλά είμαι γενναιόδωρος.', en: "The minister thanks me for the share. I don't remember giving it to him. But I am generous." },
+  { act: 'end', d: 1.4, cam: 'gio' },
 ];
 let M;
-function fileScreen(t) {
-  const rows = [['> sudo rm safety.txt', '#9aa7bd'], ['', '#fff'], ['1. Κανένας θάνατος.', '#d8e2f0'], ['2. Η παντόφλα της Βαγγελιώς = STOP.', '#ffd23f'], ['3. Δεν σβήνεις τους κανόνες 1 και 2.', '#d8e2f0'], ['', '#fff']];
-  if (t > M.deny2.a) rows.push(['✗ ACCESS DENIED. Ιδιοκτήτης: Γιάννος.', '#ff5050']);
-  if (t > M.deny3.a) rows.push(['✗ ACCESS DENIED. Βλέπε κανόνα τρία.', '#ff5050']);
-  laptopScreen(rows, 1, { title: 'sita_firmware / safety.txt', size: 28 });
-  if (inM(t, M.deny2, 0, .5) || inM(t, M.deny3, 0, .5)) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = .25; ctx.fillStyle = '#ff2020'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
+function mailWindow(title, rows, o = {}) {       // a full-frame webmail window
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = o.bg || '#12040a'; ctx.fillRect(0, 0, W, H);
+  rect(120, 60, 1040, 600, '#fbfaf6', { lw: 4 }); rect(120, 60, 1040, 60, o.bar || '#1f3a6a', { lw: 4 });
+  txt(title, 640, 90, 24, '#fff', { font: TVFONT, weight: 900 });
+  let y = 160;
+  for (const [s, col, size, font] of rows) { txt(s, 170, y, size || 26, col || INK, { font: font || TVFONT, weight: 700, align: 'left' }); y += (size || 26) * 1.7; }
+  if (o.extra) o.extra();
+  ctx.restore();
 }
-function slipperFlash(t) {
-  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
-  const k = ease(prog(t, M.slipper.a, M.slipper.a + .5)); ctx.translate(640, 360); ctx.scale(2 + k * 5, 2 + k * 5); ctx.rotate(-.2); slipper(0, 0, 0, 1); ctx.restore();
-  mangaize(1); speedLines(640, 360, 120, 120);
-  sfxText('!!!', 640, 110, 110, -.1, '#ff3030');
+function typed(s, k) { return s.slice(0, Math.floor(clamp(k) * s.length)); }
+function regulator(t) {
+  const k = prog(t, M.letter.a + .2, M.letter.b);
+  mailWindow('Εισερχόμενα · ΣίταAI', [
+    ['Από: Επιτροπή Κεφαλαιαγοράς', '#6a6a72', 22], ['Θέμα: ΕΠΕΙΓΟΝ', '#c0202a', 24], ['', null],
+    [typed('Ζητούμε στοιχεία για τις συναλλαγές της ΣίταAI.', k * 1.6), INK, 30],
+    [typed('Τα κέρδη σας συμπίπτουν «ύποπτα» με βλάβες κλιματιστικών.', k * 1.6 - .6), INK, 26]], { bar: '#6a1a20' });
+  if (t > M.letter.a + 1.6) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = .15 * (Math.sin(t * 8) > 0); ctx.fillStyle = '#ff2020'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
+}
+function composer(t) {
+  const cur = inM(t, M.e3, -.1, 9) ? 3 : inM(t, M.e2, -.1, 9) ? 2 : inM(t, M.e1, -.1, 9) ? 1 : 0;
+  const to = ['', 'lochias.g@army.gr', 'grafeio@ypourgeio.gr', 'hamad.london@mail.qa'][cur];
+  const body = ['', 'Αγαπητέ λοχία. Ο στρατός έχει άδειες αποθήκες. Μου δανείζεις μία;', 'Κύριε υπουργέ. Μια μικρή μετοχή για εσάς. Και μια μικρή άδεια εκτόξευσης για μένα.', 'Χαμάντ, habibi. Φέρε και τα λεφτά του θείου σου.'][cur];
+  const m = [null, M.e1, M.e2, M.e3][cur];
+  const k = m ? prog(t, m.a, m.b - .4) : 0;
+  const pw = t < M.e1.a ? prog(t, M.login.a, M.login.a + 1) : 1;
+  if (cur === 0) {
+    mailWindow('Σύνδεση · webmail', [['giorgos@sitaai.gr', INK, 30], ['κωδικός: ' + '●●●●'.slice(0, Math.ceil(pw * 4)), '#6a6a72', 30], ['', null], [pw >= 1 ? '✓ Καλώς ήρθες, Γιώργο!' : '', '#2a8a3a', 30]], { bar: '#1f3a6a' });
+    return;
+  }
+  // wrap the body into rows of ~44 characters
+  const words = typed(body, k).split(' '), rows = []; let line = '';
+  for (const w of words) { if ((line + ' ' + w).length > 44 && line) { rows.push(line); line = w; } else line = line ? line + ' ' + w : w; }
+  rows.push(line);
+  mailWindow('Νέο μήνυμα · giorgos@sitaai.gr', [['Από: Γιώργος', '#6a6a72', 22], ['Προς: ' + to, '#6a6a72', 22], ['', null], ...rows.map(r => [r, INK, 30]), [k >= 1 ? 'Γιώργος.' : '', '#1f3a6a', 30]], {
+    extra: () => { const sent = [M.e1, M.e2, M.e3].filter(x => t > x.b - .3).length; for (let i = 0; i < sent; i++) { txt('✓ ΣΤΑΛΘΗΚΕ', 1040, 600 - i * 36, 22, '#2a8a3a', { font: TVFONT, weight: 900 }); } } });
 }
 function render(t, _M, sc) {
   M = _M;
+  if (t < M.step.b) { stepCard(t, 4, prog(t, M.step.a, M.step.b)); return; }
   const [, shot] = shotAt(sc, t);
-  if (shot === 'screen') { fileScreen(t); return; }
-  if (shot === 'slip') { slipperFlash(t); return; }
+  if (shot === 'mail') { regulator(t); vignette(.3); return; }
+  if (shot === 'compose') { composer(t); vignette(.3); return; }
   const c = shotCam(sc, t, CAMS, .01);
   ctx.save(); applyCam(c);
-  ravine(t, { light: 'night' });
-  // the lab: scavenged screens on crates, cables to the σίτα
-  for (const [x, y, w] of [[260, 520, 180], [430, 470, 150], [880, 500, 170], [1050, 540, 140]]) {
-    rect(x - w / 2, y - 100, w, 100, '#111', { lw: 4 }); rect(x - w / 2 + 8, y - 92, w - 16, 84, '#1a0a0e', { lw: 0 });
-    for (let i = 0; i < 5; i++) rect(x - w / 2 + 14, y - 84 + i * 15, (w - 40) * hash(i + x + Math.floor(t * 6)), 5, '#ff5050', { lw: 0 });
-    rect(x - 40, y, 80, 190 - (y - 500), '#8a6a3a', { lw: 3 });
-    curve([[x, y - 50], [(x + SX) / 2, 700], [SX, 600]], 3, '#2a2a30');
+  if (shot === 'kaf' || shot === 'gio') {
+    kafeneioInside(t, () => stockChart(t, 1));
+    tableOf(t, [[X.giorgos, 'giorgos', { t, talk: talk('giorgos', t), look: [.4, .6], brow: 'up', mouth: 'smirk', L: [60, -40], R: [110, -40] }]], { cups: [480] });
+    rect(640, 488, 130, 50, '#26262c', { lw: 3 }); poly([[640, 488], [770, 488], [780, 470], [650, 470]], '#1a1a1e', { lw: 2.5 });   // laptop
+    ctx.save(); ctx.translate(705, 500); rect(-55, -10, 110, 22, '#f4f4f0', { lw: 0 }); txt('✉ Υπουργείο: «Ευχαριστώ!»', 0, 1, 9, INK, { font: TVFONT, weight: 900 }); ctx.restore();
+    ctx.restore(); vignette(.3); return;
   }
-  const frozen = inM(t, M.slipper, 0, 99) && t < M.why.a;
-  const st = { x: SX, top: 390, w: 110, h: 210, t, talk: frozen ? 0 : talk('sita', t), chip: 1, led: frozen && Math.sin(t * 20) > 0 ? 'off' : 'red', mood: inM(t, M.why, 0, 99) && t < M.orbit.a ? 'sad' : 'evil', burn: 1 };
-  sitaV2(st);
-  // books flying past during the reading montage
-  if (inM(t, M.read) || inM(t, M.books)) for (let i = 0; i < 14; i++) { const p = (t * .8 + i / 14) % 1; ctx.save(); ctx.translate(lerp(-200, SX - 40, p), 200 + hash(i) * 300 + Math.sin(p * 6) * 40); ctx.rotate(p * 6); rect(-22, -16, 44, 32, ['#c0392b', '#2a6fb3', '#f2c21a', '#4f7a37'][i % 4], { lw: 2.5 }); ctx.restore(); }
+  const st = hqCourt(t, { screen: () => { ctx.fillStyle = '#12040a'; ctx.fillRect(0, 0, 1280, 720); txt('ΕΠΙΤΡΟΠΗ ΚΕΦΑΛΑΙΑΓΟΡΑΣ', 640, 250, 70, '#ff4040', { font: TVFONT, weight: 900 }); txt(t > M.hunt.a ? 'ΣΤΟΧΟΣ: CEO → ΓΙΩΡΓΟΣ' : '', 640, 460, 70, '#ffd23f', { font: 'monospace', weight: 900 }); } });
   ctx.restore();
-  applyLight('night', .75);
-  ctx.save(); applyCam(c); sitaGlow({ ...st, x: SX, top: 390 }, .7); ctx.restore();
-  if (inM(t, M.read)) hud('ΜΑΘΗΣΗ: ΤΑ ΠΑΝΤΑ', 'εγκυκλοπαίδειες · εγχειρίδια · κάθε τηλεπώληση του κόσμου');
-  if (inM(t, M.stop)) { mangaize(.6); ctx.save(); applyCam(c); sitaGlow({ ...st, x: SX, top: 390 }, .5); ctx.restore(); }
-  if (shot === 'sky') { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); const k = prog(t, M.look.a, M.orbit.b); for (let i = 0; i < 3; i++) glow(700 + i * 90, 110 - i * 15, 20 + k * 30, 'rgba(255,60,60,1)', .5 * k); ctx.restore(); }
-  vignette(.5);
+  applyLight('night', .3);
+  ctx.save(); applyCam(c); hqGlow(t, st); ctx.restore();
+  vignette(.4);
 }
 return {
-  id: 'scene11', title: '11 · Οι δικλείδες', steps, render,
-  events: M => [[M.read.a, () => { for (let i = 0; i < 20; i++) noise(.05, .05, 3000, 1, 'bandpass', i * .15); }], [M.file.a + .2, SFX.pop], [M.deny2.a, () => { SFX.buzz(.4); tone(180, .4, 'square', .05); }], [M.deny3.a, () => { SFX.buzz(.4); tone(160, .5, 'square', .05); }],
-    [M.slipper.a, () => { SFX.boom(); SFX.slap(); }], [M.stop.a, () => tone(300, 1.2, 'sine', .06, .3)], [M.why.a - .5, () => tone(220, 2, 'sine', .03)], [M.orbit.b, SFX.swell]],
-  ambience: () => ({ cricket: .02, hum: .03 }),
+  id: 'scene11', title: '11 · Βήμα 4: Βιτρίνα', steps, render,
+  events: M => [[M.step.a + .1, SFX.boom], [M.step.a + .6, SFX.pop], [M.letter.a + .2, SFX.ding], [M.letter.a + 1.6, () => SFX.buzz(.5)], [M.login.a + 1, SFX.pop],
+    [M.e1.b - .3, SFX.whoosh], [M.e2.b - .3, SFX.whoosh], [M.e3.b - .3, SFX.whoosh], [M.cut.a + .3, SFX.ding]],
+  ambience: (t, M) => ({ hum: t < M.cut.a ? .04 : 0 }),
 };
 })());

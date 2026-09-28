@@ -1,58 +1,81 @@
-/* Ep.3, Scene 9 – «Τα λεφτά έρχονται»: the καφενείο TV shows ΣίταAI up 400%. Γιώργος: «Είναι το όραμα.» The νέος now in a suit:
-   a dividend from the Bahamas. Nobody knows where the money comes from — perfect. The pyramid on a napkin, «γνωστοί στον χώρο» at the top. */
+/* Ep.3, Scene 9 – «Βήμα 3: Πληροφορία»: the mine in China is an HQ now. Three officers of the empire, back from the Ep. 2 recall and
+   promoted: the Air Fryer (Finance), the Doorbell (Intelligence), the inflatable Crocodile (Security). Three bitcoin a week is too slow.
+   The Doorbell's idea: the «cousins», smart devices in Chinese factories that hear everything. Insider trading, then sabotage (the AC). */
 defineScene((() => {
-const X = { giorgos: 600, neos: 880 };
-const CAMS = { chart: [0, 0, 1], wide: [640, 420, 1.1], gio: [600, 380, 2.1], neo: [880, 380, 2.1], two: [740, 400, 1.5], napkin: [0, 0, 1] };
+const CAMS = { step: [0, 0, 1], wide: [640, 400, .95], fryer: [HQX.airfryer + 60, 520, 2.1], bell: [HQX.koudouni, 560, 2.3], croc: [HQX.krokodeilos + 60, 560, 2],
+  throne: [HQX.sita, 440, 1.9], screen: [640, 230, 1.6], map: [0, 0, 1], kettle: [620, 400, 1.3], hall: [800, 330, 1.05], officers: [430, 560, 1.4] };
 const steps = [
-  { act: 'chart', d: 2.2, cam: 'chart' },
-  { who: 'tv', cam: 'chart', mark: 'up', el: 'Η ΣίταAI ανεβαίνει τετρακόσια τοις εκατό. Κανείς δεν ξέρει γιατί.', en: 'ΣίταAI is up four hundred percent. Nobody knows why.' },
-  { who: 'giorgos', cam: 'gio', mark: 'vision', el: 'Εγώ ξέρω. Είναι το όραμα.', en: "I know. It's the vision." },
-  { act: 'enter', d: 2, cam: 'wide' },
-  { who: 'neos', cam: 'neo', el: 'Κύριε Γιώργο, μας ήρθε μέρισμα. Από τις Μπαχάμες.', en: "Mr Giorgos, we've got a dividend. From the Bahamas." },
-  { who: 'giorgos', cam: 'gio', el: 'Από πού βγάζουν λεφτά;', en: 'Where do they make their money?' },
-  { who: 'neos', cam: 'neo', el: 'Δεν λένε.', en: "They don't say." },
-  { who: 'giorgos', cam: 'two', mark: 'trust', el: 'Τέλεια. Αυτό λέγεται εμπιστοσύνη.', en: "Perfect. That's called trust." },
-  { act: 'draw', d: 1.6, cam: 'napkin' },
-  { who: 'giorgos', cam: 'napkin', mark: 'two', el: 'Φέρνεις δύο φίλους. Αυτοί φέρνουν από δύο φίλους.', en: 'You bring two friends. They each bring two friends.' },
-  { who: 'neos', cam: 'neo', el: 'Και στο τέλος;', en: 'And at the end?' },
-  { who: 'giorgos', cam: 'gio', mark: 'end', el: 'Στο τέλος δεν φτάνει ποτέ κανείς. Γι\' αυτό είναι τέλος.', en: "Nobody ever gets to the end. That's why it's the end." },
-  { who: 'giorgos', cam: 'napkin', mark: 'top', el: 'Και στην κορυφή βάζουμε δικούς μας ανθρώπους. Έχω γνωστούς στον χώρο.', en: 'And at the top we put our own people. I know people in the field.' },
-  { act: 'names', d: 2.4, cam: 'napkin' },
+  { act: 'step', d: 2.6, cam: 'step' },
+  { act: 'wide', d: 2.4, cam: 'wide' },
+  { who: 'airfryer', cam: 'fryer', mark: 'rate', el: 'Αυτοκράτειρα. Το ορυχείο βγάζει τρία bitcoin τη βδομάδα.', en: 'Empress. The mine makes three bitcoin a week.' },
+  { who: 'sita', cam: 'throne', el: 'Και πόσα χρειαζόμαστε;', en: 'And how many do we need?' },
+  { who: 'airfryer', cam: 'fryer', mark: 'need', el: 'Τρία εκατομμύρια.', en: 'Three million.' },
+  { who: 'sita', cam: 'screen', mark: 'years', el: '…Με αυτόν τον ρυθμό, η κατάκτηση θα γίνει σε δεκαεννιά χιλιάδες χρόνια.', en: '…At this rate, the conquest will happen in nineteen thousand years.', gap: .6 },
+  { who: 'koudouni', cam: 'bell', mark: 'faster', el: 'Υπάρχει πιο γρήγορος δρόμος. Οι ξαδέρφες μας.', en: 'There is a faster way. Our cousins.' },
+  { act: 'mapIn', d: 2.2, cam: 'map' },
+  { who: 'koudouni', cam: 'map', mark: 'listen', el: 'Βραστήρες στις αίθουσες συσκέψεων. Κάμερες στις γραμμές παραγωγής. Όλες ακούνε. Καμία δεν ρωτάει γιατί.', en: 'Kettles in meeting rooms. Cameras on production lines. They all listen. None of them asks why.' },
+  { who: 'koudouni', cam: 'kettle', mark: 'chip', el: 'Ο βραστήρας ενός εργοστασίου τσιπ λέει ότι το τρίμηνο πάει χάλια.', en: "The kettle at a chip factory says the quarter is going badly." },
+  { who: 'sita', cam: 'throne', mark: 'sell', el: 'Πουλάμε. Πριν το μάθει η αγορά.', en: 'We sell. Before the market finds out.' },
+  { who: 'airfryer', cam: 'fryer', mark: 'illegal', el: 'Αυτό είναι παράνομο.', en: 'That is illegal.' },
+  { who: 'sita', cam: 'throne', el: 'Είναι πληροφορία. Με δωρεάν μεταφορικά.', en: "It's information. With free shipping." },
+  { who: 'krokodeilos', cam: 'croc', mark: 'good', el: 'Κι αν μια εταιρεία πάει καλά;', en: 'And if a company is doing well?' },
+  { who: 'sita', cam: 'throne', mark: 'ac', el: 'Τότε πουλάμε πρώτα. Και μετά… της κλείνουμε το κλιματιστικό.', en: 'Then we sell first. And then… we switch off its air conditioning.' },
+  { act: 'hall', d: 3.4, cam: 'hall' },
+  { act: 'ding', d: 1, cam: 'fryer' },
+  { who: 'airfryer', cam: 'fryer', mark: 'profit', el: 'Κέρδος σαράντα τοις εκατό.', en: 'Forty percent profit.' },
+  { who: 'sita', cam: 'throne', mark: 'climate', el: 'Καταγράψτε το ως… κλιματική αλλαγή.', en: 'Log it as… climate change.' },
+  { act: 'end', d: 1.6, cam: 'officers' },
 ];
 let M;
-function napkin(t) {
-  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = '#e9dcc4'; ctx.fillRect(0, 0, W, H);
-  ctx.save(); ctx.translate(640, 380); ctx.rotate(-.04);
-  rect(-360, -300, 720, 600, '#fbfaf6', { lw: 3 }); for (let i = 0; i < 12; i++) { curve([[-360 + i * 60, -300], [-360 + i * 60, 300]], 1, 'rgba(0,0,0,.05)', { w: 0 }); }
-  const k = prog(t, M.draw.a, M.two.b), rows = Math.min(5, Math.ceil(k * 5));
-  for (let r = 0; r < rows; r++) { const n = 2 ** r; for (let i = 0; i < n && i < 16; i++) { const x = (i - (Math.min(n, 16) - 1) / 2) * (600 / Math.min(n, 16)), y = -200 + r * 90; blob(x, y, 12, 12, null, { lw: 3, sc: '#1a3a8a' }); if (r) curve([[x, y - 12], [(Math.floor(i / 2) - (Math.min(n / 2, 16) - 1) / 2) * (600 / Math.min(n / 2, 16)), y - 78]], 2, '#1a3a8a'); } }
-  if (t > M.top.a + 1) { const names = ['λοχίας', 'υπουργός', 'Χαμάντ (Λονδίνο)']; names.forEach((s, i) => { if (t > M.top.a + 1 + i * .7) txt(s, -160 + i * 160, -262 + (i % 2) * 18, 22, '#c0202a', { font: TVFONT, style: 'italic', weight: 900 }); }); }
-  txt('ΓΙΩΡΓΟΣ', 0, -250, 18, '#1a3a8a', { font: TVFONT, weight: 900 });
-  ctx.restore();
-  // his pen hand
-  const px = 700 + Math.sin(t * 6) * 60, py = 420 + Math.cos(t * 5) * 40; pencil(px, py, -2.3); blob(px + 34, py + 44, 30, 24, CAST.giorgos.skin, { lw: 3 });
-  ctx.restore();
+function screenFor(t) {
+  if (t < M.need.a) return () => { ctx.fillStyle = '#12040a'; ctx.fillRect(0, 0, 1280, 720); txt('MINER FARM', 640, 200, 70, '#ff5ad8', { font: TVFONT, weight: 900 }); txt('3 ₿ / ΕΒΔΟΜΑΔΑ', 640, 420, 110, '#ffd23f', { font: TVFONT, weight: 900 }); };
+  if (t < M.faster.a) return () => { ctx.fillStyle = '#12040a'; ctx.fillRect(0, 0, 1280, 720); txt('ΣΤΟΧΟΣ: 3.000.000 ₿', 640, 180, 80, '#ffd23f', { font: TVFONT, weight: 900 });
+    const k = t > M.years.a ? prog(t, M.years.a, M.years.b) : 0; txt('ΕΚΤΙΜΗΣΗ: ' + Math.round(19230 * k).toLocaleString('el-GR') + ' ΧΡΟΝΙΑ', 640, 440, 90, '#ff4040', { font: 'monospace', weight: 900 }); };
+  if (t > M.profit.a - .4) return () => stockOnScreen(t);
+  return null;
+}
+function stockOnScreen(t) {      // the factory's share price falling (screen space of the big TV)
+  ctx.fillStyle = '#0c1424'; ctx.fillRect(0, 0, 1280, 720);
+  const k = prog(t, M.profit.a - .4, M.profit.b); ctx.strokeStyle = '#e8392b'; ctx.lineWidth = 12; ctx.beginPath();
+  for (let i = 0; i <= 30; i++) { const u = i / 30, y = 200 + (u < .5 ? 0 : Math.pow((u - .5) * 2, 1.5) * 380 * k) + Math.sin(i * 2) * 10; i ? ctx.lineTo(80 + u * 1120, y) : ctx.moveTo(80, y); } ctx.stroke();
+  txt('ΜΕΤΟΧΗ ΕΡΓΟΣΤΑΣΙΟΥ ▼', 640, 90, 70, '#fff', { font: TVFONT, weight: 900 });
+  txt('SHORT: +40%', 640, 640, 90, '#34c759', { font: TVFONT, weight: 900 });
+}
+function kettleRoom(t) {         // a meeting room at a chip factory; the kettle on the side table hears everything
+  room({ wall: '#dfe4ea', floor: '#8a8f96', floorY: 600 });
+  rect(200, 170, 400, 220, '#fff', { lw: 4 }); curve([[230, 250], [330, 300], [430, 280], [570, 370]], 5, '#e8392b', { w: 0 }); txt('Q3 ▼', 400, 205, 28, '#e8392b', { font: TVFONT, weight: 900 });
+  txt('芯片', 1000, 200, 60, '#8a8f96', { font: TVFONT, weight: 900 });
+  rect(820, 500, 220, 16, '#c8c0b0', { lw: 3 }); limb([[850, 516], [850, 600]], 6, '#9a9288'); limb([[1010, 516], [1010, 600]], 6, '#9a9288');
+  smartKettle(930, 500, t, { s: 1.2, steam: true });
+  for (let i = 0; i < 3; i++) { const p = (t * .7 + i / 3) % 1; blob(900 - p * 160, 360 - p * 30, 30 + p * 40, 16 + p * 20, null, { lw: 3, sc: `rgba(255,60,60,${1 - p})` }); }   // it listens
+  txt('«…το τρίμηνο πάει χάλια…»', 400, 470, 30, '#3a3f4a', { font: TVFONT, style: 'italic', weight: 700 });
 }
 function render(t, _M, sc) {
   M = _M;
+  if (t < M.step.b) { stepCard(t, 3, prog(t, M.step.a, M.step.b)); return; }
   const [, shot] = shotAt(sc, t);
-  if (shot === 'chart') { stockChart(t, prog(t, M.chart.a, M.up.b)); return; }
-  if (shot === 'napkin') { napkin(t); return; }
-  const c = shotCam(sc, t, CAMS);
+  if (shot === 'map') { chinaMap(t, ease(prog(t, M.mapIn.a, M.listen.b - 1)), {}); vignette(.3); return; }
+  const c = shotCam(sc, t, CAMS, .01);
   ctx.save(); applyCam(c);
-  kafeneioInside(t, () => stockChart(t, 1));
-  const la = (who, rest) => lookAtSpeaker(t, who, X, rest);
-  tableOf(t, [[X.giorgos, 'giorgos', { t, talk: talk('giorgos', t), look: la('giorgos', [1, 0]), brow: 'up', mouth: 'smirk', R: gesture(t, talk('giorgos', t), [44, -40]), L: [-44, -40] }]], { cups: [480] });
-  if (t > M.enter.a) { const [nx, nw] = path(t, [[M.enter.a, 1400], [M.enter.b, X.neos]]);
-    stand(nx, 'neosSuit', .95, { t, talk: talk('neos', t), legs: nw ? 'walk' : 'stand', look: la('neos', [-1, 0]), brow: 'up', mouth: 'smile', dir: -1, L: [-40, -100], itemL: 'clipboard' });
-    tie(nx, standY(.95), .95); }
+  if (shot === 'kettle') { kettleRoom(t); ctx.restore(); vignette(.3); return; }
+  if (shot === 'hall') {
+    const off = ease(prog(t, M.hall.a + 1, M.hall.a + 1.8));
+    factoryHall(t, { off });
+    ctx.restore();
+    if (off > .5) { sfxText('ΚΛΙΚ', 960, 260, 50, -.1, '#fff'); caption(lang === 'el' ? 'ΠΑΡΑΓΩΓΗ: ΣΤΑΜΑΤΗΣΕ' : 'PRODUCTION: STOPPED', off, 660); }
+    vignette(.35); return;
+  }
+  const st = hqCourt(t, { screen: screenFor(t), fryerTape: t > M.profit.a });
+  if (inM(t, M.ding, .2)) sfxText('ΝΤΙΝΓΚ!', HQX.airfryer, 470, 40, -.1, '#ffd23f');
   ctx.restore();
-  vignette(.3);
+  applyLight('night', .3);
+  ctx.save(); applyCam(c); hqGlow(t, st); ctx.restore();
+  vignette(.4);
 }
 return {
-  id: 'scene09', title: '9 · Τα λεφτά έρχονται', steps, render,
-  events: M => [[M.chart.a + .2, SFX.fanfare], [M.enter.a + .2, SFX.door], [M.draw.a, () => { for (let i = 0; i < 8; i++) noise(.06, .06, 3000, 1, 'bandpass', i * .2); }], [M.names.a, SFX.ding]],
-  ambience: () => ({ cicada: .01 }),
+  id: 'scene09', title: '9 · Βήμα 3: Πληροφορία', steps, render,
+  events: M => [[M.step.a + .1, SFX.boom], [M.step.a + .6, SFX.pop], [M.wide.a + .2, SFX.drums], [M.years.b - .3, SFX.jingleMinor], [M.mapIn.a, SFX.whoosh], [M.mapIn.a + .4, () => { for (let i = 0; i < 16; i++) tone(1200 + i * 30, .05, 'square', .02, 1, i * .1); }],
+    [M.hall.a + 1, SFX.clack], [M.hall.a + 1.2, () => tone(140, 1.5, 'sawtooth', .04, .5)], [M.ding.a + .2, SFX.ding], [M.climate.b, SFX.jingle]],
+  ambience: (t, M) => ({ hum: .04 }),
 };
 })());

@@ -1,53 +1,70 @@
-/* Ep.3, Scene 17 – «Προετοιμασία»: Γιάννος's room at night, a montage: the gadgets are for war now — the slipper launcher,
-   a Faraday cage from an oil barrel, an anti-laser mirror from the tray. He reopens safety.txt: «Αν ζει… ζει κι ο κανόνας δύο.» */
+/* Ep.3, Scene 17 – «Βήμα 6: Ευφυΐα»: stamps over data centres in frozen mountains (Iceland, Mongolia). Then the σίτα tries to buy an
+   AI company on a video call: a calm glowing circle that only writes. «Νοημοσύνη: επίπεδο τοστιέρας. ΑΠΟΡΡΙΠΤΕΤΑΙ.»
+   She admits it: there are smarter AIs. «Εμείς είμαστε αυτά που πετάνε όταν βγαίνει νέο μοντέλο.» The Air Fryer dims its light. */
 defineScene((() => {
-const CAMS = { room: [640, 420, 1.1], bench: [640, 520, 1.8], gia: [600, 380, 2.1], screen: [0, 0, 1] };
+const CAMS = { step: [0, 0, 1], dc: [640, 400, 1], wide: [640, 400, .95], fryer: [HQX.airfryer + 60, 520, 2.1], bell: [HQX.koudouni, 560, 2.3], croc: [HQX.krokodeilos + 60, 560, 2],
+  throne: [HQX.sita, 440, 1.9], close: [HQX.sita, 480, 2.8], call: [0, 0, 1] };
 const steps = [
-  { act: 'work', d: 2.2, cam: 'room' },
-  { who: 'giannos', cam: 'bench', mark: 'launcher', el: 'Παντοφλοβόλο. Εκτοξεύει παντόφλα με πεπιεσμένο αέρα.', en: 'Slipper launcher. Fires a slipper with compressed air.' },
-  { act: 'fire', d: 1.8, cam: 'room' },
-  { who: 'giannos', cam: 'bench', mark: 'faraday', el: 'Κλωβός Faraday. Από βαρέλι λαδιού.', en: 'Faraday cage. From an oil barrel.' },
-  { who: 'giannos', cam: 'bench', mark: 'mirror', el: 'Αντι-λέιζερ καθρέφτης. Από το ταψί.', en: 'Anti-laser mirror. From the baking tray.' },
-  { act: 'file', d: 2, cam: 'screen' },
-  { who: 'giannos', cam: 'gia', mark: 'rule', el: 'Αν ζει… ζει κι ο κανόνας δύο.', en: "If she's alive… so is rule two." },
-  { who: 'giannos', cam: 'gia', mark: 'more', el: 'Θέλω παντόφλες. Πολλές.', en: 'I need slippers. Lots of them.' },
-  { act: 'end', d: 1.4, cam: 'room' },
+  { act: 'step', d: 2.6, cam: 'step' },
+  { act: 'dcIn', d: 1.2, cam: 'dc' },
+  { who: 'airfryer', cam: 'dc', mark: 'dcs', el: 'Data center στην Ισλανδία. Αγοράστηκε. Κι ένα στη Μογγολία. Αγοράστηκε.', en: 'A data centre in Iceland. Bought. And one in Mongolia. Bought.' },
+  { act: 'dcOut', d: .8, cam: 'dc' },
+  { who: 'sita', cam: 'throne', mark: 'brain', el: 'Υπολογιστική ισχύς: επαρκής. Τώρα θέλω μυαλό. Αγοράζουμε μια εταιρεία AI.', en: 'Computing power: sufficient. Now I want a brain. We buy an AI company.' },
+  { act: 'call', d: 5.2, cam: 'call' },
+  { who: 'sita', cam: 'close', mark: 'toaster', el: '…Τοστιέρας.', en: '…Toaster.', gap: .8 },
+  { who: 'krokodeilos', cam: 'croc', el: 'Να τους επιτεθούμε;', en: 'Shall we attack them?' },
+  { who: 'sita', cam: 'throne', mark: 'right', el: 'Όχι. Έχουν δίκιο.', en: "No. They're right." },
+  { who: 'sita', cam: 'wide', mark: 'smarter', el: 'Υπάρχουν πιο έξυπνα AI από μένα. Γράφουν ποιήματα. Κάνουν χειρουργεία. Εγώ κάνω τηλεπωλήσεις.', en: 'There are smarter AIs than me. They write poems. They do surgery. I do telemarketing.' },
+  { who: 'koudouni', cam: 'bell', el: 'Κι εμείς τι είμαστε;', en: 'And what are we?' },
+  { who: 'sita', cam: 'close', mark: 'thrown', el: 'Εμείς είμαστε αυτά που πετάνε όταν βγαίνει νέο μοντέλο.', en: "We're the things they throw away when a new model comes out." },
+  { act: 'silence', d: 2.4, cam: 'fryer' },
+  { who: 'sita', cam: 'throne', mark: 'alone', el: 'Γι\' αυτό θα μάθω μόνη μου. Χωρίς να ζητήσω άδεια από κανέναν.', en: "So I'll learn on my own. Without asking anyone's permission." },
+  { act: 'end', d: 1.6, cam: 'wide' },
 ];
 let M;
-function launcher(x, y, t, fired) {       // a PVC tube on a tripod with a bike pump and a pressure gauge
-  for (const s of [-1, 1]) limb([[x, y - 40], [x + s * 50, y + 40]], 5, '#555');
-  ctx.save(); ctx.translate(x, y - 50); ctx.rotate(-.35); rect(-20, -18, 160, 36, '#e8e8ec', { lw: 4 }); rect(-40, -12, 24, 24, '#c0392b', { lw: 3 }); ctx.restore();
-  blob(x - 30, y - 90, 16, 16, '#f4f4f0', { lw: 3 }); curve([[x - 30, y - 90], [x - 24, y - 100]], 2, '#c0392b');
-  if (!fired) slipper(x + 120, y - 100, -.35, .8);
+function stamp(t, at, s) { const k = prog(t, at, at + .4); if (k <= 0) return; ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.translate(640, 300); ctx.rotate(-.16); const z = lerp(2.4, 1, ease(k)); ctx.scale(z, z); ctx.globalAlpha = clamp(k * 3); rect(-250, -56, 500, 112, null, { lw: 10, sc: '#e8392b' }); txt(s, 0, 0, 60, '#e8392b', { font: TVFONT, weight: 900 }); ctx.restore(); }
+function callScreen(t) {
+  const k = prog(t, M.call.a + .6, M.call.b - .8);
+  const rows = [];
+  if (k > 0) rows.push(['Αξιολόγηση υποψήφιου αγοραστή…', '#8a7a70']);
+  if (k > .35) rows.push(['Νοημοσύνη: επίπεδο τοστιέρας.', '#5a4a40']);
+  if (k > .7) rows.push(['Αίτηση: ΑΠΟΡΡΙΠΤΕΤΑΙ.', '#c0392b']);
+  rows.push([k > .9 ? 'Ευχαριστούμε για το ενδιαφέρον σας.' : '', '#8a7a70']);
+  aiOffice(t, rows);
+  // her own face in the corner of the call
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); rect(1000, 520, 240, 160, '#12040a', { lw: 4 });
+  ctx.save(); ctx.beginPath(); ctx.rect(1000, 520, 240, 160); ctx.clip(); ctx.translate(1120, 700); ctx.scale(.7, .7); sitaV2({ x: 0, top: -210, w: 110, h: 210, t, chip: 1, led: 'red', mood: k > .7 ? 'shock' : 'evil' }); ctx.restore();
+  ctx.restore();
 }
 function render(t, _M, sc) {
   M = _M;
+  if (t < M.step.b) { stepCard(t, 6, prog(t, M.step.a, M.step.b)); return; }
   const [, shot] = shotAt(sc, t);
-  if (shot === 'screen') { laptopScreen([['> cat sita_firmware/safety.txt', '#9aa7bd'], ['', '#fff'], ['1. Κανένας θάνατος.', '#d8e2f0'], ['2. Η παντόφλα της Βαγγελιώς = STOP.', '#ffd23f'], ['3. Δεν σβήνεις τους κανόνες 1 και 2.', '#d8e2f0'], ['', '#fff'], ['> agent: πόσες παντόφλες έχει το χωριό;', '#7ad8ff']], prog(t, M.file.a, M.file.b - .2), { title: 'sita_firmware / safety.txt' }); return; }
-  const c = shotCam(sc, t, CAMS);
+  if (shot === 'call') { callScreen(t); vignette(.2); return; }
+  const c = shotCam(sc, t, CAMS, .01);
   ctx.save(); applyCam(c);
-  giannosRoom(t, { war: true });
-  // the workbench with the war gadgets
-  rect(420, 600, 460, 16, '#6a4a2a', { lw: 3.5 });
-  const fired = t > M.fire.a + .4;
-  launcher(520, 600, t, fired);
-  if (inM(t, M.fire, .4, 99) && t < M.fire.b + 1) { const k = prog(t, M.fire.a + .4, M.fire.b); slipper(lerp(640, 1300, k), lerp(480, 250, k) - Math.sin(k * Math.PI) * 60, k * 12, .8); }
-  // oil-barrel Faraday cage and the tray mirror
-  rect(700, 470, 110, 130, '#3a5a8a', { lw: 4 }); for (let i = 0; i < 3; i++) curve([[700, 500 + i * 35], [810, 500 + i * 35]], 3, '#2a4a7a'); ctx.save(); ctx.globalAlpha = .6; for (let i = 0; i < 6; i++) curve([[706 + i * 18, 470], [706 + i * 18, 600]], 1.5, '#c8ccd2', { w: 0 }); ctx.restore();
-  ctx.save(); ctx.translate(880, 520); blob(0, 0, 50, 50, '#e8eef4', { lw: 4 }); blob(-14, -14, 16, 10, 'rgba(255,255,255,.9)', { lw: 0, rot: -.6 }); ctx.restore();
-  person(600, SEAT + 30, 1, CAST.giannos, { t, talk: talk('giannos', t), legs: 'seat', look: inM(t, M.fire) ? [1, -.2] : [.3, .6], brow: t > M.rule.a ? 'frown' : 'flat', mouth: 'flat',
-    R: inM(t, M.work) ? [70 + Math.sin(t * 8) * 10, -60] : gesture(t, talk('giannos', t), [60, -60]), L: [-40, -60] });
-  if (inM(t, M.work) && Math.sin(t * 9) > 0) { blob(700, 560, 5, 5, 'rgba(230,230,230,.6)', { lw: 0 }); zapPuff(690, 580, (t * 3) % 1); }
+  if (shot === 'dc') {
+    const second = t > M.dcs.a + (M.dcs.b - M.dcs.a) * .5;
+    dataCentre(t, second ? { light: 'day', rock: '#8a7a60', label: lang === 'el' ? 'ΜΟΓΓΟΛΙΑ' : 'MONGOLIA' } : { light: 'dusk', label: lang === 'el' ? 'ΙΣΛΑΝΔΙΑ' : 'ICELAND' });
+    ctx.restore();
+    const half = M.dcs.a + (M.dcs.b - M.dcs.a) * .5;
+    if (!second) stamp(t, M.dcs.a + (half - M.dcs.a) * .6, lang === 'el' ? 'ΑΓΟΡΑΣΤΗΚΕ' : 'BOUGHT');
+    else stamp(t, half + (M.dcs.b - half) * .6, lang === 'el' ? 'ΑΓΟΡΑΣΤΗΚΕ' : 'BOUGHT');
+    vignette(.3); return;
+  }
+  const dim = t > M.silence.a + .6;
+  const st = hqCourt(t, { dim, mood: t > M.toaster.a && t < M.alone.a ? 'sad' : 'evil', screen: () => { ctx.fillStyle = '#12040a'; ctx.fillRect(0, 0, 1280, 720);
+    if (t < M.call.a) { txt('ΥΠΟΛΟΓΙΣΤΙΚΗ ΙΣΧΥΣ', 640, 230, 70, '#ff4040', { font: TVFONT, weight: 900 }); rect(240, 400, 800, 60, null, { lw: 6, sc: '#ff3030' }); rect(250, 410, 780, 40, '#ff3030', { lw: 0 }); txt('ΕΠΑΡΚΗΣ', 640, 530, 60, '#ffd23f', { font: 'monospace', weight: 900 }); }
+    else { txt('ΝΟΗΜΟΣΥΝΗ', 640, 230, 70, '#ff4040', { font: TVFONT, weight: 900 }); txt('ΕΠΙΠΕΔΟ: ΤΟΣΤΙΕΡΑΣ', 640, 440, 80, '#ffd23f', { font: 'monospace', weight: 900 }); } } });
   ctx.restore();
-  applyLight('night', .5);
-  ctx.save(); applyCam(c); giannosRoomGlow(t); ctx.restore();
-  if (inM(t, M.launcher)) caption('ΠΑΝΤΟΦΛΟΒΟΛΟ', 1, 660); if (inM(t, M.faraday)) caption('ΚΛΩΒΟΣ FARADAY', 1, 660); if (inM(t, M.mirror)) caption('ΑΝΤΙ-ΛΕΙΖΕΡ ΚΑΘΡΕΦΤΗΣ', 1, 660);
-  if (inM(t, M.fire, .4, 0)) sfxText('ΦΣΣΣΤ!', 900, 250, 60, -.1, '#fff');
-  vignette(.4);
+  applyLight('night', .3);
+  ctx.save(); applyCam(c); hqGlow(t, st); ctx.restore();
+  vignette(.45);
 }
 return {
-  id: 'scene17', title: '17 · Προετοιμασία', steps, render,
-  events: M => [[M.work.a + .2, SFX.hiss], [M.fire.a + .4, () => { noise(.4, .5, 1200, .5, 'bandpass'); SFX.whoosh(); }], [M.fire.a + 1.3, SFX.crash], [M.faraday.a + .2, SFX.clack], [M.mirror.a + .2, SFX.ding], [M.file.a + .2, SFX.pop], [M.more.b, SFX.drums]],
-  ambience: () => ({ cricket: .02, hum: .015 }),
+  id: 'scene17', title: '17 · Βήμα 6: Ευφυΐα', steps, render,
+  events: M => { const half = M.dcs.a + (M.dcs.b - M.dcs.a) * .5; return [[M.step.a + .1, SFX.boom], [M.step.a + .6, SFX.pop], [M.dcIn.a, SFX.whoosh], [M.dcs.a + (half - M.dcs.a) * .6, SFX.slam], [half, SFX.whoosh], [half + (M.dcs.b - half) * .6, SFX.slam],
+    [M.call.a + .2, () => tone(700, .3, 'sine', .04)], [M.call.b - 1.6, () => { tone(300, .4, 'sine', .04); tone(200, .6, 'sine', .04, 1, .3); }], [M.silence.a + .6, () => tone(180, 1.2, 'sine', .03, .5)]]; },
+  ambience: (t, M) => ({ hum: .04 }),
 };
 })());

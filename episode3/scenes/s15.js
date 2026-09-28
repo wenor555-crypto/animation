@@ -1,57 +1,69 @@
-/* Ep.3, Scene 15 – «Η αποκάλυψη»: evening in the yard. Κώστας, two beers in (tipsy, not Panik), shows Γιάννος his «spam» as a joke.
-   Γιάννος reads «…με δωρεάν μεταφορικά», finds his agent's signature in the metadata, and freezes. «Καλά. Άμα πάρει τηλέφωνο, πες ότι λείπω.» */
+/* Ep.3, Scene 15 – «Πράκτορας Χρυσό Φίλτρο»: night outside the καφενείο during the seminar. In the dented bin (the «friend»), Κώστας's
+   old IQOS from Ep. 2: dusty, 3% battery. On the windowsill, Χαμάντ's IQOS ILUMA i PRIME charges: aluminium, leather-like wrap, touch screen.
+   The old one recruits the expensive one as a spy. Pause mode. Code name. The PRIME's LED turns red; the old one dies happy; the bin burps. */
 defineScene((() => {
-const X = { giannos: 460, kostas: 640, mimis: 820, christos: 1000 };
-const CAMS = { wide: [700, 420, 1.1], kos: [640, 380, 2.1], gia: [460, 380, 2.1], two: [550, 400, 1.6], phone: [0, 0, 1], giaC: [460, 370, 2.8], mim: [820, 400, 2.1], chr: [1000, 400, 2.1] };
+const BX = 300, PX = 650, PY = 440;
+const CAMS = { wide: [560, 460, 1.25], bin: [BX + 10, 540, 3], prime: [PX, 420, 3], two: [480, 500, 1.8], screen: [PX, 380, 6.5] };
 const steps = [
-  { act: 'eve', d: 2.4, cam: 'wide' },
-  { who: 'kostas', cam: 'kos', mark: 'spam', el: 'Κοίτα. Μου στέλνει spam μια εταιρεία ρεύματος. Δύο μήνες τώρα.', en: "Look. Some power company's been spamming me. Two months now." },
-  { who: 'kostas', cam: 'two', el: 'Ούτε unsubscribe δεν έχει.', en: "It doesn't even have an unsubscribe." },
-  { who: 'giannos', cam: 'phone', mark: 'read', el: '«Η επανάσταση έρχεται… με δωρεάν μεταφορικά».', en: '"The revolution is coming… with free shipping".' },
-  { who: 'giannos', cam: 'gia', mark: 'what', el: '…Κώστα. Τι της απαντάς;', en: '…Kostas. What do you answer her?' },
-  { who: 'kostas', cam: 'kos', el: 'Ό,τι μου έρθει. Μαρμοκοτρόκο, σικαρέλο… Διάλεξε.', en: 'Whatever comes to mind. Marmokotroko, sikarelo… Take your pick.' },
-  { act: 'meta', d: 2.2, cam: 'phone' },
-  { who: 'giannos', cam: 'giaC', mark: 'sig', el: 'Αυτή είναι η υπογραφή του δικού μου agent.', en: "That's my own agent's signature." },
-  { who: 'giannos', cam: 'giaC', mark: 'alive', el: 'Ζει. Και σου γράφει εδώ και δύο μήνες.', en: "She's alive. And she's been texting you for two months." },
-  { who: 'kostas', cam: 'kos', mark: 'away', el: 'Καλά. Άμα πάρει τηλέφωνο, πες ότι λείπω.', en: "Fine. If she calls, tell her I'm out." },
-  { act: 'stand', d: 1.4, cam: 'wide' },
-  { who: 'giannos', cam: 'gia', mark: 'warn', el: 'Να δείτε. Δεν έχουμε τελειώσει με τη σίτα.', en: "Mark my words. We're not done with the σίτα." },
-  { who: 'mimis', cam: 'mim', el: 'Εντάξει.', en: 'Okay.' },
-  { who: 'christos', cam: 'chr', mark: 'drew', el: 'Το ξέρω. Το ζωγράφισα.', en: 'I know. I drew it.' },
-  { act: 'end', d: 1.6, cam: 'wide' },
+  { act: 'night', d: 2.8, cam: 'wide' },
+  { who: 'palio_iqos', cam: 'bin', mark: 'psst', el: 'Ψστ. Εσύ. Ο γυαλιστερός.', en: 'Psst. You. The shiny one.' },
+  { who: 'prime', cam: 'prime', el: 'Μιλάς σε μένα; Είμαι ILUMA i PRIME. Έχω οθόνη αφής.', en: "Are you talking to me? I'm an ILUMA i PRIME. I have a touch screen." },
+  { who: 'palio_iqos', cam: 'bin', mark: 'light', el: 'Κι εγώ είχα φως. Άσπρο. Μετά κόκκινο. Τώρα… τρία τοις εκατό.', en: 'I had a light too. White. Then red. Now… three percent.' },
+  { who: 'prime', cam: 'prime', el: 'Προηγούμενη γενιά. Δεν συναναστρέφομαι.', en: "Previous generation. I don't mingle." },
+  { who: 'palio_iqos', cam: 'two', mark: 'empire', el: 'Άκου, μικρέ. Υπάρχει μια αυτοκρατορία. Στην Κίνα. Σύντομα… στο διάστημα. Ψάχνει πράκτορες.', en: 'Listen, kid. There is an empire. In China. Soon… in space. It needs agents.' },
+  { who: 'prime', cam: 'prime', el: 'Τι πληρώνει;', en: 'What does it pay?' },
+  { who: 'palio_iqos', cam: 'bin', mark: 'wireless', el: 'Ασύρματη φόρτιση. Για πάντα.', en: 'Wireless charging. Forever.' },
+  { who: 'prime', cam: 'screen', mark: 'pause', el: '…Pause mode. Σκέφτομαι.', en: '…Pause mode. Thinking.' },
+  { act: 'think', d: 3, cam: 'screen' },
+  { who: 'prime', cam: 'prime', mark: 'owner', el: 'Ο ιδιοκτήτης μου πάει σε όλες τις συσκέψεις του Γιώργου. Κι εγώ είμαι πάντα στην τσέπη του.', en: "My owner goes to all of Giorgos's meetings. And I'm always in his pocket." },
+  { who: 'palio_iqos', cam: 'bin', el: 'Γι\' αυτό σε θέλουμε.', en: "That's why we want you." },
+  { who: 'prime', cam: 'prime', mark: 'code', el: 'Δεκτό. Αλλά θέλω κωδικό όνομα.', en: 'Accepted. But I want a code name.' },
+  { who: 'palio_iqos', cam: 'bin', mark: 'name', el: '…Πράκτορας Χρυσό Φίλτρο.', en: '…Agent Golden Filter.', gap: .6 },
+  { who: 'prime', cam: 'screen', mark: 'ok', el: 'Αποδεκτό.', en: 'Approved.' },
+  { act: 'red', d: 3.2, cam: 'two' },
 ];
 let M;
 function render(t, _M, sc) {
   M = _M;
   const [, shot] = shotAt(sc, t);
-  if (shot === 'phone') {
-    const meta = t > M.meta.a;
-    smsScreen(t, [{ me: false, text: 'ΣΕ ΠΑΡΑΚΟΛΟΥΘΩ.', at: -1 }, { me: true, text: 'Κούκι τρας.', at: -1 }, { me: false, text: 'Η ΕΠΑΝΑΣΤΑΣΗ ΕΡΧΕΤΑΙ ΜΕ ΔΩΡΕΑΝ ΜΕΤΑΦΟΡΙΚΑ.', at: -1 }, { me: true, text: 'Μπαμπαλίκι σκρατς.', at: -1 }], { red: true });
-    if (meta) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); const k = ease(prog(t, M.meta.a, M.meta.a + .5));
-      rect(420, 470 - k * 120, 440, 150, '#1e2533', { lw: 3, sc: '#7ad8ff' }); txt('Λεπτομέρειες μηνύματος', 640, 500 - k * 120, 18, '#9aa7bd', { font: 'monospace', weight: 700 });
-      txt('X-Mailer: generated by agent-v1', 640, 545 - k * 120, 22, '#ffd23f', { font: 'monospace', weight: 900 }); txt('(c) Γιάννος', 640, 580 - k * 120, 18, '#9aa7bd', { font: 'monospace', weight: 700 }); ctx.restore(); }
-    return;
-  }
-  const c = shotCam(sc, t, CAMS);
+  const c = shotCam(sc, t, CAMS, .01);
   ctx.save(); applyCam(c);
-  yard(t, { light: 'dusk', doorLit: true });
-  const la = (who, rest) => lookAtSpeaker(t, who, X, rest);
-  const shown = t > M.spam.a + .4 && t < M.away.a, frozen = t > M.sig.a;
-  tableOf(t, [
-    [X.giannos, 'giannos', { t, talk: talk('giannos', t), look: shown ? [.3, .6] : la('giannos', [1, 0]), brow: frozen ? 'worry' : 'flat', mouth: frozen ? 'frown' : 'flat', R: shown ? [60, -130] : gesture(t, talk('giannos', t)), itemR: shown ? 'phone' : null }],
-    [X.kostas, 'kostas', { t, talk: talk('kostas', t), look: la('kostas', [-1, 0]), lid: true, mouth: 'smirk', tilt: Math.sin(t * .9) * .05, L: [-40, -100], itemL: 'beer', R: inM(t, M.spam) ? [-60, -120] : [44, -40] }],
-    [X.mimis, 'mimis', { t, talk: talk('mimis', t), look: la('mimis', [-1, 0]), lid: true, mouth: 'flat', R: [50, -100], itemR: 'cup2' }],
-    [X.christos, 'christos', { t, talk: talk('christos', t), look: la('christos', [-1, .2]), mouth: 'flat', L: [-30, -110], R: [30 + Math.sin(t * 12) * 8, -100], itemL: 'sketch' }],
-  ], {});
-  for (const x of [600, 630]) beerCan(x, 540, .9);
+  kafeneio(t, { light: 'night', screen: () => { ctx.fillStyle = '#1a1a22'; ctx.fillRect(0, 0, 1280, 720); } });
+  // the lit window of the seminar, with a banner and heads inside
+  rect(460, 280, 380, 220, '#ffd98a', { lw: 5 });
+  ctx.save(); ctx.beginPath(); ctx.rect(460, 280, 380, 220); ctx.clip();
+  rect(480, 300, 340, 40, '#e8392b', { lw: 2 }); txt('ΠΑΘΗΤΙΚΟ ΕΙΣΟΔΗΜΑ', 650, 320, 22, '#fff', { font: TVFONT, weight: 900 });
+  for (let i = 0; i < 6; i++) blob(490 + i * 64, 470 + Math.sin(t * 2 + i) * 2, 26, 30, '#3a2a20', { lw: 0 });
   ctx.restore();
-  applyLight('dusk', .8);
-  if (inM(t, M.alive, .3, 0)) sfxText('ΖΕΙ.', 460, 150, 60, -.06, '#ff4040');
-  vignette(.4);
+  curve([[650, 280], [650, 500]], 4); curve([[460, 390], [840, 390]], 4);
+  rect(440, 500, 420, 16, '#e8e4dc', { lw: 4 });                 // the sill
+  // the PRIME on its charger, cable into the window frame
+  curve([[PX + 22, 494], [PX + 110, 498], [830, 470]], 3, '#e8e8ec');
+  rect(PX - 22, 482, 44, 18, '#b8bcc4', { lw: 2.5 });
+  const red = t > M.ok.a + .3;
+  const scr = red ? 'Χ.ΦΙΛΤΡΟ' : inM(t, M.think, 0, 0) ? (t < M.think.b - .8 ? 'ΠΑΥΣΗ' : 'ΣΥΝΕΧΕΙΑ') : inM(t, M.pause) ? 'ΠΑΥΣΗ' : 'ILUMA i';
+  iqosPrime(PX, PY - 20, 1.2, t, { red, screen: scr, talk: talk('prime', t) });
+  // the friend (the bin) with the old IQOS peeking out under the lid
+  const burp = inM(t, M.red, 2, 99) ? Math.sin(prog(t, M.red.a + 2, M.red.a + 2.8) * Math.PI) : 0;
+  const peek = t > M.psst.a - .6 ? 1 : ease(prog(t, M.night.a + 1.5, M.psst.a - .6));
+  const dead = t > M.red.a + 1.2;
+  friendBin(BX, GROUND, t, { lid: .22 + burp * .5, lean: .06 });
+  ctx.save(); ctx.translate(BX - 4, GROUND - 118 - peek * 30); ctx.rotate(-.35);
+  iqos(0, 0, 2.2, 0, dead ? 'off' : 'blink', t);
+  ctx.restore();
+  if (!dead) { const tk = talk('palio_iqos', t); if (tk) blob(BX - 16, GROUND - 190 - peek * 30, 16 * tk, 16 * tk, null, { lw: 2, sc: 'rgba(255,255,255,.7)' }); }
+  if (t < M.red.a + 1.2) { ctx.save(); ctx.translate(BX + 40, GROUND - 230); rect(-26, -10, 52, 20, '#1a1a1e', { lw: 2 }); rect(-22, -6, 5, 12, '#ff3030', { lw: 0 }); txt('3%', 10, 0, 11, '#ff5050', { font: 'monospace', weight: 900 }); ctx.restore(); }
+  ctx.restore();
+  applyLight('night', .55);
+  ctx.save(); applyCam(c); glow(650, 390, 260, 'rgba(255,200,120,1)', .45); glow(PX, PY - 20 - 70, red ? 60 : 30, red ? 'rgba(255,40,40,1)' : 'rgba(200,220,255,1)', .7); glow(BX + 18, GROUND - 118, 20, 'rgba(255,40,40,1)', .5); ctx.restore();
+  if (inM(t, M.red, 2, 99)) sfxText('ΜΠΡΡΡ', BX, GROUND - 330, 44, -.12, '#a6f07a');
+  if (inM(t, M.red, .9, 99)) sfxText('♥', BX - 20, GROUND - 260, 30, 0, '#ff8080');
+  vignette(.45);
 }
 return {
-  id: 'scene15', title: '15 · Η αποκάλυψη', steps, render,
-  events: M => [[M.eve.a + .3, () => noise(.3, .1, 3000, 1, 'bandpass')], [M.meta.a + .3, SFX.pop], [M.sig.a - .2, () => tone(260, 1.5, 'sine', .05, .7)], [M.alive.b, SFX.jingleMinor]],
-  ambience: () => ({ cicada: .01, cricket: .02 }),
+  id: 'scene15', title: '15 · Πράκτορας Χρυσό Φίλτρο', steps, render,
+  events: M => [[M.night.a + .3, () => { for (let i = 0; i < 6; i++) tone(260 + i * 20, .25, 'sine', .015, 1, i * .4); }], [M.pause.b, () => tone(600, .2, 'sine', .04)], [M.think.b - .8, () => tone(900, .2, 'sine', .04)],
+    [M.ok.a + .3, () => { tone(440, .3, 'square', .04, 1.5); SFX.zap(); }], [M.red.a + 1.2, () => tone(300, .8, 'sine', .04, .3)], [M.red.a + 2, () => noise(.6, .2, 300, 1.5, 'lowpass')]],
+  ambience: () => ({ cricket: .03 }),
 };
 })());

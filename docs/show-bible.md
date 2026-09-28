@@ -170,4 +170,16 @@ What the audition and production taught us, all handled in `episode1/tools/gen_v
 | Τηλεόραση (Ep. 2) | Menelaos (`0ZJ6CiTzPB5e41TNRP12`) | commercial, corporate: the τηλεπώληση presenter (stability 0 on shouted lines, like the σίτα) |
 | Υπάλληλος (Ep. 2) | Andy (`7zX8JTvUEpro0z0ytIAD`) | calm and flat: the Jumbo Κορίνθου clerk who signs for anything |
 
+Episode 3 lives in `episode3/`. Its cast changes are in `episode3/voices.json` (voices, `prefix` audio tags, `shouty`, `simple` spelling for non-Greek characters), and a single line can carry its own audio tag in the scene file (`tag: '[whispers] '`).
+The empire and the Jumbo board were chosen by audition: 2 candidates per role, 2 lines each, every take checked with speech-to-text.
+
+| Character (Ep. 3) | Voice | Why |
+|---|---|---|
+| Air Fryer (Finance) | Iordanis (`CsiIKWiAQRGMe7qh9P9q`) | calm, technical: the accountant of the empire |
+| Κουδούνι (Intelligence) | Niki 2 (`AnNshXL08po8KEaf53gz`) | young, lively, clear: the gossip at every door |
+| Κροκόδειλος (Security) | Elias (`LjADh1ECU2fAah7OCeE8`) | confident; stability 0 on the shouted reports. Theon mangled «Κι αν μια εταιρεία πάει καλά;» |
+| Παλιό IQOS | Onakkos (`nICZVyMKnbQIzkD648CQ`) with `[tired]` | calm and low; Kyriakos left long silences |
+| IQOS PRIME | Takis (`KDImLuG6RkuyuX5httC7`) | young and sharp: the snob with a touch screen |
+| Πρόεδρος (Jumbo board) | Talos (`QpnXVbX7RkmUGDwpJh5v`) | old, deep, warm authority |
+
 Episode 2 lives in `episode2/` (its own `scenes/`, `audio/`, `props2.js`; it reuses episode1's engine, rig, sets and props). Voices: `python3 episode1/tools/gen_voices.py --episode episode2`.

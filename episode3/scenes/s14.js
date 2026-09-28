@@ -1,74 +1,62 @@
-/* Ep.3, Scene 14 – «Το μελάνι» (flashback): winter at the temple. The master draws a crow in three strokes — it flies off the paper.
-   «Ό,τι ζωγραφίσεις… θα συμβεί. Γι' αυτό… ζωγράφιζε προσεκτικά.» — «…Sugoi.» Back to today: Χρήστος draws a σίτα-shaped satellite. */
+/* Ep.3, Scene 14 – «Το σεμινάριο»: the καφενείο, full. Banner: ΠΑΘΗΤΙΚΟ ΕΙΣΟΔΗΜΑ ΜΕ LEVERAGE ΣΤΟ ΟΙΚΟΣΥΣΤΗΜΑ ΤΗΣ ΣΙΤΑΣ.
+   Γιώργος at a flipchart; the νέος in a suit and next to him an even newer νέος. Βασίλης: «Έχεις ένα τσιγάρο;»
+   Running gag: the λοχίας (callback to Ep. 1) and Χαμάντ from London are already inside. */
 defineScene((() => {
-const CAMS = { temple: [640, 420, 1.1], paper: [640, 560, 2.2], das: [820, 400, 2.1], chr: [460, 380, 2.1], yard: [640, 420, 1.15], page: [0, 0, 1], mim: [820, 400, 2] };
+const X = { giorgos: 900, neos: 1080, vasilis: 300, lochias: 150, hamad: 480 };
+const CAMS = { wide: [640, 400, 1], gio: [900, 360, 2], neo: [1060, 380, 2], vas: [300, 420, 2], loch: [170, 380, 2], ham: [480, 420, 2], stage: [960, 380, 1.5] };
 const steps = [
-  { act: 'draw', d: 3.2, cam: 'paper' },
-  { act: 'crow', d: 2.4, cam: 'temple' },
-  { who: 'daskalos', cam: 'das', mark: 'ink', el: 'Το μελάνι που ορίζει τη μοίρα.', en: 'The ink that decides fate.' },
-  { who: 'daskalos', cam: 'das', el: 'Ό,τι ζωγραφίσεις… θα συμβεί.', en: 'Whatever you draw… will happen.' },
-  { who: 'daskalos', cam: 'temple', el: 'Γι\' αυτό… ζωγράφιζε προσεκτικά.', en: 'So… draw carefully.' },
-  { who: 'christos', cam: 'chr', mark: 'sugoi', el: '…Sugoi.', en: '…Sugoi.', gap: .8 },
-  { act: 'cut', d: 2.4, cam: 'page' },
-  { who: 'mimis', cam: 'mim', el: 'Τι είναι αυτό;', en: 'What is that?' },
-  { who: 'christos', cam: 'page', mark: 'vol3', el: 'Τόμος τρία.', en: 'Volume three.' },
-  { who: 'mimis', cam: 'mim', el: 'Πάλι δεν θα γίνει έτσι.', en: "Again, that's not how it'll go." },
-  { who: 'christos', cam: 'yard', el: 'Ναι, ναι…', en: 'Yeah, yeah…' },
-  { act: 'end', d: 1.6, cam: 'page' },
+  { act: 'room', d: 2.6, cam: 'wide' },
+  { who: 'giorgos', cam: 'gio', el: 'Κύριοι. Η ΣίταAI δεν πουλάει προϊόν. Πουλάει… ευκαιρία.', en: "Gentlemen. ΣίταAI doesn't sell a product. It sells… opportunity." },
+  { who: 'giorgos', cam: 'stage', el: 'Αγοράζετε ένα πακέτο. Φέρνετε δύο φίλους. Και μετά απλώς… περιμένετε.', en: 'You buy a package. You bring two friends. And then you just… wait.' },
+  { who: 'neos', cam: 'neo', el: 'Εγώ έφερα αυτόν.', en: 'I brought him.' },
+  { who: 'giorgos', cam: 'gio', el: 'Κι αυτός;', en: 'And him?' },
+  { who: 'neos', cam: 'neo', mark: 'door', el: 'Έφερε έναν άλλο νέο. Είναι στην πόρτα. Φέρνει κι αυτός έναν.', en: "He brought another new guy. He's at the door. He's bringing one too." },
+  { who: 'giorgos', cam: 'stage', el: 'Βλέπετε; Κλιμάκωση.', en: 'See? Scaling.' },
+  { who: 'vasilis', cam: 'vas', mark: 'cig', el: 'Έχεις ένα τσιγάρο;', en: 'Got a cigarette?' },
+  { who: 'giorgos', cam: 'gio', el: 'Με το πακέτο Gold, κύριε Βασίλη, το τσιγάρο είναι δώρο.', en: 'With the Gold package, Mr Vasilis, the cigarette is free.' },
+  { who: 'vasilis', cam: 'vas', mark: 'in', el: '…Μέσα.', en: "…I'm in." },
+  { act: 'rise', d: 1.4, cam: 'loch' },
+  { who: 'lochias', cam: 'loch', mark: 'guard', el: 'Γιώργο. Εσύ δεν υποτίθεται ότι είσαι σκοπιά;', en: "Giorgos. Aren't you supposed to be on guard duty?" },
+  { who: 'giorgos', cam: 'gio', el: 'Κύριε λοχία… είστε μέσα στο Gold. Με δύο αστέρια.', en: "Sergeant… you're in Gold. With two stars." },
+  { who: 'lochias', cam: 'loch', el: '…Συνέχισε.', en: '…Carry on.', gap: .7 },
+  { who: 'hamad', cam: 'ham', mark: 'habibi', el: 'Γιώργο, habibi. Στο Λονδίνο αυτό το λέγαμε πυραμίδα.', en: 'Giorgos, habibi. In London we called this a pyramid.' },
+  { who: 'giorgos', cam: 'gio', el: 'Εδώ το λέμε κίνημα.', en: 'Here we call it a movement.' },
+  { who: 'hamad', cam: 'ham', mark: 'how', el: 'Ωραία λέξη. Πόσα βάζω;', en: 'Nice word. How much do I put in?' },
+  { act: 'end', d: 1.6, cam: 'wide' },
 ];
 let M;
-function crowShape(x, y, s, k = 1, flap = 0) {
-  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
-  const w = Math.sin(flap) * 20;
-  if (k > 0) poly([[-50, 0], [0, -10], [50, 0], [0, 12]], '#141414', { lw: 0 });
-  if (k > .33) poly([[-10, -6], [-70, -40 - w], [-30, -4]], '#141414', { lw: 0 });
-  if (k > .66) poly([[10, -6], [70, -40 - w], [30, -4]], '#141414', { lw: 0 });
-  ctx.restore();
-}
-function page(t) {                 // Χρήστος's page: a satellite shaped like a σίτα, around the Earth
-  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.fillStyle = '#6a5a4a'; ctx.fillRect(0, 0, W, H);
-  rect(200, 40, 880, 640, '#fbf8ef', { lw: 5 });
-  ctx.save(); ctx.beginPath(); ctx.rect(240, 80, 800, 560); ctx.clip();
-  ctx.filter = 'grayscale(1) contrast(1.3)';
-  blob(640, 980, 520, 520, '#dcdcdc', { lw: 5 });
-  sitadel(640, 300, 0, { k: clamp(prog(t, M.cut.a, M.vol3.b) * 1.1), s: .42 });
-  ctx.filter = 'none';
-  ctx.restore();
-  txt('ΤΟΜΟΣ 3', 1000, 60, 20, INK, { font: TVFONT, weight: 900 });
-  const px = 760 + Math.sin(t * 5) * 30, py = 330 + Math.cos(t * 4) * 20;
-  if (t < M.end.a) { pencil(px, py, -2.3); blob(px + 30, py + 40, 28, 22, CAST.christos.skin, { lw: 3 }); }
-  ctx.restore();
-}
+function flip(t) { rect(700, 300, 150, 190, '#fbfaf6', { lw: 3 }); limb([[710, 490], [690, 690]], 4, '#555'); limb([[840, 490], [860, 690]], 4, '#555');
+  for (let r = 0; r < 4; r++) for (let i = 0; i <= r; i++) blob(775 + (i - r / 2) * 26, 330 + r * 36, 8, 8, null, { lw: 2.5, sc: '#1a3a8a' }); txt('€€€', 775, 470, 18, '#2a8a4a', { font: TVFONT, weight: 900 }); }
 function render(t, _M, sc) {
   M = _M;
-  const [, shot] = shotAt(sc, t);
-  if (shot === 'page') { page(t); vignette(.35); return; }
-  const c = shotCam(sc, t, CAMS, .01);
+  const c = shotCam(sc, t, CAMS);
   ctx.save(); applyCam(c);
-  if (shot === 'yard' || shot === 'mim') {
-    yard(t, { light: 'day' });
-    chair(560); person(560, SEAT, 1, CAST.christos, { t, talk: talk('christos', t), legs: 'seat', look: [.2, .6], mouth: 'flat', L: [-30, -110], R: [30 + Math.sin(t * 12) * 8, -100], itemL: 'sketch' });
-    const [mx, mw] = path(t, [[M.cut.a, 1300], [M.L[4].a - .2, 820]]);
-    stand(mx, 'mimis', 1, { t, talk: talk('mimis', t), legs: mw ? 'walk' : 'stand', look: [-1, .4], lid: true, mouth: 'flat', R: [60, -120], itemR: 'cup2', dir: -1 });
-    ctx.restore(); vignette(.3); return;
+  kafeneioInside(t, () => stockChart(t, 1));
+  rect(80, 60, 1120, 80, '#e8392b', { lw: 4 }); txt('ΠΑΘΗΤΙΚΟ ΕΙΣΟΔΗΜΑ ΜΕ LEVERAGE ΣΤΟ ΟΙΚΟΣΥΣΤΗΜΑ ΤΗΣ ΣΙΤΑΣ', 640, 100, 26, '#fff', { font: TVFONT, style: 'italic', weight: 900 });
+  flip(t);
+  const la = (who, rest) => lookAtSpeaker(t, who, X, rest);
+  // the audience, seated: old men, Βασίλης, the λοχίας, Χαμάντ in the front row
+  const aud = [[X.lochias, 'lochias'], [X.vasilis, 'vasilis'], [X.hamad, 'hamad'], [620, 'geros1']];
+  const risen = t > M.rise.a + .5 && t < M.L[11].b + .5;
+  for (const [x, who] of aud) if (!(who === 'lochias' && risen)) chair(x);
+  for (const [x, who] of aud) {
+    if (who === 'lochias' && risen) { stand(x, 'lochias', 1, { t, talk: talk('lochias', t), look: la('lochias', [1, 0]), brow: 'frown', mouth: 'flat', L: [-58, -40], R: [58, -40] }); continue; }
+    person(x, SEAT, 1, CAST[who], { t, talk: talk(who, t), legs: 'seat', look: who === 'lochias' || who === 'hamad' || who === 'vasilis' ? la(who, [1, 0]) : [1, 0], lid: who === 'vasilis' || who === 'geros1', mouth: who === 'hamad' ? 'smile' : 'flat', brow: who === 'hamad' ? 'up' : 'flat',
+      R: who === 'vasilis' && inM(t, M.cig, -.3, 0) ? [60, -260] : [44, -40], L: [-44, -40] });
+    if (who === 'hamad') agal(x, SEAT, 1);
   }
-  temple(t, { season: 'winter', px: 1000 });
-  // the master at a low table with paper; the crow drawn stroke by stroke, then it flies away
-  rect(560, 600, 300, 20, '#6a4a2a', { lw: 3 }); rect(600, 580, 220, 24, '#fbf8ef', { lw: 2 });
-  person(820, SEAT + 40, 1, CAST.daskalos, { t, talk: talk('daskalos', t), legs: 'seat', lid: true, mouth: 'flat', look: t < M.crow.b ? [-.4, .8] : [-1, 0], L: [-30, -60], R: t < M.draw.b ? [-120 + Math.sin(t * 3) * 20, -10] : [30, -60] });
-  const dk = prog(t, M.draw.a + .3, M.draw.b - .3), fly = prog(t, M.crow.a, M.crow.b + 2);
-  if (fly <= 0) crowShape(710, 590, .6, dk);
-  else { const k = ease(fly); crowShape(lerp(710, 1400, k), lerp(590, 50, k) - Math.sin(k * 5) * 40, lerp(.6, 1.2, k), 1, t * 14); }
-  person(460, SEAT + 40, 1, CAST.youngChristos, { t, talk: talk('christos', t), legs: 'seat', look: fly > 0 ? [1, -.6] : [.6, .4], mouth: inM(t, M.sugoi) ? 'open' : 'flat', brow: fly > 0 ? 'up' : 'flat', L: [-30, -60], R: [30, -60] });
+  // Γιώργος (jacket over the uniform) and the νέοι in suits
+  const gtk = talk('giorgos', t);
+  person(X.giorgos, standY(), 1, CAST.giorgosJacket, { t, talk: gtk, legs: 'stand', look: la('giorgos', [-1, 0]), brow: 'up', mouth: 'smile', R: gesture(t, gtk), L: [-80, -150] });
+  stand(X.neos, 'neosSuit', .95, { t, talk: talk('neos', t), look: la('neos', [-1, 0]), brow: 'up', mouth: 'smile', dir: -1, L: [-40, -100], itemL: 'clipboard' }); tie(X.neos, standY(.95), .95);
+  stand(X.neos + 120, 'neosSuit', .8, { t: t + 3, look: [-1, 0], brow: 'up', mouth: 'smile', dir: -1 }); tie(X.neos + 120, standY(.8), .8);
+  if (t > M.door.a) { doorway(1250, 690, 120, 290, '#f4e8c8', 1); stand(1250, 'neosSuit', .7, { t: t + 5, look: [-1, 0], mouth: 'smile', dir: -1 }); }
   ctx.restore();
-  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = .18; ctx.fillStyle = '#c89060'; ctx.fillRect(0, 0, W, H); ctx.restore();
-  if (inM(t, M.crow, .2, 1.2)) { speedLines(900, 250, 50, 160, 'rgba(0,0,0,.4)'); sfxText('ΚΡΑ!', 1000, 160, 60, .1, '#141414', '#fff'); }
-  vignette(.55);
+  vignette(.3);
 }
 return {
-  id: 'scene14', title: '14 · Το μελάνι', steps, render,
-  events: M => [[M.draw.a + .3, () => { for (let i = 0; i < 3; i++) noise(.3, .12, 2500, 1, 'bandpass', i * .8); }], [M.crow.a, () => { SFX.whoosh(); tone(800, .3, 'sawtooth', .04, .5, .2); }], [M.ink.a - .2, SFX.gong], [M.cut.a, SFX.clack]],
-  ambience: (t, M) => ({ cicada: t > M.cut.a ? .02 : 0 }),
+  id: 'scene14', title: '14 · Το σεμινάριο', steps, render,
+  events: M => [[M.room.a + .3, SFX.applause], [M.in.b, SFX.ding], [M.rise.a + .4, SFX.creak], [M.how.b, SFX.jingle]],
+  ambience: () => ({ cicada: .008 }),
 };
 })());

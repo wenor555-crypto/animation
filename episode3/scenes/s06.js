@@ -2,8 +2,9 @@
    Γιώργος's signature arrives at once. Stamp: ΣίταAI 51%. She takes the voice changer off. */
 defineScene((() => {
 const TX = 1040;
-const CAMS = { throne: [TX, 400, 1.7], close: [TX, 440, 2.6], card: [0, 0, 1], wide: [640, 400, .95] };
+const CAMS = { step: [0, 0, 1], throne: [TX, 400, 1.7], close: [TX, 440, 2.6], card: [0, 0, 1], wide: [640, 400, .95] };
 const steps = [
+  { act: 'step', d: 2.6, cam: 'step' },
   { act: 'phone', d: 1.6, cam: 'throne' },
   { who: 'investor', label: ['ΕΠΕΝΔΥΤΗΣ', 'INVESTOR'], cam: 'close', mark: 'send', el: 'Στείλτε το συμβόλαιο.', en: 'Send the contract.' },
   { act: 'stamp', d: 2.4, cam: 'card' },
@@ -16,6 +17,7 @@ const steps = [
 let M;
 function render(t, _M, sc) {
   M = _M;
+  if (t < M.step.b) { stepCard(t, 2, prog(t, M.step.a, M.step.b)); return; }
   const [, shot] = shotAt(sc, t);
   if (shot === 'card') { contractCard(t, { sign: 1, stamp: prog(t, M.stamp.a + .6, M.stamp.a + 1.4), line: 'Πωλητής: Γιώργος · Αγοραστής: Offshore Holdings (Μπαχάμες)' }); return; }
   const c = shotCam(sc, t, CAMS, .01);
@@ -40,7 +42,7 @@ function render(t, _M, sc) {
 }
 return {
   id: 'scene06', title: '6 · 51%', steps, render,
-  events: M => [[M.phone.a + .2, SFX.phone], [M.stamp.a + .6, SFX.slam], [M.stamp.a + .7, SFX.fanfare], [M.off.a + .6, SFX.pop], [M.off.a + 1.1, SFX.thud]],
+  events: M => [[M.step.a + .1, SFX.boom], [M.step.a + .6, SFX.pop], [M.phone.a + .2, SFX.phone], [M.stamp.a + .6, SFX.slam], [M.stamp.a + .7, SFX.fanfare], [M.off.a + .6, SFX.pop], [M.off.a + 1.1, SFX.thud]],
   ambience: () => ({ hum: .04 }),
 };
 })());

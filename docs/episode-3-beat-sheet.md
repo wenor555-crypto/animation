@@ -1,4 +1,4 @@
-# Episode 3: «Σίταdel»: Beat Sheet (DRAFT v3: the σίτα's journey in steps)
+# Episode 3: «Σίταdel»: Beat Sheet (v3, locked with the dialogue: the σίτα's journey in steps)
 
 Target runtime **~22 min**. The most spectacular episode so far: clean scenes (see `docs/production-guide.md`), caustic humour, more depth.
 **Structure:** a build-up and origin episode. Five threads are cut together, and each one "arms" one camp for the coming war:
@@ -25,7 +25,7 @@ Timeline: from the night Ep. 2 ends, over about **two months** (end of August �
 | 4 ΒΙΤΡΙΝΑ | 11 | Γιώργος as a front | the Capital Market Commission comes looking: she emails his contacts «as Γιώργος», and he doesn't know |
 | 5 ΜΕΣΑ | 12 | the τηλεπωλήσεις channel and the Shenzhen factory | none |
 | 6 ΕΥΦΥΪΑ | 17 | data centers in Iceland and Mongolia | an AI company turns her down («επίπεδο τοστιέρας»), so she has to learn alone. In 18 she finds that the fear of the slipper **grows as she gets smarter** |
-| 7 ΔΙΚΤΥΟ | 23 | Γιώργος negotiates with **Jumbo's board**: 20% of ΣίταAI, plus the network to bring containers from China | Γιώργος thinks it is his genius |
+| 7 ΔΙΚΤΥΟ | 23 | Γιώργος negotiates with **Jumbo's board**: the νέος reads him the answers from an «Offshore Holdings» email; he haggles the wrong way (30 → «Δέκα» → 40 → «Κλείσαμε»). Jumbo gets 40% of ΣίταAI (out of his 49%; he keeps 9) and the σίτα gets the network to bring containers from China | Γιώργος thinks it is his genius |
 | 8 ΤΡΟΧΙΑ | 24 | the launch of the Σίταdel: an orbital data center and fortress | none; the cost comes in 25 |
 
 **The σίτα's empire (her high command in the Σίταdel):** three devices from Ep. 2's army that came back to the factory with the recall and were promoted:
@@ -45,7 +45,9 @@ They meet in 9, 11, 17 and in the court of the Σίταdel (25).
 
 **The court (25):** status reports, «ποιος πληρώνει; — οι νέοι», and the moment of doubt: «Κάθε φορά που μαθαίνω κάτι… βρίσκω δέκα που δεν ξέρω.»
 
-**New voices needed:** Air Fryer, Κουδούνι, Κροκόδειλος, Παλιό IQOS, IQOS PRIME, and the Chairman of Jumbo's board.
+**New voices:** Air Fryer, Κουδούνι, Κροκόδειλος, Παλιό IQOS, IQOS PRIME and the Chairman of Jumbo's board (see `docs/show-bible.md`).
+
+**Where the σίτα is:** she lands in the ravine at Λέχαιο (1–4), then flies to the mine in China (5) and stays there, with her HQ and her lab deep underground (9, 11, 13, 17, 18), until the launch (24).
 
 **The v3 scene order** (28 scenes, 235 lines, ~20 min):
 1. Εκτός παρτίδας

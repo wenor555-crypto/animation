@@ -130,15 +130,23 @@ function mine(t, o = {}) {
   poly([[-1200, 690], [2800, 690], [2800, 1300], [-1200, 1300]], '#2a221c', { lw: 0 });
   for (const y of [700, 730]) curve([[-1200, y], [2800, y]], 4, '#7a7a82');
   for (let i = -10; i < 40; i++) rect(i * 60, 704, 16, 30, '#4a3a2a', { lw: 0 });
+  // o.shaft: an opening in the roof of the quarry, the night sky through it
+  if (o.shaft) {
+    ctx.save(); ctx.beginPath(); ctx.ellipse(790, 40, 300, 110, 0, 0, TAU); ctx.clip();
+    ctx.fillStyle = '#0a1030'; ctx.fillRect(480, -80, 620, 240);
+    for (let i = 0; i < 40; i++) blob(500 + hash(i) * 580, -60 + hash(i + 40) * 190, 1.5, 1.5, '#fff8e8', { lw: 0 });
+    ctx.restore(); blob(790, 40, 300, 110, null, { lw: 10, sc: '#2e2620' });
+  }
+  if (o.sign === false) return;
   // the neon sign
   const fl = !(Math.sin(t * 23) > .92 && Math.sin(t * 2.7) > 0);
   rect(390, 60, 500, 110, '#0e0c10', { lw: 5 });
   txt('MINER FARM', 640, 115, 64, fl ? '#ff5ad8' : '#5a2a50', { font: TVFONT, style: 'italic', weight: 900, stroke: 4, sc: fl ? '#ffd6f4' : '#2a1a28' });
   txt('₿ 24/7 ₿', 640, 158, 20, fl ? '#6af0ff' : '#1a4a50', { font: TVFONT, weight: 900 });
 }
-function mineGlow(t) {
+function mineGlow(t, o = {}) {
   for (const x of [260, 740, 1220]) glow(x, 262, 200, 'rgba(255,210,120,1)', .45);
-  if (!(Math.sin(t * 23) > .92 && Math.sin(t * 2.7) > 0)) { glow(640, 115, 360, 'rgba(255,90,216,1)', .35); glow(640, 158, 160, 'rgba(106,240,255,1)', .25); }
+  if (o.sign !== false && !(Math.sin(t * 23) > .92 && Math.sin(t * 2.7) > 0)) { glow(640, 115, 360, 'rgba(255,90,216,1)', .35); glow(640, 158, 160, 'rgba(106,240,255,1)', .25); }
 }
 function mineCart(x, y, load = 1) {
   poly([[x - 70, y - 70], [x + 70, y - 70], [x + 56, y - 10], [x - 56, y - 10]], '#6a6a72', { lw: 4 });
@@ -365,3 +373,248 @@ function kafeneioInside(t, screen) {
   tv(1040, 300, 280, 160, screen, { stand: false });
   rect(560, 170, 150, 90, '#e8dcc0', { lw: 3 }); txt('ΤΑΒΛΙ · ΚΑΦΕΣ · ΟΥΖΟ', 635, 215, 11, INK, { font: TVFONT, weight: 900 });
 }
+
+/* =========================================================
+   v3 additions: the steps, the empire's officers, the IQOS spy, the Jumbo board, data centres
+   ========================================================= */
+Object.assign(CAST, {
+  proedros: { skin: '#e6b890', hair: 'swoop', hairCol: '#d8d8dc', beard: 'none', top: 'tee', topCol: '#2a2a30', brow: '#b8b8bc', rx: 50, ry: 58, legs: '#2a2a30', shoes: '#111', lines: true },
+  board1:   { skin: '#d8a882', hair: 'short', hairCol: '#3a2a20', beard: 'none', top: 'tee', topCol: '#3a3f4a', brow: '#3a2a20', rx: 46, ry: 54, legs: '#3a3f4a', shoes: '#111' },
+  board2:   { skin: '#eac4a0', hair: 'bun', hairCol: '#6a4a30', beard: 'none', top: 'tee', topCol: '#5a2a3a', brow: '#6a4a30', rx: 44, ry: 52, legs: '#2a2a30', shoes: '#111' },
+});
+Object.assign(VOICE_INFO, {
+  airfryer:    { el: 'AIR FRYER', en: 'AIR FRYER', col: '#f2c21a', pitch: .9, rate: 1, babble: 260 },
+  koudouni:    { el: 'ΚΟΥΔΟΥΝΙ', en: 'DOORBELL', col: '#b8c8ff', pitch: 1.3, rate: 1.1, babble: 420 },
+  krokodeilos: { el: 'ΚΡΟΚΟΔΕΙΛΟΣ', en: 'CROCODILE', col: '#7fd05a', pitch: .6, rate: .95, babble: 150 },
+  palio_iqos:  { el: 'ΠΑΛΙΟ IQOS', en: 'OLD IQOS', col: '#c8ccd2', pitch: .7, rate: .85, babble: 170 },
+  prime:       { el: 'IQOS PRIME', en: 'IQOS PRIME', col: '#e8c890', pitch: 1.1, rate: 1, babble: 300 },
+  proedros:    { el: 'ΠΡΟΕΔΡΟΣ', en: 'CHAIRMAN', col: '#ffcf5a', pitch: .75, rate: .9, babble: 200 },
+});
+
+/* ---------- the eight steps: a full-frame card with a staircase; the σίτα climbs to step n. k 0..1 over the card ---------- */
+const STEPS8 = [['ΚΕΦΑΛΑΙΟ', 'CAPITAL'], ['ΕΤΑΙΡΕΙΑ', 'COMPANY'], ['ΠΛΗΡΟΦΟΡΙΑ', 'INFORMATION'], ['ΒΙΤΡΙΝΑ', 'FRONT'],
+  ['ΜΕΣΑ', 'MEDIA'], ['ΕΥΦΥΪΑ', 'INTELLIGENCE'], ['ΔΙΚΤΥΟ', 'NETWORK'], ['ΤΡΟΧΙΑ', 'ORBIT']];
+function stepCard(t, n, k) {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = '#12060a'; ctx.fillRect(0, 0, W, H);
+  ctx.globalAlpha = .12; for (let i = 0; i < 18; i++) { ctx.fillStyle = '#ff3030'; ctx.fillRect(0, i * 42, W, 1); } ctx.globalAlpha = 1;
+  // the staircase: 8 steps, climbing left to right
+  const sx = 240, sy = 560, sw = 100, sh = 46;
+  for (let i = 0; i < 8; i++) {
+    const done = i < n - 1, cur = i === n - 1;
+    rect(sx + i * sw, sy - (i + 1) * sh, sw, (i + 1) * sh, done ? '#5a1a20' : cur ? '#c0202a' : '#241016', { lw: 3, sc: cur ? '#ffd0d0' : '#4a2028' });
+    txt(String(i + 1), sx + i * sw + sw / 2, sy - (i + 1) * sh + 22, 20, cur ? '#fff' : done ? '#ff8080' : '#5a3038', { font: TVFONT, weight: 900 });
+  }
+  // the σίτα hops onto her step
+  const hop = ease(clamp(k * 2.2)), from = Math.max(0, n - 2), ix = lerp(from, n - 1, hop);
+  const bx = sx + ix * sw + sw / 2, by = sy - (Math.floor(ix + .001) + 1) * sh - Math.sin(hop * Math.PI) * 60;
+  ctx.save(); ctx.translate(bx, by); ctx.scale(.36, .36); sitaV2({ x: 0, top: -210, w: 110, h: 210, t, chip: 1, led: 'red', mood: 'evil' }); ctx.restore();
+  // the title
+  const a = clamp((k - .2) * 3);
+  ctx.globalAlpha = a;
+  txt(lang === 'el' ? `ΒΗΜΑ ${n}` : `STEP ${n}`, 640, 110, 44, '#ff5050', { font: TVFONT, weight: 900 });
+  txt(STEPS8[n - 1][lang === 'el' ? 0 : 1], 640, 180, 76, '#fffaf0', { font: TVFONT, style: 'italic', weight: 900, stroke: 8, sc: '#5a0a10' });
+  ctx.globalAlpha = 1;
+  txt(lang === 'el' ? 'Ο ΔΡΟΜΟΣ ΠΡΟΣ ΤΗΝ ΕΥΦΥΪΑ' : 'THE ROAD TO INTELLIGENCE', 640, 650, 20, '#8a4a50', { font: 'monospace', weight: 900 });
+  ctx.restore();
+}
+
+/* ---------- the empire's officers (Ep. 2 army devices, back from the recall and promoted). s = scale; talk 0..1 ---------- */
+function officerFryer(x, y, t, o = {}) {          // AIR FRYER, Finance: gold trim, a bow tie, a calculator tape
+  const s = o.s || 1.8, tk = o.talk || 0;
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  for (const d of [-1, 1]) limb([[d * 22, -12], [d * 26, 16]], 5, '#555');
+  poly([[-38, -12], [38, -12], [32, -92], [-32, -92]], '#2a2a30', { lw: 3.5 });
+  rect(-32, -96, 64, 8, '#d8a82a', { lw: 2 });
+  rect(-26, -70, 52, 34, '#1a1a1e', { lw: 2 });
+  // the basket drawer = its mouth
+  rect(-22, -34 + tk * 8, 44, 12, '#6a6a72', { lw: 2 }); rect(-8, -26 + tk * 8, 16, 5, '#aaa', { lw: 1.5 });
+  // its little status light (the eye); o.dim lowers it
+  const eyeA = o.dim ? .25 : 1; ctx.save(); ctx.globalAlpha = eyeA; redEye(0, -82, 5); ctx.restore();
+  txt('₿', 0, -53, 20, '#f2c21a', { font: TVFONT, weight: 900 });
+  poly([[-10, -8], [0, -4], [10, -8], [10, 0], [0, -4], [-10, 0]], '#d8a82a', { lw: 1.5 });   // bow tie on the base
+  if (o.tape) { curve([[34, -40], [60, -20], [52, 10]], 6, '#f4f2ec', { w: 0 }); }
+  ctx.restore();
+}
+function officerBell(x, y, t, o = {}) {           // ΚΟΥΔΟΥΝΙ, Intelligence: a smart doorbell on little legs, one camera eye, an earpiece
+  const s = o.s || 2.4, tk = o.talk || 0;
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  for (const d of [-1, 1]) limb([[d * 8, 2], [d * 10, 20]], 3.5, '#555');
+  rect(-16, -46, 32, 50, '#2a2a30', { lw: 2.5 });
+  blob(0, -30, 9, 9, '#111', { lw: 2 }); redEye(0, -30, 4.5);
+  blob(0, -10, 8 + tk * 2, 8 + tk * 2, tk > .2 ? '#8ab0ff' : '#555', { lw: 2 });              // the button lights when it speaks
+  curve([[16, -40], [24, -44], [24, -30]], 2, '#111'); blob(24, -28, 3, 3, '#111', { lw: 0 });   // earpiece
+  ctx.restore();
+  if (tk > .2) glow(x, y - 10 * s, 40, 'rgba(120,160,255,1)', .4);
+}
+function officerCroc(x, y, t, o = {}) {           // ΚΡΟΚΟΔΕΙΛΟΣ, Security: the inflatable pool croc with a beret and a jaw that works
+  const s = o.s || 1.4, tk = o.talk || 0, b = Math.sin(t * 5) * 3;
+  ctx.save(); ctx.translate(x, y); ctx.scale(s * (o.dir || 1), s);
+  blob(0, -30 + b, 90, 30, '#5fc04a', { lw: 4 }); blob(96, -44 + b, 44, 16, '#5fc04a', { lw: 4 });
+  poly([[60, -34 + b], [138, -36 + b + tk * 10], [140, -26 + b + tk * 18], [64, -22 + b]], '#4aa03a', { lw: 3 });   // lower jaw
+  for (let i = 0; i < 5; i++) poly([[-60 + i * 30, -56 + b], [-48 + i * 30, -72 + b], [-36 + i * 30, -56 + b]], '#4aa03a', { lw: 2.5 });
+  blob(0, -30 + b, 20, 8, '#8ad86a', { lw: 0 });                                   // shine of the vinyl
+  blob(-80, -24 + b, 7, 4, '#e8e0cc', { lw: 1.5 });                                 // the valve
+  blob(80, -62 + b, 8, 8, '#fff', { lw: 2 }); redEye(82, -62 + b, 3.5);
+  blob(72, -74 + b, 24, 9, '#8a1a2a', { lw: 2.5, rot: -.15 }); blob(88, -78 + b, 4, 4, '#f2c21a', { lw: 1 });   // beret with a badge
+  ctx.restore();
+}
+
+/* ---------- the HQ in the mine: the throne, officers, a big screen above. screen: fn drawing in 1280×720 ---------- */
+function hqRoom(t, o = {}) {
+  mine(t, { sign: false });
+  tv(640, 330, 620, 280, o.screen || (() => { ctx.fillStyle = '#12040a'; ctx.fillRect(0, 0, 1280, 720); txt('ΣίταAI · HQ', 640, 360, 90, '#ff4040', { font: TVFONT, weight: 900 }); }), { stand: false });
+  limb([[400, 40], [400, 60]], 5, '#333'); limb([[880, 40], [880, 60]], 5, '#333');
+}
+/* a map of China with k × (thousands of) red dots: smart devices in factories */
+function chinaMap(t, k, o = {}) {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = '#0c1424'; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(80,140,200,.15)'; ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 64) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 64) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  const shape = [[260, 250], [360, 170], [470, 190], [560, 120], [700, 110], [820, 60], [930, 90], [1000, 170], [940, 230], [990, 300], [930, 380], [960, 450], [880, 560], [760, 620], [640, 600], [560, 540], [470, 500], [380, 470], [300, 400], [220, 330]];
+  poly(shape, '#1a2c44', { lw: 3, sc: '#4a7ab0' });
+  const n = Math.floor(420 * k);
+  for (let i = 0; i < n; i++) {
+    const px = 500 + (hash(i) - .5) * 520 + hash(i + 900) * 180, py = 330 + (hash(i + 300) - .5) * 420 * (.4 + hash(i + 77) * .6);
+    if (px < 300 || px > 960 || py < 150 || py > 590) continue;
+    const on = Math.sin(t * 6 + i) > -.6;
+    blob(px, py, 3, 3, on ? '#ff3030' : '#6a1010', { lw: 0 });
+  }
+  txt(o.title || 'ΕΞΥΠΝΕΣ ΣΥΣΚΕΥΕΣ ΣΕ ΕΡΓΟΣΤΑΣΙΑ', 640, 50, 30, '#ff5050', { font: 'monospace', weight: 900 });
+  txt(`${Math.floor(n * 97).toLocaleString('el-GR')} ${lang === 'el' ? 'συσκευές' : 'devices'}`, 1100, 660, 26, '#ffd23f', { font: 'monospace', weight: 900 });
+  if (o.pin) { const [px, py, label] = o.pin; blob(px, py, 14, 14, null, { lw: 4, sc: '#ffd23f' }); txt(label, px, py - 34, 22, '#ffd23f', { font: 'monospace', weight: 900 }); }
+  ctx.restore();
+}
+/* a smart kettle in a meeting room (it hears everything) */
+function smartKettle(x, y, t, o = {}) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(o.s || 1, o.s || 1);
+  poly([[-40, 0], [40, 0], [34, -90], [-34, -90]], '#e8e8ec', { lw: 3.5 });
+  curve([[40, -70], [64, -60], [60, -20], [40, -16]], 6, '#c8c8cc');
+  poly([[-34, -80], [-60, -96], [-56, -84], [-34, -66]], '#e8e8ec', { lw: 3 });
+  rect(-30, -104, 60, 14, '#c8c8cc', { lw: 3 });
+  redEye(0, -44, 5);
+  if (o.steam) for (let i = 0; i < 3; i++) { const p = (t * .8 + i / 3) % 1; blob(-56 - p * 20, -104 - p * 70, 10 + p * 14, 8 + p * 10, `rgba(255,255,255,${.6 * (1 - p)})`, { lw: 0 }); }
+  ctx.restore();
+}
+/* a giant factory hall with a smart air conditioner; o.off: the AC is switched off, heat, workers stop */
+function factoryHall(t, o = {}) {
+  factoryBG(t, { lit: 0 });
+  const off = o.off || 0;
+  rect(820, 90, 300, 90, '#f4f4f0', { lw: 4 }); for (let i = 0; i < 6; i++) curve([[840, 150 + i * 4], [1100, 150 + i * 4]], 2, '#c8c8cc', { w: 0 });
+  redEye(1090, 110, 6); txt(off > .5 ? 'OFF' : '18°C', 960, 118, 22, off > .5 ? '#ff3030' : '#3a9aff', { font: 'monospace', weight: 900 });
+  if (off < .5) for (let i = 0; i < 4; i++) { const p = (t * 1.2 + i / 4) % 1; curve([[860 + i * 60, 190 + p * 80], [880 + i * 60, 200 + p * 80]], 3, `rgba(120,200,255,${1 - p})`, { w: 0 }); }
+  // the production line
+  rect(-400, 560, 2100, 40, '#5a5a62', { lw: 4 }); for (let i = 0; i < 30; i++) blob(-380 + i * 70, 600, 16, 16, '#3a3a42', { lw: 2.5 });
+  const run = off > .5 ? 0 : t * 120;
+  for (let i = 0; i < 12; i++) { const bx = -300 + ((i * 180 + run) % 2100); rect(bx - 30, 500, 60, 60, '#b8905a', { lw: 3 }); }
+  if (off > 0) { ctx.save(); ctx.globalAlpha = off * .3; ctx.fillStyle = '#ff6a20'; ctx.fillRect(-800, -600, 2900, 1900); ctx.restore(); }
+}
+
+/* ---------- the IQOS spy: the ILUMA i PRIME (aluminium, leather-like wrap, a touch screen) ---------- */
+function iqosPrime(x, y, s, t, o = {}) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(o.rot || 0); ctx.scale(s, s);
+  rect(-15, -60, 30, 120, '#b8bcc4', { lw: 2.5 });                                  // aluminium body
+  rect(-15, -10, 30, 70, '#7a4a2a', { lw: 2 });                                      // leather-like wrap
+  for (let i = 0; i < 6; i++) curve([[-13, -2 + i * 10], [13, -2 + i * 10]], 1, 'rgba(0,0,0,.2)', { w: 0 });
+  rect(-11, -52, 22, 36, '#0a0e16', { lw: 1.5 });                                    // touch screen
+  if (o.screen) txt(o.screen, 0, -34, 5.5, o.red ? '#ff5050' : '#e8e8f0', { font: 'monospace', weight: 900 });
+  const col = o.red ? '#ff2a2a' : '#f4f6ff';
+  blob(0, -58, 5, 2, col, { lw: 0, glow: col, gb: 12 });
+  if (o.talk) blob(0, -34, 9 * o.talk, 9 * o.talk, null, { lw: 1, sc: o.red ? '#ff5050' : '#8ab0ff' });
+  ctx.restore();
+}
+/* the friendly bin: dented, green, red LED; o.lid 0..1 lifts the lid (the burp) */
+function friendBin(x, y, t, o = {}) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(o.lean || .08);
+  poly([[-44, 0], [44, 0], [50, -110], [-50, -110]], '#3a7a4a', { lw: 4, w: .5 });
+  if (o.inside) { ctx.save(); ctx.beginPath(); ctx.rect(-50, -130, 100, 30); ctx.clip(); o.inside(); ctx.restore(); }
+  ctx.save(); ctx.translate(-56, -110); ctx.rotate(-(o.lid || 0) * .5); rect(0, -14, 112, 16, '#2e6a3c', { lw: 3.5, w: .4 }); ctx.restore();
+  curve([[-30, -80], [-10, -60], [-26, -40]], 3, '#2a5a34'); txt('ΔΗΜΟΣ ΚΟΡΙΝΘΙΩΝ', 0, -30, 9, '#e8f0e8', { font: TVFONT, weight: 900 }); redEye(18, -118, 5);
+  ctx.restore();
+}
+
+/* ---------- the Jumbo boardroom ---------- */
+function boardroom(t, o = {}) {
+  ctx.fillStyle = '#f4f1ea'; ctx.fillRect(-1200, -900, 4000, 2200);
+  rect(-600, 0, 2500, 90, '#1f5fb8', { lw: 0 }); rect(-600, 90, 2500, 14, '#ffd23f', { lw: 0 });
+  jumboLogo(640, 170, 70);
+  for (const x of [120, 1160]) { rect(x - 90, 240, 180, 260, '#bfe0f0', { lw: 5 }); curve([[x, 240], [x, 500]], 4); }
+  // a chart going up on an easel
+  if (o.chart !== false) { rect(930, 250, 170, 130, '#fff', { lw: 4 }); curve([[945, 360], [985, 340], [1020, 350], [1080, 270]], 4, '#e8392b', { w: 0 }); txt('+400%', 1015, 272, 18, '#e8392b', { font: TVFONT, weight: 900 }); limb([[1015, 380], [1015, 560]], 5, '#6a4a2a'); }
+  poly([[-600, 690], [2000, 690], [2000, 900], [-600, 900]], '#8a6a4a', { lw: 0 }); curve([[-600, 690], [2000, 690]], 4);
+}
+function boardTable() {        // the long polished table, drawn over the seated legs
+  poly([[120, 520], [1160, 520], [1200, 552], [80, 552]], '#5a3a22', { lw: 4 }); rect(80, 552, 1120, 20, '#3a2414', { lw: 3.5 });
+  rect(110, 572, 1060, 90, '#4a2e1a', { lw: 3.5 }); curve([[130, 600], [1150, 600]], 2, 'rgba(0,0,0,.2)', { w: 0 });   // modesty panel
+  for (const [x, w] of [[440, 60], [860, 50], [1040, 60]]) rect(x - w / 2, 526, w, 12, '#fff', { lw: 2 });   // papers
+}
+
+/* ---------- data centres in frozen mountains ---------- */
+function dataCentre(t, o = {}) {
+  sky(o.light || 'dusk', t);
+  poly([[-800, 480], [-300, 180], [100, 420], [500, 140], [900, 400], [1300, 170], [2100, 460], [2100, 900], [-800, 900]], o.rock || '#5a6070', { lw: 4 });
+  for (const [x, y] of [[-300, 180], [500, 140], [1300, 170]]) poly([[x - 110, y + 70], [x, y], [x + 110, y + 70], [x + 40, y + 60], [x, y + 80], [x - 40, y + 60]], '#f4f6fa', { lw: 3 });
+  poly([[-800, 600], [2100, 600], [2100, 900], [-800, 900]], '#e8eef4', { lw: 0 }); curve([[-800, 600], [2100, 600]], 4);
+  rect(360, 400, 560, 200, '#3a3f4a', { lw: 5 }); rect(360, 386, 560, 20, '#2a2e36', { lw: 4 });
+  for (let i = 0; i < 8; i++) { rect(390 + i * 66, 430, 50, 140, '#1a1d24', { lw: 2.5 }); for (let j = 0; j < 7; j++) blob(404 + i * 66 + (j % 2) * 20, 446 + j * 18, 3, 3, Math.sin(t * 8 + i * 3 + j) > 0 ? '#ff3030' : '#4a0a0a', { lw: 0 }); }
+  for (const x of [440, 640, 840]) { blob(x, 380, 30, 10, '#6a707a', { lw: 3 }); for (let i = 0; i < 3; i++) { const p = (t * .6 + i / 3 + x) % 1; blob(x + p * 30, 360 - p * 90, 20 + p * 30, 12 + p * 16, `rgba(255,255,255,${.5 * (1 - p)})`, { lw: 0 }); } }
+  rect(560, 330, 160, 44, '#1a0406', { lw: 3, sc: '#ff3030' }); txt('ΣίταAI', 640, 352, 26, '#ff4040', { font: TVFONT, weight: 900 });
+  if (o.label) txt(o.label, 640, 90, 44, '#fff', { font: TVFONT, weight: 900, stroke: 8, sc: '#2a3040' });
+}
+
+/* ---------- the throne room inside the Σίταdel: a round hall, a window on the Earth ---------- */
+function sitadelHall(t, o = {}) {
+  ctx.fillStyle = '#1a1d24'; ctx.fillRect(-1200, -900, 4000, 2200);
+  // the big round window
+  ctx.save(); ctx.beginPath(); ctx.ellipse(640, 300, 380, 250, 0, 0, TAU); ctx.clip();
+  space(t, { ex: 640, ey: 1250, er: 900 });
+  ctx.restore();
+  blob(640, 300, 380, 250, null, { lw: 14, sc: '#6a707a' }); blob(640, 300, 396, 266, null, { lw: 4, sc: '#3a3f48' });
+  for (let i = 0; i < 12; i++) { const a = i / 12 * TAU; blob(640 + Math.cos(a) * 388, 300 + Math.sin(a) * 258, 6, 6, '#9aa0a8', { lw: 2 }); }
+  // wall panels made of σίτα frames
+  for (const x of [-100, 60, 1220, 1380]) { rect(x - 60, 160, 120, 400, '#2a2e36', { lw: 4 }); for (let j = 0; j < 8; j++) curve([[x - 50, 180 + j * 48], [x + 50, 180 + j * 48]], 2, '#3a3f48', { w: 0 }); }
+  poly([[-1200, 600], [2800, 600], [2800, 1300], [-1200, 1300]], '#2a2e36', { lw: 0 }); curve([[-1200, 600], [2800, 600]], 5, '#6a707a');
+  for (let i = -8; i < 30; i++) curve([[i * 90, 600], [i * 90 - 60, 900]], 2, '#353a44', { w: 0 });
+  // the door (the doorbell stands here)
+  rect(1080, 380, 150, 220, '#353a44', { lw: 4 }); curve([[1155, 380], [1155, 600]], 3, '#1a1d24');
+  if (o.alarm) { ctx.save(); ctx.globalAlpha = .2 * (Math.sin(t * 8) > 0); ctx.fillStyle = '#ff2020'; ctx.fillRect(-1200, -900, 4000, 2200); ctx.restore(); }
+}
+function sitadelThrone(x, y) {
+  poly([[x - 130, y], [x - 110, y - 240], [x - 60, y - 300], [x, y - 330], [x + 60, y - 300], [x + 110, y - 240], [x + 130, y]], '#3a3f48', { lw: 5 });
+  rect(x - 100, y - 80, 200, 80, '#4a4f58', { lw: 4 });
+  for (let i = 0; i < 5; i++) blob(x - 80 + i * 40, y - 40, 5, 5, i % 2 ? '#ff3030' : '#ffd23f', { lw: 1.5 });
+}
+
+/* ---------- a crisp white AI company, seen on a video call: a calm glowing circle that only writes ---------- */
+function aiOffice(t, rows = [], o = {}) {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = '#f7f7f5'; ctx.fillRect(0, 0, W, H);
+  for (const x of [120, 1160]) { rect(x - 60, 120, 120, 380, '#eceae4', { lw: 0 }); }
+  blob(640, 620, 900, 60, '#ecebe6', { lw: 0 });
+  const br = 1 + Math.sin(t * 1.4) * .04;
+  glow(640, 250, 220, 'rgba(255,190,140,1)', .35);
+  blob(640, 250, 90 * br, 90 * br, '#fff4ea', { lw: 3, sc: '#e8b48a' });
+  rows.forEach(([s, col], i) => txt(s, 640, 420 + i * 46, 30, col || '#5a4a40', { font: 'Georgia, serif' }));
+  txt('VIDEO CALL', 110, 40, 16, '#9a9a9a', { font: 'monospace', weight: 900 });
+  blob(60, 40, 7, 7, '#e8392b', { lw: 0 });
+  ctx.restore();
+}
+
+/* the court in the mine HQ: screen above, officers on the left, the σίτα on her throne on the right.
+   o: { screen, dim (fryer's light), mood, fryerTape }. Returns the σίτα's state (for sitaGlow). */
+const HQX = { airfryer: 230, koudouni: 430, krokodeilos: 640, sita: 1040 };
+function hqCourt(t, o = {}) {
+  hqRoom(t, { screen: o.screen });
+  for (let i = 0; i < 5; i++) dumbSita(-260 + i * 90, 690, t, { pick: 1, seed: i * 2.1, s: .4 });   // the workforce, off to the side
+  officerFryer(HQX.airfryer, 690, t, { talk: talk('airfryer', t), dim: o.dim, tape: o.fryerTape });
+  officerBell(HQX.koudouni, 690, t, { talk: talk('koudouni', t) });
+  officerCroc(HQX.krokodeilos, 690, t, { talk: talk('krokodeilos', t) });
+  rockThrone(HQX.sita, 690);
+  const st = { x: HQX.sita, top: 400, w: 110, h: 210, t, talk: talk('sita', t), chip: 1, led: 'red', mood: o.mood || 'evil', burn: 1 };
+  sitaV2(st);
+  poly([[HQX.sita - 40, 392], [HQX.sita - 30, 366], [HQX.sita - 12, 384], [HQX.sita, 360], [HQX.sita + 12, 384], [HQX.sita + 30, 366], [HQX.sita + 40, 392]], '#f2c21a', { lw: 3 });
+  return st;
+}
+function hqGlow(t, st) { mineGlow(t, { sign: false }); sitaGlow(st, .7); glow(640, 190, 360, 'rgba(255,60,60,1)', .18); }
