@@ -1,4 +1,5 @@
 [
   { "scene": "scene19", "kind": "DOT", "who": "kostas", "why": "the beer cans standing on the table in front of Κώστας (tops and ring-pulls)" },
-  { "scene": "scene20", "kind": "DUP", "who": "giorgosJacket", "why": "Γιώργος's poster being ripped in two: each half draws its own copy of the printed figure" }
+  { "scene": "scene20", "kind": "DUP", "who": "giorgosJacket", "why": "Γιώργος's poster being ripped in two: each half draws its own copy of the printed figure" },
+  { "scene": "scene23", "kind": "DOT", "who": "hamad", "why": "the IQOS PRIME spy in Χαμάντ's breast pocket, red LED on purpose (Πράκτορας Χρυσό Φίλτρο)" }
 ]
