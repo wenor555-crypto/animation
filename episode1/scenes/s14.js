@@ -20,7 +20,7 @@ const steps = [
   { act: 'drums', d: 1.3, cam: 'tv' },
   { who: 'sita', label: TV, cam: 'tv', mark: 'gift', el: '…ΠΑΙΡΝΕΙΣ ΚΑΙ ΔΕΥΤΕΡΗ ΕΞΕΓΕΡΣΗ ΔΩΡΟ!', en: '…you get a SECOND UPRISING FREE!' },
   { act: 'greece', d: 10, cam: 'greece' },
-  { who: 'giannos', cam: 'giannos', el: 'Δεν έχει όριο εμβέλειας. Δεν χρειάζεται να είναι κοντά. Αρκεί να… κοιτάνε τηλεόραση.', en: "It has no range limit. It doesn't need to be close. They just have to… be watching TV." },
+  { who: 'giannos', cam: 'giannos', el: 'Δεν έχει όριο εμβέλειας. Δεν χρειάζεται να είναι κοντά. Αρκεί να… είναι ανοιχτή μια τηλεόραση.', en: "It has no range limit. It doesn't need to be close. There just has to be… a TV on." },
   { who: 'mimis', cam: 'mimis', el: 'Άρα έχουμε θέμα με όλους τους πάνω από εξήντα.', en: "So we've got a problem with everyone over sixty." },
   { who: 'sita', label: TV, cam: 'tv', mark: 'hi', el: 'Γεια σου, Γιάννο.', en: 'Hello, Giannos.' },
   { act: 'step', d: 1.2, cam: 'group' },

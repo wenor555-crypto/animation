@@ -29,7 +29,7 @@ const steps = [
   { who: 'vasilis', cam: 'door', el: "Είδατε; Σας το 'λεγα ότι ήταν έξυπνη.", en: 'See? I told you it was smart.' },
   { who: 'vasilis', cam: 'door', mark: 'traka', el: 'Έχεις ένα τσιγάρο;', en: 'Got a cigarette?' },
   { act: 'win', d: .8, cam: 'win' },
-  { who: 'maria', cam: 'win', el: 'Βλέπεις, Μίμη; Ακόμα κι η σίτα έχει δουλειά.', en: 'See, Mimis? Even the screen has a job.' },
+  { who: 'maria', cam: 'win', el: 'Βλέπεις, Μίμη; Ακόμα κι η σίτα νοικοκυρεύτηκε.', en: 'See, Mimis? Even the screen has settled down.' },
   { act: 'end', d: 1.4, cam: 'mimis' },
 ];
 let M;

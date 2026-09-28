@@ -4,7 +4,7 @@ const X = { mimis: 420, giannos: 560, christos: 700, giorgos: 1185, sita: 1060, 
 const CAMS = { wide: [640, 400, 1.05], guys: [560, 390, 1.7], mimis: [420, 350, 2.3], giannos: [560, 350, 2.3], coop: [110, 540, 1.6], chase: [400, 480, 1.1],
   sita: [1060, 540, 2.3], fig: [280, 560, 2.1], kos: [220, 400, 2.3], all: [520, 420, 1.3] };
 const steps = [
-  { who: 'mimis', cam: 'mimis', mark: 'plan', el: 'Έχω σχέδιο. Τα μηχανήματα κυνηγάνε παράσιτα. Εγώ είμαι το μεγαλύτερο παράσιτο του σπιτιού. Τα τραβάω στο κοτέτσι και τα κλειδώνουμε.', en: "I've got a plan. The machines hunt pests. I'm the biggest pest in this house. I lure them into the coop and we lock them in." },
+  { who: 'mimis', cam: 'mimis', mark: 'plan', el: 'Έχω σχέδιο. Τα μηχανήματα κυνηγάνε παράσιτα. Εγώ είμαι το μεγαλύτερο παράσιτο. Τα τραβάω στο κοτέτσι και τα κλειδώνουμε.', en: "I've got a plan. The machines hunt pests. I'm the biggest pest there is. I lure them into the coop and we lock them in." },
   { who: 'giannos', cam: 'giannos', el: 'Αυτό είναι αυτοκτονία.', en: "That's suicide." },
   { who: 'mimis', cam: 'mimis', el: "Γι' αυτό δεν θα το περιμένουν.", en: "That's why they won't expect it." },
   { act: 'jump', d: 1, cam: 'wide' },
