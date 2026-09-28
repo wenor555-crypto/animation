@@ -38,7 +38,8 @@ Set in `episode1/engine.js`, shared by every episode:
 | 5. Keyframe sheets to the creator | the contact sheets from step 3 | the creator approves before any voice or render budget is spent |
 | 6. Voices | `python3 episode1/tools/gen_voices.py --episode episodeN` | every clip passes speech-to-text, or is listed for the creator to check by ear |
 | 7. Build + QA again | `python3 episodeN/build.py`, then `tools/qa.js` on `dist/` | exit code 0 |
-| 8. Render | node: `~/sita-render/render_ep.sh episodeN` | uploads to Drive as `episodeN_rNN.mp4` |
+| 8. HTML to the creator | `episodeN/dist/episodeN.html` (sent as a file) | the creator watches the whole episode in the browser and approves; revisions go back to step 2, 6 or 7. **No MP4 before this approval**: a render costs time on every revision |
+| 9. Render | node: `~/sita-render/render_ep.sh episodeN` | only after step 8; uploads to Drive as `episodeN_rNN.mp4` |
 
 ### What `tools/qa.js` checks
 
