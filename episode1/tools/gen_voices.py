@@ -55,12 +55,13 @@ MAX_TAKES = int(os.environ.get('MAX_TAKES', 4))   # every clip is checked with s
 STRESS = {''.join(c for c in unicodedata.normalize('NFD', w) if unicodedata.category(c) != 'Mn').upper(): w for w in """βήμα ανοιχτή επανάσταση γεμίσουμε μύγες τελειώσαμε απορρίπτεται βασίλης έξυπνος κράτησα
     πινακίδες σπάσω σίτες μηδέν ακριβώς έλεγε πληρώνεις πυράντοχο διαβάστε οδηγίες χρήσης πρώτο δεύτερο πρίζα τρίτο
     τέταρτο πέμπτο αποκτήστε πόδια έκτο κινητήρας έβδομο κουρασμένο ξυπνήσεις δεύτερη εξέγερση δωρεάν συμφωνία ελάτε
-    ηλεκτρικά αυγά μέκα τρισχιλιάδες""".split()}
+    ηλεκτρικά αυγά μέκα τρισχιλιάδες πουτανάκια γαμώ""".split()}
 # spoken form for things TTS might read oddly (the script and subtitles keep the written form)
 SAY = {'38': 'τριάντα οχτώ', '9,90': 'εννιά και ενενήντα', 'ΣίταAI': 'Σίτα Έι Άι',
        'Ωραία σίτα.': 'Ωραία… σίτα.',   # «ωραία σίτα» runs together into «ωραία είσαι τα»
        'Jumbo': 'Τζάμπο',               # the shop, said the Greek way (not «Τζούμπο»)
-       'IQOS': 'Άικος'}                 # the heated-tobacco device, as Greeks say it
+       'IQOS': 'Άικος',                 # the heated-tobacco device, as Greeks say it
+       'ΤΟ AI ΣΑΣ': 'ΤΟ ΈΙ-ΆΙ ΣΑΣ'}     # «AI» the way Greeks say it
 
 
 def req(path, body=None, accept='application/json'):
