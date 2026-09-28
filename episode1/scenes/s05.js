@@ -9,7 +9,7 @@ const steps = [
   { act: 'enter', d: 3.2, cam: 'door' },
   { who: 'myrsini', cam: 'myr', el: 'Παιδιά, καρπουζάκι. Κρύο.', en: 'Guys, watermelon. Cold.' },
   { who: 'giorgos', cam: 'giorgos', el: 'Μυρσίνη, είσαι θεά.', en: "Myrsini, you're a goddess." },
-  { who: 'myrsini', cam: 'myr', mark: 'burn', el: 'Το ξέρω, Γιώργο. Κι εσύ είσαι σκοπιά αυτή τη στιγμή.', en: "I know, Giorgos. And you're on guard duty right now." },
+  { who: 'myrsini', cam: 'myr', mark: 'burn', el: 'Εσύ δεν υποτίθεται ότι είσαι σκοπιά τώρα;', en: "Aren't you supposed to be on guard duty right now?" },
   { act: 'leave', d: 2.8, cam: 'three' },
   { act: 'fly', d: 2.2, cam: 'gface' },
   { who: 'vangelio', cam: 'gface', label: ['ΒΑΓΓΕΛΙΩ (Ε.Κ.)', 'VANGELIO (O.S.)'], el: 'ΜΗΝ ΑΦΗΝΕΤΕ ΤΗΝ ΠΟΡΤΑ ΑΝΟΙΧΤΗ, ΘΑ ΓΕΜΙΣΟΥΜΕ ΜΥΓΕΣ!', en: "DON'T LEAVE THE DOOR OPEN, WE'LL BE FULL OF FLIES!" },
