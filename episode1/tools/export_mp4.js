@@ -1,4 +1,4 @@
-// Render dist/episode1.html to an MP4:  node tools/export_mp4.js out.mp4 [fps] [seconds]
+// Render dist/episode1.html to an MP4:  node tools/export_mp4.js out.mp4 [fps] [seconds]   (PAGE=episode2.html for another episode)
 // Frames come from the page itself (renderAt), the soundtrack from exportAudio() (offline Web Audio).
 // Needs: npm i playwright-core, a Chromium (CHROME=path), and ffmpeg (pip install imageio-ffmpeg, or FFMPEG=path).
 const { chromium } = require('playwright-core');
@@ -16,7 +16,7 @@ const path = require('path'), HERE = path.resolve(__dirname, '..'), S = require(
       await route.fulfill({ status: r.status, body, headers: { 'content-type': r.headers.get('content-type') || '', 'access-control-allow-origin': '*' } }); }
     catch (e) { console.log('font fetch failed', e.message); await route.abort(); }
   });
-  await pg.goto('file://' + HERE + '/dist/episode1.html'); await pg.evaluate(() => Promise.all(['700 20px Comfortaa', '700 20px "Noto Sans"', 'italic 900 20px "Noto Sans"', 'italic 700 20px "Noto Sans"', '900 20px "Noto Sans"'].map(f => document.fonts.load(f)))); await pg.waitForTimeout(1500);
+  await pg.goto('file://' + HERE + '/dist/' + (process.env.PAGE || 'episode1.html')); await pg.evaluate(() => Promise.all(['700 20px Comfortaa', '700 20px "Noto Sans"', 'italic 900 20px "Noto Sans"', 'italic 700 20px "Noto Sans"', '900 20px "Noto Sans"'].map(f => document.fonts.load(f)))); await pg.waitForTimeout(1500);
   console.log('fonts', await pg.evaluate(() => [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family + ' ' + f.style + ' ' + f.weight).join(', ')));
   const dur = limit || await pg.evaluate(() => EPISODE.dur);
   console.log('duration', dur.toFixed(1), 's');

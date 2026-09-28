@@ -164,3 +164,9 @@ What the audition and production taught us, all handled in `episode1/tools/gen_v
 | Μαρία | Madlen (`Jv2zcgjn9Qu0uNMKJjb1`) | young, casual, dry; two candidates said «Μιμή» instead of «Μίμη» |
 | Μυρσίνη | Aria (`mRTQIE2xdk2oMdoKFGJu`) | smooth and warm, with enough lift in the intonation for the sarcasm |
 | Η σίτα | Sofia (`0oYUKTNPbymIKVAkDQqh`) | the library's "TV spots / telemarketing" voice, widest pitch range of the candidates: the TV-shop presenter at 200% |
+| Ο νέος (Ep. 2) | Yiannis (`2KCRgZhHPaecTJfl6gAl`) | young, bright and friendly: Γιώργος's eager young soldier |
+| Οδηγός (Ep. 2) | Spyros (`aiLoXPalsEy9XgwZza9g`) | Athenian, casual: the Jumbo truck driver who doesn't ask |
+| Τηλεόραση (Ep. 2) | Menelaos (`0ZJ6CiTzPB5e41TNRP12`) | commercial, corporate: the τηλεπώληση presenter (stability 0 on shouted lines, like the σίτα) |
+| Υπάλληλος (Ep. 2) | Andy (`7zX8JTvUEpro0z0ytIAD`) | calm and flat: the Jumbo Κορίνθου clerk who signs for anything |
+
+Episode 2 lives in `episode2/` (its own `scenes/`, `audio/`, `props2.js`; it reuses episode1's engine, rig, sets and props). Voices: `python3 episode1/tools/gen_voices.py --episode episode2`.

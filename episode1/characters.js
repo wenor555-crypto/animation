@@ -100,6 +100,8 @@ function cigarette(x, y, rot, t, seed = 0) {
 }
 function phone(x, y) { ctx.save(); ctx.translate(x, y); ctx.rotate(-.2); rect(-9, -16, 18, 32, '#1b1b1f', { lw: 2.5, w: .2 }); rect(-7, -13, 14, 24, '#5b87c4', { lw: 0 }); ctx.restore(); }
 
+/* hand-held props registered by later episodes: ITEM_HOOK[name] = (hand, side, state, t) => draw */
+const ITEM_HOOK = {};
 function person(x, y, s, c, st = {}) {
   const t = st.t || 0, tk = st.talk || 0, part = st.part || 'all', has = p => part === 'all' || part === p;
   ctx.save(); ctx.translate(x, y); ctx.scale(s * (st.dir || 1), s);
@@ -235,6 +237,7 @@ function personArms(c, st) {
     if (item === 'souvlaki') { limb([[h[0], h[1]], [h[0] + side * 4, h[1] - 50]], 2, '#d9b889', { w: .2 }); for (let i = 0; i < 4; i++) blob(h[0] + side * 3, h[1] - 16 - i * 10, 8, 6, i % 2 ? '#8a4a2a' : '#a55a30', { lw: 2 }); }
     if (item === 'shirt') poly([[h[0] - 4, h[1] - 10], [h[0] + 60, h[1] - 30 + Math.sin(t * 8) * 8], [h[0] + 64, h[1] + 20 + Math.sin(t * 8 + 1) * 8], [h[0], h[1] + 10]], '#f6f5f0', { lw: 3, w: .6 });
     if (item === 'cup2') freddo(h[0], h[1] - 4);
+    if (item && ITEM_HOOK[item]) ITEM_HOOK[item](h, side, st, t);   // props added by later episodes (episode2/props2.js)
     if (item === 'weedbag') {        // a small clear zip bag, pinched at the top, green buds inside
       const bx = h[0] + side * 2, by = h[1] - 12;
       poly([[bx - 17, by - 6], [bx + 17, by - 6], [bx + 19, by + 34], [bx - 19, by + 34]], 'rgba(235,245,240,.55)', { lw: 2.5, w: .4 });

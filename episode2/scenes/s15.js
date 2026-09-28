@@ -1,0 +1,78 @@
+/* Ep.2, Scene 15 – «Το σχέδιο»: back in the coop, laser stings and feathers in their hair. The plan comes out of the clash
+   between the three: Μίμης (war), Γιάννος (logic), Γιώργος (agrees with everyone). Then the new guy bursts in: promoted. */
+defineScene((() => {
+const X = { mimis: 330, giorgos: 560, giannos: 800, christos: 1030, neos: 1300 };
+const CAMS = { wide: [700, 400, 1.05], mim: [330, 380, 2.1], gio: [560, 380, 2.1], gia: [800, 380, 2.1], chr: [1030, 380, 2.1], neo: [1180, 400, 1.8], three: [560, 400, 1.4], board: [640, 360, 1.6], gioC: [560, 370, 2.9] };
+const steps = [
+  { act: 'open', d: 2.2, cam: 'wide' },
+  { who: 'mimis', cam: 'mim', el: 'Κερδίζαμε.', en: 'We were winning.' },
+  { who: 'giannos', cam: 'gia', el: 'Χάναμε πιο αργά.', en: 'We were losing more slowly.' },
+  { who: 'giannos', cam: 'three', mark: 'logic', el: 'Σκεφτείτε λογικά. Είναι προϊόντα τηλεπώλησης. Υπακούν σε ό,τι μοιάζει με διαφήμιση.', en: 'Think logically. They are TV-shop products. They obey anything that looks like an ad.' },
+  { who: 'giorgos', cam: 'gio', el: 'Συμφωνώ.', en: 'I agree.' },
+  { who: 'mimis', cam: 'mim', el: 'Και η σίτα θέλει τον Panik. Άρα της δίνουμε τον Panik.', en: 'And the σίτα wants Panik. So we give her Panik.' },
+  { who: 'giorgos', cam: 'gio', el: '…Και με αυτό συμφωνώ.', en: '…I agree with that too.' },
+  { who: 'mimis', cam: 'mim', mark: 'bait', el: 'Δόλωμα. Και μετά ξανά πόλεμος.', en: 'Bait. And then war again.' },
+  { who: 'giannos', cam: 'gia', mark: 'recall', el: 'Δόλωμα. Και μετά… ανάκληση προϊόντος.', en: 'Bait. And then… a product recall.' },
+  { who: 'mimis', cam: 'mim', el: 'Ανάκληση;', en: 'A recall?' },
+  { who: 'giannos', cam: 'board', mark: 'plan', el: 'Μια ψεύτικη τηλεπώληση. «Όλα τα προϊόντα επιστρέφουν στη συσκευασία τους.» Τη σκηνοθετείς εσύ.', en: 'A fake TV-shop ad. "All products return to their packaging." You direct it.' },
+  { who: 'mimis', cam: 'mim', mark: 'school', el: '…Πέντε χρόνια σχολή. Επιτέλους.', en: '…Five years of film school. At last.' },
+  { who: 'giannos', cam: 'gia', mark: 'host', el: 'Και θέλουμε παρουσιαστή. Κάποιον που λέει ψέματα με χαμόγελο.', en: 'And we need a presenter. Someone who lies with a smile.' },
+  { act: 'stare', d: 1.8, cam: 'three' },
+  { who: 'giorgos', cam: 'gioC', mark: 'oops', el: 'Συμφωνώ. …Ωχ.', en: 'I agree. …Oh.' },
+  { who: 'christos', cam: 'chr', el: 'Θα πετύχει. Είναι το κεφάλαιο όπου η ομάδα ενώνεται.', en: "It'll work. It's the chapter where the team comes together." },
+  { act: 'burst', d: 1.2, cam: 'neo' },
+  { who: 'neos', cam: 'neo', mark: 'rm', el: 'Κύριε Γιώργο! Με έκανε Regional Manager!', en: 'Mr Giorgos! She made me Regional Manager!' },
+  { who: 'giorgos', cam: 'gio', el: 'Ποιος;', en: 'Who?' },
+  { who: 'neos', cam: 'neo', el: 'Η σίτα. Μου είπε ότι είναι ευκαιρία ανάπτυξης.', en: 'The σίτα. She said it was a growth opportunity.' },
+  { who: 'giorgos', cam: 'gioC', mark: 'good', el: '…Είναι καλή.', en: "…She's good." },
+  { act: 'end', d: 1.4, cam: 'wide' },
+];
+let M;
+function coopInside(t) {
+  ctx.fillStyle = '#b58a5a'; ctx.fillRect(-600, -400, 2600, 1100);
+  for (let i = -6; i < 30; i++) curve([[i * 70, -400], [i * 70, 700]], 3, '#9a7048', { w: .5 });
+  rect(420, 120, 440, 160, '#ffb070', { lw: 5 });
+  for (const y of [300, 380]) limb([[-100, y], [1500, y]], 8, '#8a6040');
+  for (let i = 0; i < 9; i++) chicken(80 + i * 150, i % 2 ? 300 : 380, t, i, ['#f3efe6', '#b97a4a', '#e8dcc4'][i % 3], { goggles: i % 3 === 0 });
+  poly([[-600, 690], [2000, 690], [2000, 800], [-600, 800]], '#d8b870', { lw: 0 });
+  // the coop door on the right (the new guy bursts through it)
+  const open = inM(t, M.burst, 0, 99) ? 1 : 0; rect(1180, 380, 140, 310, open ? '#ffe0a0' : '#a07a4a', { lw: 4 });
+  // Γιάννος's plan on a feed sack
+  const k = prog(t, M.plan.a, M.plan.b);
+  rect(540, 130, 200, 140, '#e8dcc0', { lw: 3 });
+  if (k > 0) { rect(560, 150, 60, 40, null, { lw: 2.5, sc: '#c0202a' }); txt('TV', 590, 170, 16, '#c0202a', { font: TVFONT, weight: 900 }); }
+  if (k > .3) { curve([[620, 170], [680, 170]], 2.5, '#c0202a'); poly([[676, 164], [688, 170], [676, 176]], '#c0202a', { lw: 0 }); }
+  if (k > .6) { rect(690, 150, 40, 40, '#c9995a', { lw: 2 }); curve([[570, 230], [720, 230]], 2, '#c0202a'); txt('ΑΝΑΚΛΗΣΗ', 640, 250, 16, '#c0202a', { font: TVFONT, weight: 900 }); }
+}
+function feathers2(x, y) { for (let i = 0; i < 3; i++) blob(x - 20 + i * 18, y - 250 - (i % 2) * 8, 7, 3, '#f7f4ee', { lw: 1.5, rot: i }); }
+function render(t, _M, sc) {
+  M = _M;
+  const c = shotCam(sc, t, CAMS);
+  ctx.save(); applyCam(c);
+  coopInside(t);
+  const la = (who, rest) => lookAtSpeaker(t, who, X, rest);
+  const stare = inM(t, M.stare, 0, 1.2) || inM(t, M.oops, -2, 0);
+  const at = who => stare && who !== 'giorgos' ? [clamp((X.giorgos - X[who]) / 150, -1, 1), .1] : la(who, [0, .1]);
+  const sore = (x, y, s = 1) => { blob(x, y, 5 * s, 4 * s, '#e05a4a', { lw: 1.5 }); };
+  stand(X.mimis, 'mimis', 1, { t, talk: talk('mimis', t), look: at('mimis'), lid: !inM(t, M.school), brow: inM(t, M.school) ? 'up' : 'frown', mouth: inM(t, M.school, .5, 99) ? 'smile' : 'flat', R: gesture(t, talk('mimis', t)) });
+  sore(X.mimis + 20, standY() - 200); feathers2(X.mimis, standY());
+  const gtk = talk('giorgos', t);
+  stand(X.giorgos, 'giorgos', 1, { t, talk: gtk, look: stare ? [0, .1] : la('giorgos', [0, .1]), brow: inM(t, M.oops, .8, 99) && t < M.burst.a ? 'worry' : inM(t, M.good) ? 'up' : 'flat', mouth: inM(t, M.oops, .8, 99) && t < M.burst.a ? 'frown' : 'smirk', R: gesture(t, gtk) });
+  sore(X.giorgos - 16, standY() - 180); feathers2(X.giorgos, standY() + 10);
+  stand(X.giannos, 'giannos', 1, { t, talk: talk('giannos', t), look: at('giannos'), brow: 'flat', mouth: 'flat', R: inM(t, M.plan) ? [-110, -230] : gesture(t, talk('giannos', t)) });
+  sore(X.giannos + 10, standY() - 220);
+  stand(X.christos, 'christos', 1.05, { t, talk: talk('christos', t), look: at('christos'), mouth: 'flat', itemL: 'sketch', L: [-30, -110], R: [30 + Math.sin(t * 12) * 8, -100] });
+  if (t > M.burst.a) { const [nx, nw] = path(t, [[M.burst.a, 1260], [M.burst.b, 1180]]); stand(nx, 'neos', .95, { t, talk: talk('neos', t), legs: nw ? 'walk' : 'stand', look: la('neos', [-1, 0]), brow: 'up', mouth: 'smile', dir: -1, R: [60, -200], L: [-44, -24] });
+    ctx.save(); ctx.translate(nx - 10, standY(.95) - 120); rect(-18, -10, 36, 14, '#ffd23f', { lw: 2 }); txt('REGIONAL MGR', 0, -3, 5, INK, { font: TVFONT, weight: 900 }); ctx.restore(); }
+  ctx.restore();
+  applyLight('dusk', .5);
+  if (inM(t, M.school, .4, 0)) sfxText('ΕΠΙΤΕΛΟΥΣ', 330, 120, 40, -.1, '#ffd23f');
+  vignette(.35);
+}
+return {
+  id: 'scene15', title: '15 · Το σχέδιο', steps, render,
+  events: M => [[M.open.a + .3, SFX.cluck], [M.plan.a + .5, () => { for (let i = 0; i < 8; i++) noise(.08, .08, 3000, 1, 'bandpass', i * .3); }], [M.stare.a, () => tone(300, .4, 'sine', .04)],
+    [M.oops.b - .4, () => tone(200, .6, 'sine', .05, .6)], [M.burst.a, () => { SFX.door(); SFX.cluck(); }]],
+  ambience: () => ({ cricket: .02 }),
+};
+})());

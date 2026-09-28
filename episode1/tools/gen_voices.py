@@ -21,6 +21,9 @@ import json, os, pathlib, re, sys, threading, time, unicodedata, urllib.error, u
 from concurrent.futures import ThreadPoolExecutor
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
+# another episode: --episode episode2 (a folder next to episode1 with its own scenes/ and audio/)
+if '--episode' in sys.argv:
+    _i = sys.argv.index('--episode'); HERE = HERE.parent / sys.argv[_i + 1]; del sys.argv[_i:_i + 2]
 API = 'https://api.elevenlabs.io/v1'
 MODEL = 'eleven_v3'   # speaks Greek with a Greek accent (multilingual_v2 kept the voices' English accent)
 LANGUAGE = 'el'
@@ -40,11 +43,16 @@ VOICES = {
     'maria': 'Jv2zcgjn9Qu0uNMKJjb1',     # Madlen: young, casual (sarcastic sister)
     'myrsini': 'mRTQIE2xdk2oMdoKFGJu',   # Aria: smooth and warm, lively intonation (the nice hostess)
     'sita': '0oYUKTNPbymIKVAkDQqh',      # Sofia: TV spots / telemarketing voice
+    # Episode 2
+    'neos': '2KCRgZhHPaecTJfl6gAl',      # Yiannis: young, bright, friendly (Γιώργος's young soldier)
+    'odigos': 'aiLoXPalsEy9XgwZza9g',    # Spyros: Athenian, casual (the Jumbo truck driver)
+    'tv': '0ZJ6CiTzPB5e41TNRP12',        # Menelaos: commercial, corporate (the τηλεπώληση presenter)
+    'ypallilos': '7zX8JTvUEpro0z0ytIAD',  # Andy: calm, flat (the Jumbo Κορίνθου clerk)
 }
 # per-character delivery. eleven_v3 only takes stability 0 (creative), .5 (natural) or 1 (robust).
 SETTINGS = {'default': {'stability': .5, 'similarity_boost': .8},
             'panik': {'stability': 0, 'similarity_boost': .8}}
-SHOUTY = {'sita'}   # stability 0 for lines with '!' or CAPS (the 200% TV-shop voice), .5 for the cold, quiet ones
+SHOUTY = {'sita', 'tv'}   # stability 0 for lines with '!' or CAPS (the 200% TV-shop voice), .5 for the cold, quiet ones
 FORMAT = 'mp3_44100_64'   # small files: the whole episode is embedded in one HTML page
 KBPS = 64
 MAX_TAKES = int(os.environ.get('MAX_TAKES', 4))   # every clip is checked with speech-to-text; a take that doesn't match the script is redone
@@ -60,6 +68,8 @@ STRESS = {''.join(c for c in unicodedata.normalize('NFD', w) if unicodedata.cate
 SAY = {'38': 'τριάντα οχτώ', '9,90': 'εννιά και ενενήντα', 'ΣίταAI': 'Σίτα Έι Άι',
        'Ωραία σίτα.': 'Ωραία… σίτα.',   # «ωραία σίτα» runs together into «ωραία είσαι τα»
        'Jumbo': 'Τζάμπο',               # the shop, said the Greek way (not «Τζούμπο»)
+       'Temu': 'Τέμου',                 # the app, as Greeks say it
+       'μια συκιά': 'μια σικιά',        # v3 swallows the unstressed υ and says «σκιά» (shade) instead of «συκιά» (fig tree)
        'IQOS': 'Άικος',                 # the heated-tobacco device, as Greeks say it
        'ΤΟ AI ΣΑΣ': 'ΤΟ ΈΙ-ΆΙ ΣΑΣ'}     # «AI» the way Greeks say it
 
