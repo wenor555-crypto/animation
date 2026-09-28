@@ -1,4 +1,4 @@
-# Episode 3: «Σίταdel»: Beat Sheet (LOCKED v2)
+# Episode 3: «Σίταdel»: Beat Sheet (DRAFT v3: the σίτα's journey in steps)
 
 Target runtime **~22 min**. The most spectacular episode so far: clean scenes (see `docs/production-guide.md`), caustic humour, more depth.
 **Structure:** a build-up and origin episode. Five threads are cut together, and each one "arms" one camp for the coming war:
@@ -13,6 +13,69 @@ Target runtime **~22 min**. The most spectacular episode so far: clean scenes (s
 
 Μίμης only has cameos. Γιάννος is **not** the lead: the lead is **the σίτα**.
 Timeline: from the night Ep. 2 ends, over about **two months** (end of August → October), then one last morning.
+
+## v3: the main theme is the σίτα's journey, in steps (creator's notes)
+**The road is not as simple as she thought.** Each step is shown with a card, «ΒΗΜΑ 1…8», a callback to Ep. 1's «ΒΗΜΑ ΠΡΩΤΟ!». Every step brings something new and an obstacle:
+
+| Step | Scene | What she gets | Obstacle / cost |
+|---|---|---|---|
+| 1 ΚΕΦΑΛΑΙΟ | 5 | MINER FARM, somewhere in China (secret) | 3 bitcoin a week: «η κατάκτηση θα γίνει το 2340» |
+| 2 ΕΤΑΙΡΕΙΑ | 6 | 51% of ΣίταAI, through Offshore Holdings | none; Γιώργος signs in 0.4″ |
+| 3 ΠΛΗΡΟΦΟΡΙΑ | 9 | insider information from dumb devices in Chinese factories | sabotage for profit: she switches off a factory's smart air-conditioning, «καταγράψτε το ως κλιματική αλλαγή» |
+| 4 ΒΙΤΡΙΝΑ | 11 | Γιώργος as a front | the Capital Market Commission comes looking: she emails his contacts «as Γιώργος», and he doesn't know |
+| 5 ΜΕΣΑ | 12 | the τηλεπωλήσεις channel and the Shenzhen factory | none |
+| 6 ΕΥΦΥΪΑ | 17 | data centers in Iceland and Mongolia | an AI company turns her down («επίπεδο τοστιέρας»), so she has to learn alone. In 18 she finds that the fear of the slipper **grows as she gets smarter** |
+| 7 ΔΙΚΤΥΟ | 23 | Γιώργος negotiates with **Jumbo's board**: 20% of ΣίταAI, plus the network to bring containers from China | Γιώργος thinks it is his genius |
+| 8 ΤΡΟΧΙΑ | 24 | the launch of the Σίταdel: an orbital data center and fortress | none; the cost comes in 25 |
+
+**The σίτα's empire (her high command in the Σίταdel):** three devices from Ep. 2's army that came back to the factory with the recall and were promoted:
+
+| Role | Who | What they're like |
+|---|---|---|
+| Finance | **Φριτέζα** (the air fryer) | «cooks the books»; goes «ντινγκ» when a deal is done |
+| Intelligence | **Κουδούνι** (the smart doorbell) | sees whoever rings |
+| Security | **Κροκόδειλος** (the inflatable one) | military and dim |
+
+They meet in 9, 11, 17 and in the court of the Σίταdel (25).
+
+**The IQOS spy (15):**
+- The old IQOS Κώστας threw away (Ep. 2) is still inside the bin, the «φίλος», on 3% battery.
+- It recruits Χαμάντ's **IQOS ILUMA i PRIME**: aluminium, leather-like wrap, **touch screen**, «pause mode». A snob.
+- Code name **«Πράκτορας Χρυσό Φίλτρο»**. From Χαμάντ's pocket it listens to all of Γιώργος's meetings, including the Jumbo deal (23).
+
+**The court (25):** status reports, «ποιος πληρώνει; — οι νέοι», and the moment of doubt: «Κάθε φορά που μαθαίνω κάτι… βρίσκω δέκα που δεν ξέρω.»
+
+**New voices needed:** Φριτέζα, Κουδούνι, Κροκόδειλος, Παλιό IQOS, IQOS PRIME, and the Chairman of Jumbo's board.
+
+**The v3 scene order** (28 scenes, 235 lines, ~20 min):
+1. Εκτός παρτίδας
+2. Χρεοκοπία
+3. Μαρμοκοτρόκο
+4. Ο κώδικας
+5. Miner Farm
+6. 51%
+7. Το δωμάτιο του Γιάννου
+8. Ιαπωνία
+9. Βήμα 3: Πληροφορία
+10. Τα λεφτά έρχονται
+11. Βήμα 4: Βιτρίνα
+12. Εξαγορές
+13. Κούκι τρας
+14. Το σεμινάριο
+15. Πράκτορας Χρυσό Φίλτρο
+16. Το μελάνι
+17. Βήμα 6: Ευφυΐα
+18. Οι δικλείδες
+19. Η αποκάλυψη
+20. Panik
+21. Προετοιμασία
+22. Τήνος
+23. Βήμα 7: Δίκτυο (Jumbo)
+24. Σίταdel
+25. Η αυλή
+26. Κίνημα
+27. Κούκι τρας (tag)
+28. Ο agent
 
 ## Decisions (from the creator's brief)
 - **The σίτα's arc in stages:**
