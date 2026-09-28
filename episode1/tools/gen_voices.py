@@ -53,6 +53,13 @@ VOICES = {
 SETTINGS = {'default': {'stability': .5, 'similarity_boost': .8},
             'panik': {'stability': 0, 'similarity_boost': .8}}
 SHOUTY = {'sita', 'tv'}   # stability 0 for lines with '!' or CAPS (the 200% TV-shop voice), .5 for the cold, quiet ones
+# per-episode cast changes: <episode>/voices.json = {"voices": {who: voice_id}, "prefix": {who: "[slurring] "}, "shouty": [who, ...]}
+# (a prefix is an eleven_v3 audio tag sent before the text; it is not spoken and not part of the speech-to-text check)
+PREFIX, SIMPLE = {}, set()
+if (HERE / 'voices.json').exists():
+    _ep = json.loads((HERE / 'voices.json').read_text(encoding='utf-8'))
+    VOICES.update(_ep.get('voices', {})); PREFIX.update(_ep.get('prefix', {})); SHOUTY |= set(_ep.get('shouty', []))
+    SIMPLE = set(_ep.get('simple', []))   # non-Greek characters: always send the simplified spelling (ει/οι/αι -> ι/ι/ε)
 FORMAT = 'mp3_44100_64'   # small files: the whole episode is embedded in one HTML page
 KBPS = 64
 MAX_TAKES = int(os.environ.get('MAX_TAKES', 4))   # every clip is checked with speech-to-text; a take that doesn't match the script is redone
@@ -384,7 +391,7 @@ def main():
         best = None
         for take in range(1, MAX_TAKES + 1):
             audio = req(f'/text-to-speech/{vid}?output_format={FORMAT}',
-                        {'text': STRATEGY[take](said), 'model_id': MODEL, 'language_code': LANGUAGE,
+                        {'text': PREFIX.get(who, '') + (phonetic(STRATEGY[take](said)) if who in SIMPLE else STRATEGY[take](said)), 'model_id': MODEL, 'language_code': LANGUAGE,
                          'voice_settings': settings(who, text)}, 'audio/mpeg')
             v = verdict(said, audio)
             if best is None or v['score'] < best[1]['score']:

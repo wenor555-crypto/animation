@@ -1,4 +1,4 @@
-# Episode 3: «Σίταdel»: Beat Sheet (DRAFT v2, after the interview)
+# Episode 3: «Σίταdel»: Beat Sheet (LOCKED v2)
 
 Target runtime **~22 min**. The most spectacular episode so far: clean scenes (see `docs/production-guide.md`), caustic humour, more depth.
 **Structure:** a build-up and origin episode. Five threads are cut together, and each one "arms" one camp for the coming war:
