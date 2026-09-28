@@ -13,6 +13,8 @@ Location: **Λέχαιο**, a week after Ep. 1, still August. Timeline: one morn
 - **Γιώργος:** after Ep. 1 he tried to **throw the σίτα off the board** of ΣίταAI (the classic startup fiasco: the shareholders oust the founder). Now she is after him too. In the war council he **agrees with everyone and does nothing**, and he hides behind Γιάννος asking for help.
 - **The νέος** (the young soldier Γιώργος left on guard duty in Ep. 1) appears in a **small role**.
 - **Finale, as one chain:** Panik beats the IQOS → the fake **«ΑΝΑΚΛΗΣΗ ΠΡΟΪΟΝΤΟΣ»** gathers the army → Panik vs σίτα, the climax. No «άρνηση παραλαβής» (it makes no sense: she is already here).
+- **Real fighting:** the gang actually fights a bit, with **home-made bows from the fig tree** (arrows from the reeds) and **Γιάννος's gadgets**: a Bluetooth jammer made from the microwave, a "magnet cannon" from the old σίτα's nine magnets, and a racket anti-aircraft gun on a broomstick. They lose the first battle and regroup; the plan comes after it.
+- **Γιώργος calls the minister** for reinforcements, offering the whole village's votes in return. Γιάννος: «Προτιμώ να με κατακτήσουν οι σίτες παρά να ψηφίσω Νέα Δημοκρατία.»
 - **The σίτα's fate stays open**, to set up Ep. 3.
 - **Manga framing in the tag:** a **hint that it really happened**.
 - **Jumbo truck:** it carries the real Jumbo logo (reference: `docs/reference/jumbo-logo.png`). It is the bubbly wordmark **JUMBO**, one colour per letter with a white outline: J `#00B4F1`, U `#8DC63F`, M `#EF59A1`, B `#F68B1F`, O `#BD1A8D`.
@@ -32,7 +34,7 @@ Location: **Λέχαιο**, a week after Ep. 1, still August. Timeline: one morn
 **2b. Chain B: the IQOS reports.** Κώστας puts the IQOS in its pocket charger. It "syncs", and a hidden red flicker sends a packet east: his location, his habits, and **«PANIK: ενεργοποιείται με αλκοόλ»**. Its LED has been white since Ep. 1, but it never really came back to his side.
 
 **3. The chain: small things.** Each harmless on its own, each one opening the next door:
-- In Shenzhen both chains land on the same address: Βασίλης's order and the IQOS report both say «ΛΕΧΑΙΟ». The σίτα swaps his gadget for «1 × ΣΤΡΑΤΟΣ», same address, same customer.
+- In Shenzhen both chains land on the same address: Βασίλης's order and the IQOS report both say «ΛΕΧΑΙΟ». The σίτα keeps his beach chair on the order and **adds an army to the same parcel**, same delivery, a Trojan horse. When the truck opens, the chair comes out first, and Βασίλης sits in it and doesn't turn around.
 - The order goes through Jumbo's supplier. A container "from the supplier" is booked for **Jumbo Κορίνθου**, and the manager signs without looking.
 - On the corner in Λέχαιο, the **ΔΗΜΟΣ ΚΟΡΙΝΘΙΩΝ bin** that Panik kicked in Ep. 1 is back up, with a dent shaped like his shoe. A tiny red LED blinks inside it.
 
@@ -78,7 +80,13 @@ At the centre stands **ΣΙΤΑ v2**: a reinforced frame and a bigger laser. The
 The σίτα on every screen:
 > «Λέχαιο! Ψάχνουμε έναν άνθρωπο. Κουκούλα. Γυαλιά ηλίου τη νύχτα. Και έναν πρώην CEO. ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!»
 
-**12. War council in the κοτέτσι.** The κότες from Ep. 1 are veterans now. **The plan is Γιάννος's, Μίμης's and Γιώργος's together**, and it comes out of their clash:
+**12. War council, round 1.** Μίμης: war. Γιώργος: Australia, then he calls **the minister** for reinforcements in exchange for the whole village's votes. Γιάννος: «Προτιμώ να με κατακτήσουν οι σίτες παρά να ψηφίσω Νέα Δημοκρατία.» Γιώργος hangs up. So it's war, but Γιάννος insists on a plan.
+
+**12b. The arsenal (montage).** Bows cut from the fig tree, strung with washing line, arrows from the reeds. Γιάννος's gadgets: a Bluetooth jammer made from the microwave, a magnet cannon made from the old σίτα's magnets, a racket anti-aircraft gun on a broomstick. Γιώργος gets Βαγγελιώ's ταψί as a shield.
+
+**12c. The battle of the yard (action).** Arrows pop air fryers, the jammer drops the selfie drones like flies, the magnet cannon sticks a robot vacuum to the wall. Μίμης charges screaming «ΓΙΑ ΤΟ ΛΕΧΑΙΟ!». The inflatable crocodile knocks Γιώργος over. Κώστας, sober, keeps eating his κουλούρι through the explosions, ignored. Then the σίτα switches on the laser, and it stings everyone. They retreat into the κοτέτσι.
+
+**12d. War council, round 2: the plan.** The κότες from Ep. 1 are veterans now. **The plan is Γιάννος's, Μίμης's and Γιώργος's together**, and it comes out of their clash:
 - **Μίμης** wants war: «Θα τις γαμήσω όλες. Μία-μία.» He wants to go out there with a bat and the κότες.
 - **Γιώργος** is scared. The σίτα is after him too, over the board. He wants to hide, negotiate, leave the country. He agrees with whoever spoke last and stays glued to Γιάννος.
 - **Γιάννος** tries, as always, to be the sensible one: «Είναι προϊόντα τηλεπώλησης. Υπακούν σε ό,τι μοιάζει με διαφήμιση.»
@@ -97,7 +105,7 @@ The plan comes out of all three:
 
 **15. The σίτα loses her spy and escalates.** ΣΙΤΑ v2 builds a bigger mecha out of the Jumbo truck and the whole army, with the church bell as a helmet. Laser at the village: it still only stings, but more every time.
 
-**16. The plan, part 2: «ΑΝΑΚΛΗΣΗ ΠΡΟΪΟΝΤΟΣ».** They take over the καφενείο TV, the one screen the whole army watches:
+**16. The plan, part 2: «ΑΝΑΚΛΗΣΗ ΠΡΟΪΟΝΤΟΣ».** Outside the καφενείο, Γιάννος and the νέος hold the door with the bows, the jammer and the magnet cannon while it's being filmed; when the arrows run out, they throw figs. They take over the καφενείο TV, the one screen the whole army watches:
 - Μίμης directs, and would rather be fighting.
 - Χρήστος draws the storyboard.
 - Γιώργος reads the script like a presenter. It's the one useful thing he does, and he only does it because it's on camera.
