@@ -36,7 +36,7 @@ Built round by round through the interview. Nothing here is final until marked *
 |---|---|---|---|
 | 1 | **Κώστας**: The Drunk / "Panik" | Borderline bipolar alcoholic. When drunk he turns into **Panik**, a confrontational, quarrelsome (εριστικός) vigilante. | Quit weed. |
 | 2 | **Μίμης**: The Kamikaze | Bold and self-destructive; does crazy stuff without thinking about consequences or risks. Studied cinema for 5 years and has a very messed-up sense of humour. | Quit weed. |
-| 3 | **Γιώργος**: The Charmer | Finance master's graduate. Very social and can make anyone like him, which is how he solves his own and the group's problems. Selfish, always angling for a better position. | Quit weed. |
+| 3 | **Γιώργος**: The Charmer | Finance master's graduate. Very social and can make anyone like him, which is how he solves his own and the group's problems. Selfish, always angling for a better position. **Never the fool of the gang:** an egoistic, happy-go-lucky kid who (roughly) knows what he's doing (the creator's note, Ep. 2 remake). | Quit weed. |
 | 4 | **Χρήστος**: The Mangaka | Tall and laid back, a manga writer. Dreams of going to Japan to become a mangaka but is stuck in the Greek ρουτίνα: no money, just grind. Has learned Japanese and does anything he can to get there. | Smokes weed often. |
 | 5 | **Γιάννος**: The Engineer | MSc in electrical engineering. Makes all the plans and builds software and hardware gadgets. He is the motivator who drags the group out of boredom and depression, and acts as the group's "father figure". Usually the one with the car. | Smokes weed often. |
 

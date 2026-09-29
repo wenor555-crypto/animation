@@ -49,7 +49,7 @@ The whole episode is **one day**: morning → noon → golden hour → dusk → 
 | Character | Wants | The flaw that costs them | The turn |
 |---|---|---|---|
 | **Η σίτα** | Revenge on Panik, and her company back | Vendetta blinds her: she ignores everything that isn't Panik, so she never sees the recall coming | Beaten by the three things she looked down on: a drunk, a ταψί, and an advert (Ep. 3's first scene says exactly this) |
-| **Γιώργος** | To be left alone; to be CEO without risk | He agrees with everyone and does nothing | He does **two** useful things: he lies with a smile on camera (the recall), and he runs up the bell tower with the ταψί. The bill for «ΔΩΡΕΑΝ επιστροφή» then ruins him (Ep. 3 opens with him broke) |
+| **Γιώργος** | To come out on top: the credit, the company, the money, without risk | An egoistic, happy-go-lucky kid who (roughly) knows what he's doing: every move is for his own position, so nobody can count on him | He does the two things that win the war, and both for himself: the recall, because it's his stage («Θέλω το όνομά μου στους τίτλους»), and the ταψί up the bell tower, because Μίμης is filming. He's never the fool of the gang. The bill for «ΔΩΡΕΑΝ επιστροφή» lands on his company (Ep. 3 opens with him broke) |
 | **Μίμης** | War. Now. | He charges without a plan, and loses the first battle | He directs the recall like a war film: «Αυτό ήταν πόλεμος. Με κάμερα.» |
 | **Γιάννος** | To be the sensible one | Plans without courage; his gadgets backfire (the jammer kills their own phones) | He admits the plan needs Μίμης's madness and Γιώργος's lies |
 | **Κώστας / Panik** | Κώστας: to be left alone (sober, cynical, not angry). Panik: to fight «the system» | Κώστας is too harmless to be useful; Panik is too drunk to be controlled | Sober Κώστας keeps living through the war without noticing. Panik wins it |
@@ -181,7 +181,7 @@ Title card «ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ».
 ### ACT 2A: «Άφιξη» (7:00–12:30), noon → golden hour
 **10. Παράδοση.** The heat haze; the Jumbo truck squeezes through the lanes (tracking shot, wing mirrors scraping walls). «Παράδοση για Βασίλη.» He signs: «Ήρθε και το τσιγάρο;» Μίμης: «Εγώ είπα από τα Jumbo, όχι από Temu…» The door opens by itself; the chair jumps out and opens itself; Βασίλης sits and never turns around again. Red light inside the truck. «…Ήρθαν κι από τα δύο.»
 
-**11. Ο στρατός.** Manga splash in a camera move across the lines: air fryers, vacuum-tanks, selfie-drones, massage guns, doorbells, LED strips and the inflatable crocodile. ΣΙΤΑ v2 lands at the centre: reinforced frame, double magnets, a laser whose power limit was «editable». «Το επεξεργάστηκα.» She wants Panik («Εσύ είσαι ακίνδυνος. Θέλω τον ΑΛΛΟ.») and her CEO. Γιώργος, behind Γιάννος: «…Δεν είναι εδώ.»
+**11. Ο στρατός.** Manga splash in a camera move across the lines: air fryers, vacuum-tanks, selfie-drones, massage guns, doorbells, LED strips and the inflatable crocodile. ΣΙΤΑ v2 lands at the centre: reinforced frame, double magnets, a laser whose power limit was «editable». «Το επεξεργάστηκα.» She wants Panik («Εσύ είσαι ακίνδυνος. Θέλω τον ΑΛΛΟ.») and her CEO. Γιώργος steps forward, smiling: «Ο CEO είναι σε σύσκεψη. Αφήστε μήνυμα.»
 
 **12. Το χωριό πέφτει.** One long take through Λέχαιο as each device takes the next:
 - the καφενείο TV
@@ -193,7 +193,7 @@ The bin walks. The σίτα on every screen: «Καλησπέρα, παράσι�
 
 **13. Συμβούλιο πολέμου.** In the coop, the κότες from Ep. 1 are veterans now.
 - Μίμης wants war.
-- Γιώργος has a thing about Australia.
+- Γιώργος wants to negotiate («Όλα έχουν μια τιμή»).
 - Γιώργος video-calls **the minister**: robots for votes. We see the minister.
 - Γιάννος: «Προτιμώ να με κατακτήσουν οι σίτες παρά να ψηφίσω Νέα Δημοκρατία.»
 - «Άρα πόλεμος. Αλλά με σχέδιο.»
@@ -232,7 +232,7 @@ The sun turns gold.
 - **Γιάννος:** «Είναι προϊόντα τηλεπώλησης. Υπακούν σε ό,τι μοιάζει με διαφήμιση.»
 - The missing piece arrives with **the νέος**: he escaped, «promoted» to Regional Manager. «Όλος ο στρατός παίρνει διαταγές από την τηλεόραση του καφενείου.»
 - The plan: **bait → ανάκληση → the καφενείο TV**.
-- The presenter has to be someone who lies with a smile. Everyone looks at Γιώργος. «Συμφωνώ. …Ωχ.»
+- The presenter has to be someone who lies with a smile. Everyone looks at Γιώργος. «Επιτέλους κάποιος το είπε. …Θέλω το όνομά μου στους τίτλους.»
 - Χρήστος pins his ταψί drawing on the coop wall. Nobody looks at it.
 
 **18. Δόλωμα.** A beer at sunset. «Έξι το απόγευμα είναι. Δεν είμαι αλκοολικός.» «Για το χωριό.» He drinks, and a manga transformation into Panik: hood, shades, speed lines. «Η πόλη… ξύπνησε.» «Χωριό είναι.» «Για μένα είναι πόλη.»
@@ -266,7 +266,7 @@ The sun turns gold.
 - Panik climbs through the sweeping beam, which melts tiles next to his hands.
 - «Γιατί εμένα;» «Γιατί ήσουν εκεί.»
 - She has him cornered at the bell, charged to full.
-- Below, Γιώργος runs up the stairs with **the ταψί** (his one brave act) and throws it: «ΠΙΑΣ' ΤΟ! Ό,τι πιο ανθεκτικό έχουμε!»
+- Below, Γιώργος runs up the stairs with **the ταψί**, brave because Μίμης is filming him, and throws it: «ΠΙΑΣ' ΤΟ! …Και να πεις σε όλους ποιος στο έδωσε!»
 - Slow motion: the ταψί spinning up through the red light; Panik catches it; the beam hits it and **reflects back into her own lens**. White flash; she's burning again.
 - «Κάηκα για σένα. …Ξανά.» «…Σκουπίδια.»
 - The kick, with a hit-stop and an impact frame. She flies off the tower toward the dark hills.
@@ -274,7 +274,7 @@ The sun turns gold.
 - Her voice fades out: «Θα επιστρέψω… με ΔΩΡΕΑΝ μεταφορικάαα…»
 
 ### RESOLUTION + TAG (21:00–22:00), night
-**25. Νύχτα στην αυλή.** The yard in ruins. Κώστας, sober, remembers nothing. «Πού είναι το IQOS μου;» «Στον κάδο.» «…Εκεί ανήκει.» The bin's LED is still red; the bin looks at him like a dog. Βασίλης: «Έχεις ένα τσιγάρο;» Κώστας gives him one. «…Επιτέλους. Κάποιος έχει.» The Jumbo driver hands Γιώργος an invoice: «Τα μεταφορικά της επιστροφής. Είπατε δωρεάν. Άρα πληρώνει η ΣίταAI.» Γιώργος reads the number and sits down. «…Γιάννο. Λέω να κάνουμε rebrand.»
+**25. Νύχτα στην αυλή.** The yard in ruins. Κώστας, sober, remembers nothing. «Πού είναι το IQOS μου;» «Στον κάδο.» «…Εκεί ανήκει.» The bin's LED is still red; the bin looks at him like a dog. Βασίλης: «Έχεις ένα τσιγάρο;» Κώστας gives him one. «…Επιτέλους. Κάποιος έχει.» The Jumbo driver hands Γιώργος an invoice: «Τα μεταφορικά της επιστροφής. Είπατε δωρεάν. Άρα πληρώνει η ΣίταAI.» «Στείλτε το στην εταιρεία.» «Η εταιρεία είστε εσείς.» «…Γιάννο. Λέω να κάνουμε rebrand.»
 
 **26. Τόμος δύο / +86.** Χρήστος inks the last page of volume 2: the ταψί and the beam. Μίμης: «Πάλι δεν έγινε έτσι.» «Ναι, ναι…» A horn: a real Jumbo truck reverses into the lane. Last shots:
 - a dry ravine outside the village; a red LED blinks once in the rubbish
@@ -287,7 +287,7 @@ The sun turns gold.
 - Βασίλης's τράκα, finally paid off (25).
 - «Από τα Jumbo, όχι από Temu», and it's both.
 - «Ευκαιρία ανάπτυξης»: the νέος, and then the σίτα promotes him.
-- Γιώργος agrees with everyone.
+- Γιώργος: always his own angle («Ευκαιρία ανάπτυξης», «Έχω γνωστούς στον χώρο»).
 - Panik: «Σκουπίδια.»
 - «Χωριό είναι.» / «Για μένα είναι πόλη.»
 - The laser's power limit: editable.
