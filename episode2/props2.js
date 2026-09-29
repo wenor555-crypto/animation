@@ -22,10 +22,10 @@ Object.assign(VOICE_INFO, {
 });
 
 /* ---------- hand-held props (see ITEM_HOOK in characters.js) ---------- */
-function bowDraw(x, y, side, pull = 0) {           // a fig-branch bow, strung with washing line
+function bowDraw(x, y, side, pull = 0) {           // a fig-branch bow, strung with washing line. side = where it shoots: the wood bulges that way, the string is pulled back the other way
   ctx.save(); ctx.translate(x, y);
   curve([[-6 * side, -54], [10 * side, 0], [-6 * side, 54]], 7, '#8a6a4a', { w: .3 });
-  curve([[-6 * side, -54], [-6 * side - pull * 30 * side, 0], [-6 * side, 54]], 1.6, '#e8e4dc', { w: 0 });
+  ctx.save(); ctx.strokeStyle = '#e8e4dc'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(-6 * side, -54); ctx.lineTo(-6 * side - pull * 30 * side, 0); ctx.lineTo(-6 * side, 54); ctx.stroke(); ctx.restore();   // the string: a straight V to the nock
   for (const yy of [-40, -14, 22]) blob(6 * side, yy, 5, 3, '#6fa04a', { lw: 1.2 });   // fig leaves still on it
   ctx.restore();
 }
@@ -51,7 +51,7 @@ function racketGun(x, y, rot, t) { ctx.save(); ctx.translate(x, y); ctx.rotate(r
 function tray(x, y, side) { ctx.save(); ctx.translate(x, y); blob(0, 0, 10 * 3.2, 38, '#c8ccd2', { lw: 3.5, w: .3 }); blob(0, 0, 26, 30, '#b0b4ba', { lw: 1.5 }); ctx.restore(); }
 function koulouri(x, y) { ctx.save(); ctx.translate(x, y); blob(0, 0, 16, 16, '#c8883a', { lw: 3 }); blob(0, 0, 7, 7, 'rgba(0,0,0,0)', { lw: 2.5 }); for (let i = 0; i < 8; i++) blob(Math.cos(i) * 11, Math.sin(i) * 11, 1.4, 1, '#f4ecd0', { lw: 0 }); ctx.restore(); }
 Object.assign(ITEM_HOOK, {
-  bow: (h, side, st) => bowDraw(h[0] + side * 6, h[1] - 6, side, st.pull || 0),
+  bow: (h, side, st) => bowDraw(h[0] + (st.bowDir ?? side) * 6, h[1] - 6, st.bowDir ?? side, st.pull || 0),   // bowDir: where the arrow points (default: the hand's side)
   jammer: (h, side, st, t) => jammer(h[0] + side * 10, h[1] - 12, t, st.jamOn ?? 1),
   magnet: (h, side) => magnetCannon(h[0] - 10, h[1] - 6, side > 0 ? 0 : Math.PI),
   racketGun: (h, side, st, t) => racketGun(h[0], h[1] + 20, side * .25, t),

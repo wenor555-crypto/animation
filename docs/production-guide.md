@@ -27,6 +27,16 @@ Set in `episode1/engine.js`, shared by every episode:
 5. **Frames are deterministic.** Use `hash()` and `t` only. No `Math.random()` or wall-clock time in drawing code (sound may use them).
 6. **Head-room.** In a shot, the top of the tallest head stays inside the frame; check this on the contact sheet.
 
+## Props and physical logic (checked on every keyframe)
+
+Before a shot is approved, every prop in a hand is checked in a full-size frame, not only in the contact sheet:
+- **Which way it points.** A bow's wood bulges toward the target and its string comes back toward the archer. A gun or cannon's barrel faces the target. A shield faces the attack.
+- **How it is held.** The bow is in the front hand and the string in the other. The drawing hand sits on the string, and the arrow is nocked while he draws.
+- **Cause and effect.** Whatever flies (arrow, beam, thrown object) starts from the thing that fires it and lands on what it hits, in the direction the character faces.
+- **Hand props follow facing.** When a character is flipped (`dir: -1`) or holds a prop in the "wrong" hand, the prop gets its own direction (e.g. `bowDir`), not the hand's side.
+
+(Added after the previs of the Ep. 2 remake, where Χρήστος's bow was drawn backwards.)
+
 ## Workflow and gates
 
 | Step | Tool | Gate |

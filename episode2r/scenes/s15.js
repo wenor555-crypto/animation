@@ -150,7 +150,9 @@ function render(t, _M, sc) {
   // Χρήστος in the fig tree: draws the bow (slow motion), releases
   const pull = inM(t, M.draw) ? clamp((T - M.draw.a - .3) / (M.draw.b - M.draw.a - .9)) : 0;
   limb([[150, 560], [CHR[0] + 30, CHR[1] + 118], [CHR[0] + 110, CHR[1] + 108]], 16, '#9a948a', { w: .6 });   // his branch
-  person(CHR[0], CHR[1], CHR[2], CAST.christos, { t, talk: talk('christos', t), legs: 'stand', look: [1, .5], brow: inM(t, M.draw) ? 'frown' : 'flat', mouth: 'flat', L: [70, -130], itemL: 'bow', pull, R: [70 - pull * 60, -128] });
+  person(CHR[0], CHR[1], CHR[2], CAST.christos, { t, talk: talk('christos', t), legs: 'stand', look: [1, .5], brow: inM(t, M.draw) ? 'frown' : 'flat', mouth: 'flat', L: [70, -130], itemL: 'bow', bowDir: 1, pull, R: [66 - pull * 30, -134] });
+  // the arrow on the string while he draws (the bow is in his front hand, the string comes back to his other hand)
+  if (inM(t, M.draw) && T < M.draw.b - .35) { const s = CHR[2], sx = CHR[0] + s * (76 - 6 - 30 * pull), sy = CHR[1] + s * (-136); arrow(sx + 50 * s * .8, sy, 0, s * .8); }
   // the gang, in front
   const duck = inM(T, M.sweep, 0, .3);
   const hands = (L, R) => duck ? { L: [-36, -250], R: [36, -250] } : { L, R };
