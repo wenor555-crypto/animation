@@ -65,8 +65,11 @@ function render(t, _M, sc) {
     towerSet(t, { helmet: false });
     const st = { x: TWX + 112, top: TWTOP - 115, w: 60, h: 115, t, talk: talk('sita', t), chip: 1, led: 'red', mood: inM(t, M.batch) ? 'shock' : 'sad', burn: 1, flapL: inM(t, M.batch) ? .8 : 0, flapR: inM(t, M.batch) ? .8 : 0 };
     const rise = t < M.alone.a + 1 ? ease(prog(t, M.alone.a, M.alone.a + 1)) : 1;
-    sitaV2({ ...st, top: lerp(GROUND, st.top, rise) });
-    ctx.restore(); applyLight('red', .45); ctx.save(); applyCam(c); sitaGlow(st, .8); ctx.restore();
+    // she scuttles up the wall on her magnets, from the square to the top (feet on the ground at the start, never under it)
+    const cur = { ...st, top: lerp(GROUND - st.h, st.top, rise) + (rise > 0 && rise < 1 ? Math.sin(t * 40) * 3 : 0) };
+    if (rise > 0 && rise < 1) fxSmear(cur.x, cur.top + cur.h / 2, 0, -140, 50, '255,120,120');
+    sitaV2(cur);
+    ctx.restore(); applyLight('red', .45); ctx.save(); applyCam(c); sitaGlow(cur, .8); ctx.restore();
     if (inM(t, M.batch)) speedLines(640, 300, 70, 200);
     vignette(.4); return;
   }

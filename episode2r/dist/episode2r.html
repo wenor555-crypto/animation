@@ -4779,8 +4779,11 @@ function render(t, _M, sc) {
     towerSet(t, { helmet: false });
     const st = { x: TWX + 112, top: TWTOP - 115, w: 60, h: 115, t, talk: talk('sita', t), chip: 1, led: 'red', mood: inM(t, M.batch) ? 'shock' : 'sad', burn: 1, flapL: inM(t, M.batch) ? .8 : 0, flapR: inM(t, M.batch) ? .8 : 0 };
     const rise = t < M.alone.a + 1 ? ease(prog(t, M.alone.a, M.alone.a + 1)) : 1;
-    sitaV2({ ...st, top: lerp(GROUND, st.top, rise) });
-    ctx.restore(); applyLight('red', .45); ctx.save(); applyCam(c); sitaGlow(st, .8); ctx.restore();
+    // she scuttles up the wall on her magnets, from the square to the top (feet on the ground at the start, never under it)
+    const cur = { ...st, top: lerp(GROUND - st.h, st.top, rise) + (rise > 0 && rise < 1 ? Math.sin(t * 40) * 3 : 0) };
+    if (rise > 0 && rise < 1) fxSmear(cur.x, cur.top + cur.h / 2, 0, -140, 50, '255,120,120');
+    sitaV2(cur);
+    ctx.restore(); applyLight('red', .45); ctx.save(); applyCam(c); sitaGlow(cur, .8); ctx.restore();
     if (inM(t, M.batch)) speedLines(640, 300, 70, 200);
     vignette(.4); return;
   }
@@ -4915,8 +4918,8 @@ const SW = 60, SH = 115, SX = TWX + 112, SY = TWTOP - SH;   // the σίτα stan
 const PS = .5, PX = TWX + 190, PTOP = TWTOP - 150 * PS;      // Panik's spot on the top, facing her (hips y)
 const ARCH = [TWX + 30, GROUND - 350];                       // Γιώργος's feet on the church roof, at the foot of the tower
 const EYE = () => sitaV2Eye({ x: SX, top: SY, w: SW, h: SH });
-const CAMS = { tower: [TWX + 145, 330, .95], climb: [TWX + 170, 300, 1.35], top: [SX + 10, SY + 50, 3], pk: [PX, PTOP - 50, 3], duo: [TWX + 150, TWTOP - 70, 2.4],
-  arch: [ARCH[0] + 20, ARCH[1] - 90, 2.6], toss: [TWX + 110, GROUND - 470, 1.5], sky: [1000, 80, .9], page: [0, 0, 1] };
+const CAMS = { tower: [TWX + 145, 330, .95], climb: [TWX + 170, 300, 1.35], top: [SX + 10, SY + 30, 3], pk: [PX, PTOP - 50, 3], duo: [TWX + 150, TWTOP - 70, 2.4],
+  arch: [ARCH[0] + 40, ARCH[1] - 140, 2.1], toss: [TWX + 110, GROUND - 520, 1.1], sky: [1000, 80, .9], page: [0, 0, 1] };
 const steps = [
   { act: 'night', d: 2.4, cam: 'tower' },
   { act: 'climb', d: 4.6, cam: 'climb' },
@@ -4989,14 +4992,14 @@ function render(t, _M, sc) {
     itemL: climbing || hasTray ? null : 'beer', kick, dir: -1 });
   const TRAY = [PX - 36, PTOP - 82];                       // held up in front of him, towards her (he faces left: dir -1 mirrors the offsets)
   if (hasTray) { ctx.save(); ctx.translate(TRAY[0], TRAY[1]); ctx.rotate(-.3); blob(0, 0, 22, 27, '#c8ccd2', { lw: 3 }); blob(0, 0, 16, 20, '#b0b4ba', { lw: 1.2 }); ctx.restore(); }
-  // Γιώργος out of the bell arch, throwing the ταψί; the tray spins up in slow motion
+  // Γιώργος out of the bell arch, throwing the ταψί; the tray spins up in slow motion (his navy jacket is drawn a bit lighter here so it reads at night after the manga pass)
   if (t > M.catch.a - .6 && t < M.kick.b) {
     const out = ease(prog(t, M.catch.a - .6, M.catch.a));
-    person(ARCH[0], ARCH[1] - 150 * .55 + (1 - out) * 60, .55, { ...CAST.giorgos, topCol: '#2a3a6a' }, { t, talk: talk('giorgos', T0), legs: 'stand', look: [1, -.8], brow: 'up', mouth: 'open', L: t < THROW() ? [30, -200] : [80, -260], R: t < THROW() ? [60, -190] : [100, -250] });
-    if (t < THROW()) { ctx.save(); ctx.translate(ARCH[0] + 24, ARCH[1] - 200); blob(0, 0, 22, 20, '#c8ccd2', { lw: 3 }); ctx.restore(); }
+    person(ARCH[0], ARCH[1] - 150 * .55 + (1 - out) * 60, .55, { ...CAST.giorgos, topCol: '#5a6ea8' }, { t, talk: talk('giorgos', T0), legs: 'stand', look: [1, -.8], brow: 'up', mouth: 'open', L: t < THROW() ? [70, -200] : [80, -260], R: t < THROW() ? [100, -190] : [100, -250] });
+    if (t < THROW()) { ctx.save(); ctx.translate(ARCH[0] + 50, ARCH[1] - 200); blob(0, 0, 22, 20, '#c8ccd2', { lw: 3 }); ctx.restore(); }
   }
   if (t > THROW() && t < CATCH()) {
-    const k = (t - THROW()) / (CATCH() - THROW()), tx = lerp(ARCH[0] + 24, TRAY[0], k), ty = lerp(ARCH[1] - 200, TRAY[1], k) - Math.sin(k * Math.PI) * 100;
+    const k = (t - THROW()) / (CATCH() - THROW()), tx = lerp(ARCH[0] + 50, TRAY[0], k), ty = lerp(ARCH[1] - 200, TRAY[1], k) - Math.sin(k * Math.PI) * 100;
     ctx.save(); ctx.translate(tx, ty); ctx.rotate(t * 8); ctx.scale(1, .5 + .5 * Math.abs(Math.cos(t * 8))); blob(0, 0, 24, 24, '#c8ccd2', { lw: 3 }); blob(0, 0, 17, 17, '#b0b4ba', { lw: 1.2 }); ctx.restore();
   }
   ctx.restore();
@@ -5006,13 +5009,14 @@ function render(t, _M, sc) {
   ctx.save(); applyCamFx(c);
   const [ex, ey] = fly < 1 ? (fly > 0 ? [fx, fy + SH * .3] : EYE()) : [0, 0];
   if (fly < 1) glow(ex, ey, 80, 'rgba(255,30,30,1)', .9);
+  if (t > M.catch.a - .6 && t < M.kick.b) glow(ARCH[0] + 10, ARCH[1] - 150, 170, 'rgba(255,70,50,1)', .22);   // red spill on Γιώργος, so his dark jacket separates from the night
   if (climbing && t > M.climb.a + .5) { const i = Math.min(5, Math.floor((t - M.climb.a - .6) / .65)); const [, hx, hy] = climbHits[Math.max(0, i)]; if (Math.sin(t * 5) > -.3) fxBeam(ex, ey, hx, hy, t, { width: .6 }); }
   if (inM(t, M.corner) || inM(t, M.last) || inM(t, M.catch) || inM(t, M.toss)) fxCharge(t, ex, ey, clamp(prog(t, M.corner.a, M.toss.b)));
   if (t > CATCH() && t < HIT() + 1.4) {                  // the shot: into the tray, and straight back into her lens
     fxBeam(ex, ey, TRAY[0], TRAY[1], t, { width: .9 });
     if (t > HIT()) { fxBeam(TRAY[0], TRAY[1], ex, ey, t, { width: .9 }); glow(TRAY[0], TRAY[1], 70, 'rgba(255,255,255,1)', .8); }
   }
-  if (t > THROW() && t < CATCH()) { const k = (t - THROW()) / (CATCH() - THROW()); glow(lerp(ARCH[0] + 24, TRAY[0], k), lerp(ARCH[1] - 200, TRAY[1], k) - Math.sin(k * Math.PI) * 100, 40, 'rgba(255,220,220,1)', .5 + .4 * Math.sin(t * 16)); }
+  if (t > THROW() && t < CATCH()) { const k = (t - THROW()) / (CATCH() - THROW()); glow(lerp(ARCH[0] + 50, TRAY[0], k), lerp(ARCH[1] - 200, TRAY[1], k) - Math.sin(k * Math.PI) * 100, 40, 'rgba(255,220,220,1)', .5 + .4 * Math.sin(t * 16)); }
   if (burnt && fly <= 0) fxFire(SX, SY + SH * .6, .3, t, clamp((t - HIT()) * 2) * (1 - clamp((t - M.burn.b) / 2)));
   ctx.restore();
   fxFlash(fxHitLight(t, [[HIT(), 1.2], [KICK(), .5]]), '255,255,255');

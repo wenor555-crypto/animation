@@ -1,0 +1,9 @@
+[
+  { "scene": "scene16", "kind": "DOT", "fill": "#f6f2e8", "why": "hen feathers stuck in everyone's hair after the battle" },
+  { "scene": "scene17", "kind": "DOT", "fill": "#f7f4ee", "why": "leftover hen feathers in the hair (continuity from scene 16)" },
+  { "scene": "scene17", "kind": "DOT", "fill": "#e05a4a", "why": "red laser-sting sores on the faces (continuity from the scene 15 battle)" },
+  { "scene": "scene18", "kind": "DOT", "who": "kostas", "why": "beer cans on the table in front of Κώστας (tops and ring-pulls)" },
+  { "scene": "scene19", "kind": "DOT", "who": "kostas", "fill": "#ff2a2a", "why": "the IQOS red LED glow in Κώστας's hand" },
+  { "scene": "scene19", "kind": "DOT", "who": "kostas", "fill": "#e8b43a", "why": "beer spray when the can is cut" },
+  { "scene": "scene21", "kind": "DOT", "who": "giannos", "fill": "#6b3d5e", "why": "a fig flying past Γιάννος during the siege" }
+]
