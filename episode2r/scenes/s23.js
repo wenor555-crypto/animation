@@ -2,7 +2,7 @@
    it cuts: the beam carves the square (a burning trench), the gang dives for cover. Γιάννος: «Αυτό δεν τσούζει πια.»
    Panik, hood up: «Ωραία. Βαρέθηκα τα τσιμπήματα.» He starts to climb. */
 defineScene((() => {
-const CAMS = { top: [TWX + 160, 60, 1.6], tower: [TWX + 145, 330, .95], sq: [640, 420, 1], gia: [520, 420, 2], pk: [760, 400, 2], base: [TWX + 180, 470, 1.4] };
+const CAMS = { top: [TWX + 122, TWTOP - 50, 2.8], tower: [TWX + 145, 330, .95], sq: [640, 420, 1], gia: [520, 420, 2], pk: [760, 400, 2], base: [TWX + 170, 520, 1.6] };
 const steps = [
   { act: 'charge', d: 2.2, cam: 'top' },
   { who: 'sita', cam: 'top', mark: 'all', el: 'Όλη η ενέργεια… σε μένα.', en: 'All the power… to me.' },
@@ -19,13 +19,13 @@ function render(t, _M, sc) {
   const hits = []; for (let s = M.cut.a; s < M.cut.b; s += .2) hits.push([s, 9, .3]);
   const c = fxCam(shotCam(sc, t, CAMS, .012), t, hits);
   ctx.save(); applyCamFx(c);
-  const st = { x: TWX + 145, top: TWTOP - 150, w: 90, h: 170, t, talk: talk('sita', t), chip: 1, led: 'red', mood: 'evil', burn: 1, laser: true };
+  const st = { x: TWX + 112, top: TWTOP - 115, w: 60, h: 115, t, talk: talk('sita', t), chip: 1, led: 'red', mood: 'evil', burn: 1, laser: true };
   if (shot === 'top' || shot === 'tower' || shot === 'base') {
     towerSet(t, { helmet: false });
     sitaV2(st);
     if (shot === 'base') {                   // Panik at the foot of the tower, starting up
-      const k = ease(prog(t, M.climb.a + .6, M.climb.b)), py = lerp(GROUND - 150, GROUND - 330, k);
-      person(TWX + 215, py, 1, CAST.kostas, { t, legs: 'stand', hood: true, shades: true, brow: 'frown', mouth: 'frown', look: [-1, -.8], L: [-40, -250 + Math.sin(t * 6) * 20], R: [30, -250 - Math.sin(t * 6) * 20], dir: -1 });
+      const k = ease(prog(t, M.climb.a + .6, M.climb.b)), py = lerp(GROUND - 75, GROUND - 200, k);
+      person(TWX + 214, py, .5, CAST.kostas, { t, legs: 'stand', hood: true, shades: true, brow: 'frown', mouth: 'frown', look: [-1, -.8], L: [-40, -250 + Math.sin(t * 6) * 20], R: [30, -250 - Math.sin(t * 6) * 20], dir: -1 });
     }
     ctx.restore(); applyLight('red', .45);
     ctx.save(); applyCamFx(c); const [ex, ey] = sitaV2Eye(st); sitaGlow(st, .9);

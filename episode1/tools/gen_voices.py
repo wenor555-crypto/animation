@@ -79,6 +79,7 @@ SAY = {'38': 'τριάντα οχτώ', '9,90': 'εννιά και ενενήν�
        'Temu': 'Τέμου',                 # the app, as Greeks say it
        'air fryers': 'έαρ φράιερς',     # (the plural first, so it isn't read «έαρ φράιερs»)
        'air fryer': 'έαρ φράιερ',       # nobody says «φριτέζα αέρος»: the English name, the Greek way
+       'Ποιοι επενδυτές;': 'Ποιοι… επενδυτές;',   # v3 swallows the «Π» and says «οι επενδυτές»
        'μια συκιά': 'μια σικιά',        # v3 swallows the unstressed υ and says «σκιά» (shade) instead of «συκιά» (fig tree)
        'IQOS': 'Άικος',                 # the heated-tobacco device, as Greeks say it
        'ΤΟ AI ΣΑΣ': 'ΤΟ ΈΙ-ΆΙ ΣΑΣ'}     # «AI» the way Greeks say it

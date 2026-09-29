@@ -5,7 +5,7 @@
    ΕΠΙΣΤΡΕΦΕΙ!»). The σίτα, alone on top of the bell tower: «ΔΕΝ ΕΙΜΑΙ ΑΠΟ ΑΥΤΗ ΤΗΝ ΠΑΡΤΙΔΑ!» */
 defineScene((() => {
 const GJ = { ...CAST.giorgos, topCol: '#2a3a6a' };                    // the jacket over the uniform
-const CAMS = { door: [640, 420, 1.1], doorC: [560, 420, 1.8], set: [640, 400, 1.2], mim: [380, 400, 2], gio: [700, 380, 2.1], screen: [0, 0, 1], out: [700, 380, .8], box: [800, 560, 1.4], mecha: [900, 330, .95], drv: [980, 420, 2], two: [520, 420, 1.6], sita: [760, 560, 2.2], tower: [TWX + 145, 330, .95], towerC: [TWX + 160, 60, 1.6] };
+const CAMS = { door: [640, 420, 1.1], doorC: [560, 420, 1.8], set: [640, 400, 1.2], mim: [380, 400, 2], gio: [700, 380, 2.1], screen: [0, 0, 1], out: [700, 380, .8], box: [800, 560, 1.4], mecha: [900, 330, .95], drv: [980, 420, 2], two: [520, 420, 1.6], sita: [760, 560, 2.2], tower: [TWX + 145, 330, .95], towerC: [TWX + 122, TWTOP - 50, 2.8] };
 const steps = [
   { act: 'plug', d: 2.2, cam: 'set' },
   { who: 'mimis', cam: 'mim', mark: 'action', el: 'Ησυχία στο πλατό! …Κάμερα… πάμε.', en: 'Quiet on set! …Camera… rolling.' },
@@ -63,7 +63,7 @@ function render(t, _M, sc) {
   }
   if (shot === 'tower' || shot === 'towerC') {        // alone at the top of the bell tower
     towerSet(t, { helmet: false });
-    const st = { x: TWX + 145, top: TWTOP - 150, w: 90, h: 170, t, talk: talk('sita', t), chip: 1, led: 'red', mood: inM(t, M.batch) ? 'shock' : 'sad', burn: 1, flapL: inM(t, M.batch) ? .8 : 0, flapR: inM(t, M.batch) ? .8 : 0 };
+    const st = { x: TWX + 112, top: TWTOP - 115, w: 60, h: 115, t, talk: talk('sita', t), chip: 1, led: 'red', mood: inM(t, M.batch) ? 'shock' : 'sad', burn: 1, flapL: inM(t, M.batch) ? .8 : 0, flapR: inM(t, M.batch) ? .8 : 0 };
     const rise = t < M.alone.a + 1 ? ease(prog(t, M.alone.a, M.alone.a + 1)) : 1;
     sitaV2({ ...st, top: lerp(GROUND, st.top, rise) });
     ctx.restore(); applyLight('red', .45); ctx.save(); applyCam(c); sitaGlow(st, .8); ctx.restore();
