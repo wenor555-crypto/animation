@@ -146,7 +146,7 @@ The whole episode is **one day**: morning → noon → golden hour → dusk → 
 ## 6. Scene by scene
 
 ### COLD OPEN (0:00–0:40)
-**1. Teaser: «Δώδεκα ώρες αργότερα».** Night. Red light. The mecha's eye over the rooftops; Panik's silhouette climbing the bell tower; the laser sweeps; Γιώργος, far below, screaming with something round and shiny in his hands. Freeze-frame. Card: «12 ΩΡΕΣ ΝΩΡΙΤΕΡΑ». *(Hollywood hook; it only makes sense at 24)*
+**1. Teaser: «Δώδεκα ώρες αργότερα».** Night. Red light. The σίτα's red eye over the rooftops; Panik's silhouette climbing the bell tower; the laser sweeps; Γιώργος, far below, screaming with something round and shiny in his hands. Freeze-frame. Card: «12 ΩΡΕΣ ΝΩΡΙΤΕΡΑ». *(Hollywood hook; it only makes sense at 24)*
 
 ### ACT 1: «Δύο αλυσίδες» (0:40–7:00), morning
 **2. Αναπάντητη.** Κώστας, sober, on the couch. +86 rings again and again. He finally answers:
@@ -176,7 +176,7 @@ Title card «ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ».
 
 **8. Arc εκδίκησης.** Χρήστος sketches; the red LED of the IQOS in the corner of his page. «Είναι arc εκδίκησης.» He turns the page: he has already drawn the last page: **a ταψί, a beam, a flash**. Μίμης: «Τι είναι αυτό;» Χρήστος: «Το τέλος.» Nobody takes it seriously.
 
-**9. Ατυχήματα.** Sober Κώστας walks to the yard; the IQOS tries to kill him three times and fails, each more elaborate (a Rube Goldberg beat with a flowerpot, a scooter and a balcony). He never notices. «Ο στόχος είναι ακίνδυνος. Περιμένω το Panik.» *Hand-off: a truck's horn, far off.*
+**9. Ατυχήματα.** Sober Κώστας walks to the yard; the IQOS tries to kill him three times and fails, each more elaborate (it overheats, it buzzes to the edge of a roof terrace, it tugs him into the path of a van). He never notices. «Ο στόχος είναι ακίνδυνος. Περιμένω το Panik.» *Hand-off: a truck's horn, far off.*
 
 ### ACT 2A: «Άφιξη» (7:00–12:30), noon → golden hour
 **10. Παράδοση.** The heat haze; the Jumbo truck squeezes through the lanes (tracking shot, wing mirrors scraping walls). «Παράδοση για Βασίλη.» He signs: «Ήρθε και το τσιγάρο;» Μίμης: «Εγώ είπα από τα Jumbo, όχι από Temu…» The door opens by itself; the chair jumps out and opens itself; Βασίλης sits and never turns around again. Red light inside the truck. «…Ήρθαν κι από τα δύο.»

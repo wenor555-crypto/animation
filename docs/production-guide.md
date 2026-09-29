@@ -33,6 +33,7 @@ Before a shot is approved, every prop in a hand is checked in a full-size frame,
 - **Which way it points.** A bow's wood bulges toward the target and its string comes back toward the archer. A gun or cannon's barrel faces the target. A shield faces the attack.
 - **How it is held.** The bow is in the front hand and the string in the other. The drawing hand sits on the string, and the arrow is nocked while he draws.
 - **Cause and effect.** Whatever flies (arrow, beam, thrown object) starts from the thing that fires it and lands on what it hits, in the direction the character faces.
+- **Every scene, not only the one where it was caught.** When a prop error is found, every scene that uses that prop gets checked (`grep` the prop name) before the fix is called done.
 - **Hand props follow facing.** When a character is flipped (`dir: -1`) or holds a prop in the "wrong" hand, the prop gets its own direction (e.g. `bowDir`), not the hand's side.
 
 (Added after the previs of the Ep. 2 remake, where Χρήστος's bow was drawn backwards.)
