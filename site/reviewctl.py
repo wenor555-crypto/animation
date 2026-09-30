@@ -4,10 +4,11 @@
   python3 reviewctl.py pull EP [--all]            compact table of the open notes (--all: every note)
   python3 reviewctl.py done EP ID [ID…] [--rev rNN] [--note TEXT] [--wontfix] [--reopen]
   python3 reviewctl.py list                        drafts and their open-note counts
+  python3 reviewctl.py passwd USER                 set a review account (password read from stdin, stored as a salted hash;
+                                                   once an account exists the shared passphrase is dropped)
 """
-import sys
-from server import CATS, RENDER, append, fmt, notes
-import time
+import json, secrets, sys, time
+from server import CATS, RENDER, SITE, append, fmt, notes, pw_hash, secret
 
 
 def opt(a, name, default=''):
@@ -47,6 +48,15 @@ def main(a):
             append(ep, {'ev': 'status', 'id': i, 'status': st, 'rev': rev, 'note': note, 'by': 'claude', 'ts': time.strftime('%Y-%m-%dT%H:%M:%S')})
             print(f'{i} -> {st} {rev}')
         return
+    if cmd == 'passwd':
+        user, pw = a[0], sys.stdin.readline().rstrip('\n')
+        if not pw:
+            sys.exit('empty password')
+        s = secret(); salt = secrets.token_hex(16)
+        s.setdefault('users', {})[user] = {'salt': salt, 'hash': pw_hash(pw, salt)}
+        s.pop('passphrase', None)
+        p = SITE / 'secret.json'; p.write_text(json.dumps(s, ensure_ascii=False)); p.chmod(0o600)
+        print(f'account {user} set'); return
     sys.exit(__doc__)
 
 

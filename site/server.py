@@ -36,6 +36,19 @@ def secret():
     return json.loads(p.read_text())
 
 
+def pw_hash(pw, salt):
+    return hashlib.pbkdf2_hmac('sha256', pw.encode(), bytes.fromhex(salt), 200_000).hex()
+
+
+def check_login(name, pw):
+    """Named accounts ("users": {name: {salt, hash}}, set with reviewctl.py passwd) if there are any, else the shared passphrase."""
+    s = secret()
+    if s.get('users'):
+        u = s['users'].get(name)
+        return bool(u) and hmac.compare_digest(pw_hash(pw, u['salt']), u['hash'])
+    return bool(s.get('passphrase')) and hmac.compare_digest(pw.encode(), s['passphrase'].encode())
+
+
 def site_cfg():
     try:
         return json.loads((HERE / 'site.json').read_text())
@@ -276,7 +289,7 @@ class H(BaseHTTPRequestHandler):
     # ---------- review ----------
     def login_page(self, err=''):
         return page('Review · Σίτα', f'''<main class="login"><h1>Review</h1>{f'<p class="err">{esc(err)}</p>' if err else ''}
-<form method="post" action="/review/login"><label>Όνομα<input name="name" required maxlength="30" autocomplete="nickname"></label>
+<form method="post" action="/review/login"><label>Όνομα χρήστη<input name="name" required maxlength="30" autocomplete="username" autocapitalize="none"></label>
 <label>Κωδικός<input name="pw" type="password" required autocomplete="current-password"></label><button class="btn">Είσοδος</button></form></main>''')
 
     def login(self):
@@ -285,9 +298,9 @@ class H(BaseHTTPRequestHandler):
         except ValueError:
             return self.send(400, 'bad', 'text/plain')
         name = (f.get('name', [''])[0].strip() or 'reviewer')[:30]
-        if not hmac.compare_digest(f.get('pw', [''])[0].strip().encode(), secret()['passphrase'].encode()):
+        if not check_login(name, f.get('pw', [''])[0]):
             time.sleep(1.5)
-            return self.send(403, self.login_page('Λάθος κωδικός'))
+            return self.send(403, self.login_page('Λάθος όνομα ή κωδικός'))
         sig = hmac.new(secret()['key'].encode(), b'rev:' + name.encode(), hashlib.sha256).hexdigest()
         val = urllib.parse.quote(base64.urlsafe_b64encode(name.encode()).decode() + '.' + sig)
         sec = '; Secure' if self.headers.get('X-Forwarded-Proto') == 'https' or self.headers.get('Cf-Visitor', '').find('https') >= 0 else ''
