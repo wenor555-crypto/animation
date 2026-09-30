@@ -8,14 +8,14 @@ const steps = [
   { who: 'tv', cam: 'screen', mark: 'pitch', el: 'Η ΕΞΥΠΝΗ ΚΑΡΕΚΛΑ ΠΑΡΑΛΙΑΣ! Ανοίγει μόνη της! Κλείνει μόνη της!', en: 'THE SMART BEACH CHAIR! It opens by itself! It closes by itself!' },
   { who: 'tv', cam: 'screen', mark: 'call', el: 'ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: 'CALL NOW!', say: 'Τηλεφωνήστε τώρα!' },
   { act: 'dial', d: 3.2, cam: 'vas' },
-  { who: 'vasilis', cam: 'vas', el: 'Ναι, γεια σας. Θέλω μία καρέκλα. Την έξυπνη.', en: 'Yes, hello. I want one chair. The smart one.' },
+  { who: 'vasilis', cam: 'vas', el: 'Ναι, γεια σας. Θέλω μία καρέκλα. Την έξυπνη.', en: "Yes, hello. I'd like one chair. The smart one." },
   { act: 'beat', d: .9, cam: 'tvS' },
   { who: 'sita', label: PH, cam: 'tvS', mark: 'again', el: 'Καλώς ήρθατε ξανά… Βασίλη.', en: 'Welcome back… Vasilis.' },
   { who: 'sita', label: PH, cam: 'tvS', el: 'Η διεύθυνση είναι η ίδια;', en: 'Same address?' },
   { who: 'vasilis', cam: 'vas', el: 'Λέχαιο. Δίπλα στη συκιά. Το σπίτι με τις κότες.', en: 'Lechaio. Next to the fig tree. The house with the chickens.' },
   { who: 'vasilis', cam: 'vasC', mark: 'cig', el: '…Έχεις ένα τσιγάρο;', en: '…Got a cigarette?', gap: .8 },
   { act: 'wait', d: 1.2, cam: 'tvS' },
-  { who: 'sita', label: PH, cam: 'tvS', mark: 'last', el: 'Θα σας έρθει… με την παραγγελία.', en: "It'll come… with your order." },
+  { who: 'sita', label: PH, cam: 'tvS', mark: 'last', el: 'Θα σας έρθει… με την παραγγελία.', en: "It'll arrive… with your order." },
   { act: 'sip', d: 2.6, cam: 'two' },
 ];
 let M;

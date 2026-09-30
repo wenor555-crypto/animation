@@ -7,7 +7,7 @@ const CAMS = { splash: [760, 400, .95], sita: [SX, 480, 2.1], sitaC: [SX, 470, 2
 const steps = [
   { act: 'pour', d: 4.4, cam: 'splash' },
   { act: 'splash', d: 1.6, cam: 'splash' },
-  { who: 'sita', cam: 'sita', mark: 'hi', el: 'ΓΕΙΑ ΣΑΣ! Είμαι η ΕΞΥΠΝΗ ΣΙΤΑ… ΕΚΔΟΣΗ ΔΥΟ!', en: "HELLO! I'm the SMART SCREEN… VERSION TWO!" },
+  { who: 'sita', cam: 'sita', mark: 'hi', el: 'ΓΕΙΑ ΣΑΣ! Είμαι η ΕΞΥΠΝΗ ΣΙΤΑ… ΕΚΔΟΣΗ ΔΥΟ!', en: "HELLO! I'm the SMART SCREEN DOOR… VERSION TWO!" },
   { who: 'sita', cam: 'sitaC', mark: 'spec', el: 'Ενισχυμένο πλαίσιο! Διπλοί μαγνήτες! Και λέιζερ… με ΑΝΑΒΑΘΜΙΣΜΕΝΟ όριο ισχύος!', en: 'Reinforced frame! Double magnets! And a laser… with an UPGRADED power limit!' },
   { who: 'giannos', cam: 'gia', el: 'Το όριο ήταν επεξεργάσιμο…', en: 'The limit was editable…' },
   { who: 'sita', cam: 'sitaC', el: 'Το επεξεργάστηκα.', en: 'I edited it.' },

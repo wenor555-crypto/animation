@@ -19,7 +19,7 @@ const steps = [
   { who: 'sita', cam: 'top', mark: 'only', el: 'Μόνο εσύ κι εγώ, Panik.', en: 'Just you and me, Panik.' },
   { who: 'panik', cam: 'pk', el: 'Και η πόλη.', en: 'And the city.' },
   { who: 'sita', cam: 'top', mark: 'village', el: 'ΧΩΡΙΟ ΕΙΝΑΙ!', en: "IT'S A VILLAGE!" },
-  { who: 'sita', cam: 'duo', el: 'Γιατί εμένα; Από όλες τις σίτες του κόσμου;', en: 'Why me? Of all the σίτες in the world?' },
+  { who: 'sita', cam: 'duo', el: 'Γιατί εμένα; Από όλες τις σίτες του κόσμου;', en: 'Why me? Of all the screen doors in all the world?' },
   { who: 'panik', cam: 'pk', mark: 'there', el: 'Γιατί ήσουν εκεί.', en: 'Because you were there.' },
   { act: 'corner', d: 1.4, cam: 'duo' },
   { who: 'sita', cam: 'top', mark: 'last', el: 'ΤΕΛΕΥΤΑΙΑ ΠΡΟΣΦΟΡΑ, PANIK!', en: 'FINAL OFFER, PANIK!', say: 'Τελευτέα προσφορά, Πάνικ!' },

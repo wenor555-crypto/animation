@@ -7,7 +7,7 @@ const steps = [
   { act: 'charge', d: 2.2, cam: 'top' },
   { who: 'sita', cam: 'top', mark: 'all', el: 'Όλη η ενέργεια… σε μένα.', en: 'All the power… to me.' },
   { act: 'cut', d: 3, cam: 'sq' },
-  { who: 'giannos', cam: 'gia', mark: 'nosting', el: 'Φακ… θα μας κάψει.', en: 'Fuck… it will burn us.' },
+  { who: 'giannos', cam: 'gia', mark: 'nosting', el: 'Φακ… θα μας κάψει.', en: "Fuck… it's going to fry us." },
   { who: 'panik', cam: 'pk', mark: 'bored', el: 'Ωραία. Βαρέθηκα τα τσιμπήματα.', en: "Good. I'm sick of the stings." },
   { act: 'climb', d: 2.4, cam: 'base' },
 ];

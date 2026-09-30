@@ -8,7 +8,7 @@ const SP = ['ΣΙΤΑ (από κάθε ηχείο)', 'SITA (every speaker)'];
 const CAMS = { wide: [640, 460, .92], vac: [350, 470, 2.6], coop: [260, 440, 1.7], mim: [80, 430, 2.2], chr: [200, 430, 2.2], gia: [320, 430, 2.2], gio: [450, 430, 2.2], vas: [1120, 470, 2.1] };
 const steps = [
   { act: 'quiet', d: 4.2, cam: 'wide' },
-  { who: 'sita', label: SP, cam: 'vac', mark: 'bye', el: 'Χάρηκα! Επόμενη προσφορά σε πέντε λεπτά!', en: 'A pleasure! Next offer in five minutes!' },
+  { who: 'sita', label: SP, cam: 'vac', mark: 'bye', el: 'Χάρηκα! Επόμενη προσφορά σε πέντε λεπτά!', en: 'Lovely doing business! Next offer in five minutes!' },
   { act: 'peek', d: 1.6, cam: 'coop' },
   { who: 'mimis', cam: 'mim', el: 'Βέλη;', en: 'Arrows?' },
   { who: 'christos', cam: 'chr', el: 'Κανένα.', en: 'None.' },

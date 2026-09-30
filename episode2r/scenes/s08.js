@@ -6,9 +6,9 @@ const CAMS = { wide: [680, 420, 1.15], chr: [900, 380, 2.1], gia: [470, 400, 2.1
 const steps = [
   { act: 'open', d: 2.6, cam: 'wide' },
   { act: 'draw', d: 2.4, cam: 'page' },
-  { who: 'christos', cam: 'page', mark: 'led', el: 'Το κόκκινο φωτάκι. Είναι arc εκδίκησης.', en: "The little red light. It's a revenge arc." },
+  { who: 'christos', cam: 'page', mark: 'led', el: 'Το κόκκινο φωτάκι. Είναι arc εκδίκησης.', en: "That little red light. That's a revenge arc." },
   { who: 'giannos', cam: 'gia', el: 'Χρήστο, είναι IQOS.', en: "Christos, it's an IQOS." },
-  { who: 'christos', cam: 'chr', mark: 'start', el: 'Έτσι ξεκινάνε όλα.', en: "That's how it all starts." },
+  { who: 'christos', cam: 'chr', mark: 'start', el: 'Έτσι ξεκινάνε όλα.', en: "That's how they all start." },
   { act: 'turn', d: 2.2, cam: 'end' },
   { who: 'mimis', cam: 'mim', mark: 'what', el: 'Τι είναι αυτό;', en: 'What is that?' },
   { who: 'christos', cam: 'end', mark: 'the', el: 'Το τέλος.', en: 'The ending.' },

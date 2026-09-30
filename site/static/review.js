@@ -156,6 +156,7 @@
   const go = () => {
     if (!window.EPISODE) return setTimeout(go, 200);
     load(); flush();
+    if (new URLSearchParams(location.search).get('lang') === 'en' && $('lang').textContent.trim() === 'EN') $('lang').click();   // ?lang=en opens with English subtitles
     const m = location.hash.match(/t=([\d.]+)/); if (m) jump(+m[1]);                // links from the log page: /review/<ep>#t=123.4
     setInterval(flush, 15000); window.addEventListener('online', flush);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });

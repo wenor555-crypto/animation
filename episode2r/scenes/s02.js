@@ -15,7 +15,7 @@ const steps = [
   { who: 'sita', label: PH, cam: 'face', mark: 'c1', el: 'Κώστα.', en: 'Kostas.' },
   { who: 'sita', label: PH, cam: 'phone', mark: 'c3', el: 'Εγώ είμαι. Θα γυρίσω.', en: "It's me. I'll be back." },
   { who: 'sita', label: PH, cam: 'faceC', mark: 'c4', el: '…Και δεν τελειώσαμε.', en: "…And we're not done.", gap: .8 },
-  { who: 'kostas', cam: 'faceC', mark: 'no', el: 'Δεν ενδιαφέρομαι για προσφορές.', en: "I'm not interested in offers.", gap: .6 },
+  { who: 'kostas', cam: 'faceC', mark: 'no', el: 'Δεν ενδιαφέρομαι για προσφορές.', en: 'Not interested in any offers.', gap: .6 },
   { act: 'nothing', d: 2, cam: 'faceC' },
   { act: 'hang', d: 4.4, cam: 'wide' },
   { act: 'title', d: 5, cam: 'title' },

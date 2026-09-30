@@ -12,7 +12,7 @@ const steps = [
   { who: 'kostas', cam: 'kosC', mark: 'toast', el: '…Για το χωριό.', en: '…For the village.' },
   { act: 'drink', d: 3, cam: 'kos' },
   { act: 'trans', d: 4.4, cam: 'manga' },
-  { who: 'panik', cam: 'manga', mark: 'woke', el: 'Η πόλη… ξύπνησε.', en: 'The city… has woken.' },
+  { who: 'panik', cam: 'manga', mark: 'woke', el: 'Η πόλη… ξύπνησε.', en: 'The city… is awake.' },
   { who: 'mimis', cam: 'mim', el: 'Χωριό είναι.', en: "It's a village." },
   { who: 'panik', cam: 'kosC', mark: 'city', el: 'Για μένα είναι πόλη.', en: "To me it's a city." },
   { act: 'end', d: 1.6, cam: 'wide' },
