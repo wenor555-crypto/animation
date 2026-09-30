@@ -75,7 +75,7 @@ Those are the mistakes rules 2–5 and the gates are there to stop.
 
 ## The site and the review tool (`site/`)
 
-A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8790`), reached from outside through the creator's Cloudflare tunnel.
+A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8790`), reached from outside at `https://sita.justachillgame.com` through the node's Cloudflare tunnel (an `ingress` rule in `/etc/cloudflared/config.yml`, plus a proxied DNS CNAME `sita` → `<tunnel id>.cfargotunnel.com` in the Cloudflare dashboard).
 
 - **Public:** `/` lists the episodes; `/ep/<slug>` plays the latest revision; `/dl/<slug>` downloads the MP4; `/play/<slug>` is the interactive HTML of the same revision (EL/EN subtitles). Only rendered revisions appear there, never drafts. `render_ep.sh` calls `publish.py`, which copies the MP4 and HTML to `releases/<slug>/rNN` and keeps the last 3. `site.json` holds the titles; its `aliases` publish the remake `episode2r` as `episode2`.
 - **Review (passphrase):** `/review/<ep>` plays the draft from `sita-render/dist/` with `static/review.js` added.
