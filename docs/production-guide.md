@@ -49,8 +49,8 @@ Before a shot is approved, every prop in a hand is checked in a full-size frame,
 | 5. Keyframe sheets to the creator | the contact sheets from step 3 | the creator approves before any voice or render budget is spent |
 | 6. Voices | `python3 episode1/tools/gen_voices.py --episode episodeN` | every clip passes speech-to-text, or is listed for the creator to check by ear |
 | 7. Build + QA again | `python3 episodeN/build.py`, then `tools/qa.js` on `dist/` | exit code 0 |
-| 8. HTML to the creator | `episodeN/dist/episodeN.html` (sent as a file) | the creator watches the whole episode in the browser and approves; revisions go back to step 2, 6 or 7. **No MP4 before this approval**: a render costs time on every revision |
-| 9. Render | node: `~/sita-render/render_ep.sh episodeN` | only after step 8; uploads to Drive as `episodeN_rNN.mp4` |
+| 8. HTML to the creator | put `episodeN/dist/episodeN.html` in `sita-render/dist/` on the node; the creator reviews it at `/review/episodeN` on the site (see below) | the creator watches the whole episode and approves; their notes are read with `python3 tools/review.py pull episodeN`; revisions go back to step 2, 6 or 7, and each fixed note is closed with `review.py done … --rev`. **No MP4 before this approval**: a render costs time on every revision |
+| 9. Render | node: `~/sita-render/render_ep.sh episodeN` | only after step 8; uploads to Drive as `episodeN_rNN.mp4` and publishes it on the site as the episode's next revision |
 
 ### What `tools/qa.js` checks
 
@@ -72,3 +72,18 @@ What it found in the old episodes:
   - one unpainted strip that picked up colour from earlier frames
 
 Those are the mistakes rules 2–5 and the gates are there to stop.
+
+## The site and the review tool (`site/`)
+
+A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8790`), reached from outside through the creator's Cloudflare tunnel.
+
+- **Public:** `/` lists the episodes; `/ep/<slug>` plays the latest revision; `/dl/<slug>` downloads the MP4; `/play/<slug>` is the interactive HTML of the same revision (EL/EN subtitles). Only rendered revisions appear there, never drafts. `render_ep.sh` calls `publish.py`, which copies the MP4 and HTML to `releases/<slug>/rNN` and keeps the last 3. `site.json` holds the titles; its `aliases` publish the remake `episode2r` as `episode2`.
+- **Review (passphrase):** `/review/<ep>` plays the draft from `sita-render/dist/` with `static/review.js` added.
+  - Tapping the frame pauses the player and opens a quick menu at that point: 🎨 visual (one tap), 🔊 audio, ⏱ timing, 💬 line, 👍 like, ✍️ comment. 📍 or **V** flags a visual check without pausing.
+  - Every note keeps the time, scene, line, the point on the 1280×720 frame, the build hash and a snapshot.
+  - The log is append-only: `review/<ep>.jsonl`. The creator also has `/review/<ep>/log`, plus `notes.md` and `.csv`.
+- **Claude's side:**
+  - `tools/review.py pull <ep>` prints only the open notes as text.
+  - `review.py shot <ep> <id>` fetches one snapshot when the text isn't enough.
+  - `review.py done <ep> <id…> --rev rNN` closes notes; the creator sees ✓.
+- **Deploy:** `bash site/deploy.sh` copies the files, installs `render_ep.sh`, adds the crontab lines (`@reboot` and a check every 5 minutes through `run.sh`), and restarts the server. The passphrase lives only in `~/sita-site/secret.json` (mode 600) on the node.

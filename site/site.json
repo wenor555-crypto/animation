@@ -1,0 +1,43 @@
+{
+  "series": {
+    "title_el": "Η Έξυπνη Σίτα",
+    "title_en": "The Smart Screen Door",
+    "tag_el": "Λέχαιο, Αύγουστος, 38 βαθμοί. Μια σίτα από τα Jumbo αποκτά μυαλό, και θεωρεί τους ανθρώπους παράσιτα.",
+    "tag_en": "Lechaio, August, 38°C. A screen door from Jumbo gets a brain, and decides people are parasites."
+  },
+  "aliases": {
+    "episode2r": "episode2"
+  },
+  "episodes": [
+    {
+      "slug": "episode1",
+      "n": 1,
+      "title_el": "Η Έξυπνη Σίτα",
+      "title_en": "The Smart Screen Door",
+      "desc_el": "Η παρέα αγοράζει μια «έξυπνη» σίτα. Κακή ιδέα.",
+      "desc_en": "The gang buys a \"smart\" screen door. Bad idea."
+    },
+    {
+      "slug": "episode2",
+      "n": 2,
+      "title_el": "Τηλεφωνήστε Τώρα",
+      "title_en": "Call Now",
+      "desc_el": "Η σίτα γυρίζει με στρατό, και ο Γιώργος με επιχειρηματικό σχέδιο.",
+      "desc_en": "The screen door comes back with an army, and Γιώργος with a business plan."
+    },
+    {
+      "slug": "episode3",
+      "n": 3,
+      "title_el": "Σίταdel",
+      "title_en": "Sitadel",
+      "desc_el": "Όλοι εξοπλίζονται για τον πόλεμο που έρχεται.",
+      "desc_en": "Everyone arms up for the war that's coming."
+    }
+  ],
+  "posters": {
+    "episode1": 825,
+    "episode2": 700,
+    "episode2r": 977,
+    "episode3": 1125
+  }
+}
