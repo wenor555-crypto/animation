@@ -87,3 +87,28 @@ A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8
   - `review.py shot <ep> <id>` fetches one snapshot when the text isn't enough.
   - `review.py done <ep> <id…> --rev rNN` closes notes; the creator sees ✓.
 - **Deploy:** `bash site/deploy.sh` copies the files, installs `render_ep.sh`, adds the crontab lines (`@reboot` and a check every 5 minutes through `run.sh`), and restarts the server. The passphrase lives only in `~/sita-site/secret.json` (mode 600) on the node.
+
+## Subtitles (Greek and English)
+
+- **Source:** every line has `el` (spoken, the subtitle in Greek) and `en` (English subtitle).
+  - The English is written by Claude in context, not machine-translated.
+  - Terms:
+    - σίτα → «the screen door» (object) / «Sita» (name)
+    - ΣίταAI → «SitaAI», Σίταdel → «Sitadel»
+    - παράσιτα → «parasites»
+    - ταψί → «baking tray»
+    - «air fryer» stays
+  - Swearing keeps the Greek intensity («μαλάκα» → «you moron» / «prick», never «dude»).
+  - Jokes are adapted, not translated word for word.
+- **Changing English lines:** `python3 tools/set_en.py episodeN table.json` (`{"<el>": "<new en>"}`). It finds each line by its Greek text and touches only `en`.
+- **Checking the English:** before a draft goes to review, no Greek letters may remain in the English lines.
+- **Render:** `export_mp4.js` now renders a **clean picture** by default (`SUBS=soft`).
+  - It writes `out/<ep>.el.vtt` and `out/<ep>.en.vtt` with the same timings as the player.
+  - It muxes both tracks into the MP4 (Greek default), so a downloaded file switches language in any player.
+  - `SUBS=burn` renders the old way, with Greek drawn in.
+- **Site:**
+  - `publish.py` copies the two `.vtt` next to the release.
+  - `/ep/<slug>` shows a ΕΛ | EN | Off picker.
+  - `?lang=en` opens in English, also for `/`, `/play/<slug>` and `/review/<ep>`.
+  - Releases rendered before this have Greek burned in; their page says so and points to the interactive version.
+

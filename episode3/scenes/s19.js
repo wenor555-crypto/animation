@@ -15,7 +15,7 @@ const steps = [
   { who: 'giannos', cam: 'giaC', mark: 'alive', el: 'Ζει. Και σου γράφει εδώ και μήνες.', en: "She's alive. And she's been texting you for months." },
   { who: 'kostas', cam: 'kos', mark: 'away', el: 'Καλά. Άμα πάρει τηλέφωνο, πες ότι λείπω.', en: "Fine. If she calls, tell her I'm out." },
   { act: 'stand', d: 1.4, cam: 'wide' },
-  { who: 'giannos', cam: 'gia', mark: 'warn', el: 'Να δείτε. Δεν έχουμε τελειώσει με τη σίτα.', en: "Mark my words. We're not done with the σίτα." },
+  { who: 'giannos', cam: 'gia', mark: 'warn', el: 'Να δείτε. Δεν έχουμε τελειώσει με τη σίτα.', en: "Mark my words. We're not done with the screen door." },
   { who: 'mimis', cam: 'mim', el: 'Εντάξει.', en: 'Okay.' },
   { who: 'christos', cam: 'chr', mark: 'drew', el: 'Το ξέρω. Το ζωγράφισα.', en: 'I know. I drew it.' },
   { act: 'end', d: 1.6, cam: 'wide' },

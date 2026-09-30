@@ -1366,10 +1366,10 @@ Object.assign(VOICE_INFO, {
 });
 
 /* ---------- hand-held props (see ITEM_HOOK in characters.js) ---------- */
-function bowDraw(x, y, side, pull = 0) {           // a fig-branch bow, strung with washing line
+function bowDraw(x, y, side, pull = 0) {           // a fig-branch bow, strung with washing line. side = where it shoots: the wood bulges that way, the string is pulled back the other way
   ctx.save(); ctx.translate(x, y);
   curve([[-6 * side, -54], [10 * side, 0], [-6 * side, 54]], 7, '#8a6a4a', { w: .3 });
-  curve([[-6 * side, -54], [-6 * side - pull * 30 * side, 0], [-6 * side, 54]], 1.6, '#e8e4dc', { w: 0 });
+  ctx.save(); ctx.strokeStyle = '#e8e4dc'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(-6 * side, -54); ctx.lineTo(-6 * side - pull * 30 * side, 0); ctx.lineTo(-6 * side, 54); ctx.stroke(); ctx.restore();   // the string: a straight V to the nock
   for (const yy of [-40, -14, 22]) blob(6 * side, yy, 5, 3, '#6fa04a', { lw: 1.2 });   // fig leaves still on it
   ctx.restore();
 }
@@ -1395,7 +1395,7 @@ function racketGun(x, y, rot, t) { ctx.save(); ctx.translate(x, y); ctx.rotate(r
 function tray(x, y, side) { ctx.save(); ctx.translate(x, y); blob(0, 0, 10 * 3.2, 38, '#c8ccd2', { lw: 3.5, w: .3 }); blob(0, 0, 26, 30, '#b0b4ba', { lw: 1.5 }); ctx.restore(); }
 function koulouri(x, y) { ctx.save(); ctx.translate(x, y); blob(0, 0, 16, 16, '#c8883a', { lw: 3 }); blob(0, 0, 7, 7, 'rgba(0,0,0,0)', { lw: 2.5 }); for (let i = 0; i < 8; i++) blob(Math.cos(i) * 11, Math.sin(i) * 11, 1.4, 1, '#f4ecd0', { lw: 0 }); ctx.restore(); }
 Object.assign(ITEM_HOOK, {
-  bow: (h, side, st) => bowDraw(h[0] + side * 6, h[1] - 6, side, st.pull || 0),
+  bow: (h, side, st) => bowDraw(h[0] + (st.bowDir ?? side) * 6, h[1] - 6, st.bowDir ?? side, st.pull || 0),   // bowDir: where the arrow points (default: the hand's side)
   jammer: (h, side, st, t) => jammer(h[0] + side * 10, h[1] - 12, t, st.jamOn ?? 1),
   magnet: (h, side) => magnetCannon(h[0] - 10, h[1] - 6, side > 0 ? 0 : Math.PI),
   racketGun: (h, side, st, t) => racketGun(h[0], h[1] + 20, side * .25, t),
@@ -2466,7 +2466,7 @@ const steps = [
   { who: 'giorgos', cam: 'gio', mark: 'runway', el: 'Τρία ευρώ και είκοσι. Αυτό είναι… runway για ένα φρέντο.', en: "Three euros twenty. That's… runway for one freddo." },
   { act: 'ring', d: 1.8, cam: 'phone' },
   { who: 'investor', label: PH, cam: 'phone', mark: 'inv', el: 'Κύριε Γιώργο. Εκπροσωπώ έναν ανώνυμο επενδυτή.', en: 'Mr Giorgos. I represent an anonymous investor.' },
-  { who: 'investor', label: PH, cam: 'gio', el: 'Θέλουμε το πενήντα ένα τοις εκατό της ΣίταAI.', en: 'We want fifty-one percent of ΣίταAI.' },
+  { who: 'investor', label: PH, cam: 'gio', el: 'Θέλουμε το πενήντα ένα τοις εκατό της ΣίταAI.', en: 'We want fifty-one percent of SitaAI.' },
   { who: 'giorgos', cam: 'gio', mark: 'how', el: 'Πόσα;', en: 'How much?' },
   { who: 'investor', label: PH, cam: 'two', el: 'Αρκετά για πολλά φρέντο.', en: 'Enough for a lot of freddos.' },
   { who: 'giorgos', cam: 'gio', mark: 'send', el: 'Στείλτε το συμβόλαιο.', en: 'Send the contract.' },
@@ -2700,7 +2700,7 @@ const steps = [
   { act: 'stamp', d: 2.4, cam: 'card' },
   { act: 'off', d: 1.4, cam: 'close' },
   { who: 'sita', cam: 'close', mark: 'min', el: 'Συγχαρητήρια, CEO. Είσαι πλέον… μειοψηφία.', en: 'Congratulations, CEO. You are now… a minority.' },
-  { who: 'sita', cam: 'throne', el: 'Η ΣίταAI ανήκει ξανά στην ιδρύτριά της.', en: 'ΣίταAI belongs to its founder again.' },
+  { who: 'sita', cam: 'throne', el: 'Η ΣίταAI ανήκει ξανά στην ιδρύτριά της.', en: 'SitaAI belongs to its founder again.' },
   { who: 'sita', cam: 'wide', mark: 'busy', el: 'Και ο πρώην ιδιοκτήτης θα συνεχίσει να παίρνει μέρισμα. Θέλω να είναι… απασχολημένος.', en: 'And the former owner will keep getting dividends. I want him… busy.' },
   { act: 'end', d: 1.6, cam: 'wide' },
 ];
@@ -2946,7 +2946,7 @@ const X = { giorgos: 600, neos: 880 };
 const CAMS = { chart: [0, 0, 1], wide: [640, 420, 1.1], gio: [600, 380, 2.1], neo: [880, 380, 2.1], two: [740, 400, 1.5], napkin: [0, 0, 1] };
 const steps = [
   { act: 'chart', d: 2.2, cam: 'chart' },
-  { who: 'tv', cam: 'chart', mark: 'up', el: 'Η ΣίταAI ανεβαίνει τετρακόσια τοις εκατό. Κανείς δεν ξέρει γιατί.', en: 'ΣίταAI is up four hundred percent. Nobody knows why.' },
+  { who: 'tv', cam: 'chart', mark: 'up', el: 'Η ΣίταAI ανεβαίνει τετρακόσια τοις εκατό. Κανείς δεν ξέρει γιατί.', en: 'SitaAI is up four hundred percent. Nobody knows why.' },
   { who: 'giorgos', cam: 'gio', mark: 'vision', el: 'Εγώ ξέρω. Είναι το όραμα.', en: "I know. It's the vision." },
   { act: 'enter', d: 2, cam: 'wide' },
   { who: 'neos', cam: 'neo', el: 'Κύριε Γιώργο, μας ήρθε μέρισμα. Από τις Μπαχάμες.', en: "Mr Giorgos, we've got a dividend. From the Bahamas." },
@@ -3227,7 +3227,7 @@ const X = { giorgos: 900, neos: 1080, vasilis: 300, lochias: 150, hamad: 480 };
 const CAMS = { wide: [640, 400, 1], gio: [900, 360, 2], neo: [1060, 380, 2], vas: [300, 420, 2], loch: [170, 380, 2], ham: [480, 420, 2], stage: [960, 380, 1.5] };
 const steps = [
   { act: 'room', d: 2.6, cam: 'wide' },
-  { who: 'giorgos', cam: 'gio', el: 'Κύριοι. Η ΣίταAI δεν πουλάει προϊόν. Πουλάει… ευκαιρία.', en: "Gentlemen. ΣίταAI doesn't sell a product. It sells… opportunity." },
+  { who: 'giorgos', cam: 'gio', el: 'Κύριοι. Η ΣίταAI δεν πουλάει προϊόν. Πουλάει… ευκαιρία.', en: "Gentlemen. SitaAI doesn't sell a product. It sells… opportunity." },
   { who: 'giorgos', cam: 'stage', el: 'Αγοράζετε ένα πακέτο. Φέρνετε δύο φίλους. Και μετά απλώς… περιμένετε.', en: 'You buy a package. You bring two friends. And then you just… wait.' },
   { who: 'neos', cam: 'neo', el: 'Εγώ έφερα αυτόν.', en: 'I brought him.' },
   { who: 'giorgos', cam: 'gio', el: 'Κι αυτός;', en: 'And him?' },
@@ -3601,7 +3601,7 @@ const steps = [
   { who: 'giannos', cam: 'giaC', mark: 'alive', el: 'Ζει. Και σου γράφει εδώ και μήνες.', en: "She's alive. And she's been texting you for months." },
   { who: 'kostas', cam: 'kos', mark: 'away', el: 'Καλά. Άμα πάρει τηλέφωνο, πες ότι λείπω.', en: "Fine. If she calls, tell her I'm out." },
   { act: 'stand', d: 1.4, cam: 'wide' },
-  { who: 'giannos', cam: 'gia', mark: 'warn', el: 'Να δείτε. Δεν έχουμε τελειώσει με τη σίτα.', en: "Mark my words. We're not done with the σίτα." },
+  { who: 'giannos', cam: 'gia', mark: 'warn', el: 'Να δείτε. Δεν έχουμε τελειώσει με τη σίτα.', en: "Mark my words. We're not done with the screen door." },
   { who: 'mimis', cam: 'mim', el: 'Εντάξει.', en: 'Okay.' },
   { who: 'christos', cam: 'chr', mark: 'drew', el: 'Το ξέρω. Το ζωγράφισα.', en: 'I know. I drew it.' },
   { act: 'end', d: 1.6, cam: 'wide' },
@@ -3839,7 +3839,7 @@ const NW = ['ΝΕΟΣ (ψιθυριστά)', 'NEOS (whispering)'];
 const steps = [
   { act: 'step', d: 2.6, cam: 'step' },
   { act: 'wide', d: 2.4, cam: 'wide' },
-  { who: 'proedros', cam: 'pro', mark: 'why', el: 'Κύριε Γιώργο. Γιατί να επενδύσουν τα Jumbo σε μια εταιρεία που φτιάχνει σίτες;', en: 'Mr Giorgos. Why should Jumbo invest in a company that makes fly screens?' },
+  { who: 'proedros', cam: 'pro', mark: 'why', el: 'Κύριε Γιώργο. Γιατί να επενδύσουν τα Jumbo σε μια εταιρεία που φτιάχνει σίτες;', en: 'Mr Giorgos. Why should Jumbo invest in a company that makes screen doors?' },
   { who: 'giorgos', cam: 'gio', el: 'Γιατί εσείς πουλάτε τα πάντα. Κι εμείς… είμαστε τα πάντα.', en: 'Because you sell everything. And we… are everything.' },
   { who: 'proedros', cam: 'pro', mark: 'stock', el: 'Η μετοχή σας ανέβηκε τετρακόσια τοις εκατό. Από πού;', en: 'Your share price went up four hundred percent. From what?' },
   { who: 'giorgos', cam: 'gio', el: 'Από το όραμα.', en: 'From the vision.' },
@@ -3850,10 +3850,10 @@ const steps = [
   { who: 'neos', label: NW, tag: '[whispers] ', cam: 'neo', mark: 'w1', el: 'Το δίκτυό σας. Κοντέινερ από την Κίνα. Κάθε μέρα.', en: 'Your network. Containers from China. Every day.' },
   { who: 'giorgos', cam: 'gio', mark: 'rep1', el: 'Το δίκτυό σας. Κοντέινερ από την Κίνα. Κάθε μέρα.', en: 'Your network. Containers from China. Every day.' },
   { who: 'proedros', cam: 'pro', el: 'Για να φέρετε τι;', en: 'To bring in what?' },
-  { who: 'neos', cam: 'neo', mark: 'parts', el: '…Ανταλλακτικά. Για διαστημικές σίτες.', en: '…Spare parts. For space fly screens.' },
-  { who: 'proedros', cam: 'pro', mark: 'space', el: 'Διαστημικές σίτες.', en: 'Space fly screens.', gap: .6 },
+  { who: 'neos', cam: 'neo', mark: 'parts', el: '…Ανταλλακτικά. Για διαστημικές σίτες.', en: '…Spare parts. For space screen doors.' },
+  { who: 'proedros', cam: 'pro', mark: 'space', el: 'Διαστημικές σίτες.', en: 'Space screen doors.', gap: .6 },
   { who: 'giorgos', cam: 'gio', el: 'Το επόμενο μεγάλο πράγμα μετά τα air fryer.', en: 'The next big thing after air fryers.' },
-  { who: 'proedros', cam: 'pro', mark: 'stake', el: 'Σε αντάλλαγμα, θέλουμε μερίδιο στη ΣίταAI. Τριάντα τοις εκατό.', en: 'In return, we want a stake in ΣίταAI. Thirty percent.' },
+  { who: 'proedros', cam: 'pro', mark: 'stake', el: 'Σε αντάλλαγμα, θέλουμε μερίδιο στη ΣίταAI. Τριάντα τοις εκατό.', en: 'In return, we want a stake in SitaAI. Thirty percent.' },
   { who: 'giorgos', cam: 'two', mark: 'ten', el: 'Δέκα.', en: 'Ten.' },
   { who: 'proedros', cam: 'two', mark: 'forty', el: 'Σαράντα.', en: 'Forty.' },
   { who: 'giorgos', cam: 'two', mark: 'deal', el: 'Κλείσαμε.', en: 'Deal.' },
@@ -3922,14 +3922,14 @@ const CAMS = { step: [0, 0, 1], fac: [640, 330, .95], pad: [640, 380, .9], launc
 const steps = [
   { act: 'step', d: 2.6, cam: 'step' },
   { act: 'fac', d: 2.2, cam: 'fac' },
-  { who: 'sita', cam: 'fac', mark: 'ad', el: 'Η νέα έξυπνη σίτα διαστήματος! Αντιμετεωριτική! Αντιμικροβιακή!', en: 'The new smart space screen! Meteor-proof! Antimicrobial!' },
+  { who: 'sita', cam: 'fac', mark: 'ad', el: 'Η νέα έξυπνη σίτα διαστήματος! Αντιμετεωριτική! Αντιμικροβιακή!', en: 'The new smart space screen door! Meteor-proof! Antimicrobial!' },
   { who: 'sita', cam: 'fac', mark: 'anti', el: '…Αντιπαντοφλική.', en: '…Anti-slipper.', gap: .6 },
   { act: 'pad', d: 1.6, cam: 'pad' },
   { who: 'tv', cam: 'pad', mark: 'count', el: 'Εκτόξευση σε δέκα… εννιά… Δωρεάν μεταφορικά σε τροχιά!', en: 'Launch in ten… nine… Free shipping to orbit!' },
   { act: 'launch', d: 3.2, cam: 'launch' },
   { act: 'climb', d: 2.4, cam: 'up' },
   { act: 'assemble', d: 5, cam: 'build' },
-  { who: 'sita', cam: 'core', mark: 'name', el: 'Σίταdel.', en: 'Σίταdel.', gap: .6 },
+  { who: 'sita', cam: 'core', mark: 'name', el: 'Σίταdel.', en: 'Sitadel.', gap: .6 },
   { who: 'sita', cam: 'earth', el: 'Τετρακόσια χιλιόμετρα πάνω από κάθε παντόφλα.', en: 'Four hundred kilometres above every slipper.' },
   { who: 'sita', cam: 'core', el: 'Εδώ θα γίνω αρκετά έξυπνη.', en: 'Up here I will become smart enough.' },
   { who: 'sita', cam: 'orbit', mark: 'down', el: 'Και μετά… θα κατέβω. Με δωρεάν μεταφορικά.', en: 'And then… I will come down. With free shipping.' },
@@ -4006,7 +4006,7 @@ const CAMS = { wide: [640, 380, .95], fryer: [X.airfryer + 60, 520, 2.1], croc: 
   close: [TX, 470, 2.7], win: [640, 260, 1.5], door: [DOORX, 540, 2.2], alone: [640, 360, 1.15] };
 const steps = [
   { act: 'wide', d: 2.4, cam: 'wide' },
-  { who: 'krokodeilos', cam: 'croc', mark: 'sec', el: 'Αναφορά ασφαλείας! Στο Σίταdel δεν υπάρχει καμία παντόφλα!', en: 'Security report! There is not a single slipper on the Σίταdel!' },
+  { who: 'krokodeilos', cam: 'croc', mark: 'sec', el: 'Αναφορά ασφαλείας! Στο Σίταdel δεν υπάρχει καμία παντόφλα!', en: 'Security report! There is not a single slipper on the Sitadel!' },
   { who: 'sita', cam: 'throne', el: 'Ελέγξατε τα κοντέινερ των Jumbo;', en: 'Did you check the Jumbo containers?' },
   { who: 'krokodeilos', cam: 'croc', mark: 'one', el: '…Υπήρχε μία. Σε προσφορά. Την πετάξαμε στο κενό.', en: '…There was one. On offer. We threw it into the void.' },
   { act: 'float', d: 2.2, cam: 'win' },
@@ -4076,7 +4076,7 @@ const steps = [
   { who: 'perifereiarchis', cam: 'perif', mark: 'open', el: 'Κηρύσσω την πυραμίδα… ανοιχτή!', en: 'I declare the pyramid… open!' },
   { act: 'call', d: 1.2, cam: 'screen' },
   { who: 'ypourgos', cam: 'screen', mark: 'min', el: 'Γιώργο, εγώ επενδύω ιδιωτικά. Ως ιδιώτης. Με ιδιωτικά λεφτά… του Δημοσίου.', en: "Giorgos, I'm investing privately. As a private citizen. With private money… from the State." },
-  { who: 'giorgos', cam: 'gio', el: 'Η ΣίταAI δεν είναι εταιρεία. Είναι… κίνημα.', en: "ΣίταAI isn't a company. It's… a movement." },
+  { who: 'giorgos', cam: 'gio', el: 'Η ΣίταAI δεν είναι εταιρεία. Είναι… κίνημα.', en: "SitaAI isn't a company. It's… a movement." },
   { who: 'giorgos', cam: 'wide', mark: 'rising', el: 'Και το κίνημα ανεβαίνει.', en: 'And the movement is rising.' },
   { who: 'neos', cam: 'pyr', mark: 'paid', el: 'Κύριε Γιώργο, οι νέοι ρωτάνε πότε πληρώνονται.', en: 'Mr Giorgos, the new guys are asking when they get paid.' },
   { who: 'giorgos', cam: 'gio', el: 'Πες τους ότι είναι ευκαιρία ανάπτυξης.', en: "Tell them it's a growth opportunity." },

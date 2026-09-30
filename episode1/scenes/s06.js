@@ -15,7 +15,7 @@ const steps = [
   { who: 'giorgos', cam: 'gio', el: 'Έχω βάλει όραμα.', en: "I've put in vision." },
   { act: 'tape', d: 2.8, cam: 'chip' },
   { act: 'prompt', d: 4.6, cam: 'screen' },
-  { who: 'giannos', cam: 'screen', mark: 'yt', el: 'Για dataset προσωπικότητας… του δίνω ό,τι βρίσκει στο YouTube για «έξυπνη σίτα».', en: 'For the personality dataset… I give it everything on YouTube for "smart screen".' },
+  { who: 'giannos', cam: 'screen', mark: 'yt', el: 'Για dataset προσωπικότητας… του δίνω ό,τι βρίσκει στο YouTube για «έξυπνη σίτα».', en: 'For the personality dataset… I\'m feeding it everything on YouTube for "smart screen door".' },
   { who: 'giorgos', cam: 'two', el: 'Είναι καλή ιδέα αυτό;', en: 'Is that a good idea?' },
   { who: 'giannos', cam: 'two', el: 'Όχι. Αλλά είναι γρήγορη.', en: "No. But it's fast." },
   { act: 'arrive', d: 3.4, cam: 'three' },

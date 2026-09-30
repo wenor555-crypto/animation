@@ -9,7 +9,7 @@ const CAMS = { wide: [640, 380, .95], fryer: [X.airfryer + 60, 520, 2.1], croc: 
   close: [TX, 470, 2.7], win: [640, 260, 1.5], door: [DOORX, 540, 2.2], alone: [640, 360, 1.15] };
 const steps = [
   { act: 'wide', d: 2.4, cam: 'wide' },
-  { who: 'krokodeilos', cam: 'croc', mark: 'sec', el: 'Αναφορά ασφαλείας! Στο Σίταdel δεν υπάρχει καμία παντόφλα!', en: 'Security report! There is not a single slipper on the Σίταdel!' },
+  { who: 'krokodeilos', cam: 'croc', mark: 'sec', el: 'Αναφορά ασφαλείας! Στο Σίταdel δεν υπάρχει καμία παντόφλα!', en: 'Security report! There is not a single slipper on the Sitadel!' },
   { who: 'sita', cam: 'throne', el: 'Ελέγξατε τα κοντέινερ των Jumbo;', en: 'Did you check the Jumbo containers?' },
   { who: 'krokodeilos', cam: 'croc', mark: 'one', el: '…Υπήρχε μία. Σε προσφορά. Την πετάξαμε στο κενό.', en: '…There was one. On offer. We threw it into the void.' },
   { act: 'float', d: 2.2, cam: 'win' },

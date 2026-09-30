@@ -13,7 +13,7 @@ const steps = [
   { act: 'leave', d: 2.8, cam: 'three' },
   { act: 'fly', d: 2.2, cam: 'gface' },
   { who: 'vangelio', cam: 'gface', label: ['ΒΑΓΓΕΛΙΩ (Ε.Κ.)', 'VANGELIO (O.S.)'], el: 'ΜΗΝ ΑΦΗΝΕΤΕ ΤΗΝ ΠΟΡΤΑ ΑΝΟΙΧΤΗ, ΘΑ ΓΕΜΙΣΟΥΜΕ ΜΥΓΕΣ!', en: "DON'T LEAVE THE DOOR OPEN, WE'LL BE FULL OF FLIES!" },
-  { who: 'giorgos', cam: 'gface', el: 'Κυρία Βαγγελιώ, έχει σίτα τώρα…', en: "Mrs Vangelio, there's a screen now…" },
+  { who: 'giorgos', cam: 'gface', el: 'Κυρία Βαγγελιώ, έχει σίτα τώρα…', en: "Mrs Vangelio, there's a screen door now…" },
   { act: 'slipper', d: 2.6, cam: 'long' },
   { who: 'vangelio', cam: 'long', label: ['ΒΑΓΓΕΛΙΩ (Ε.Κ.)', 'VANGELIO (O.S.)'], el: 'Φέρε μου πίσω την παντόφλα.', en: 'Bring me back my slipper.', gap: .6 },
   { act: 'flinch', d: 2, cam: 'sita' },

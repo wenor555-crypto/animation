@@ -9,7 +9,7 @@ const steps = [
   { act: 'silence', d: 2.4, cam: 'wide' },
   { who: 'giorgos', cam: 'gio', el: '…Αυτό ήταν;', en: '…Is that it?' },
   { act: 'jingle', d: 1.6, cam: 'sita' },
-  { who: 'sita', cam: 'sitaC', mark: 'hello', el: 'ΓΕΙΑ ΣΑΣ! Είμαι η ΕΞΥΠΝΗ ΣΙΤΑ! Εύκολη τοποθέτηση! ΧΩΡΙΣ ΕΙΔΙΚΟ! ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: "HELLO! I'm the SMART SCREEN! Easy installation! NO TECHNICIAN! CALL NOW!" },
+  { who: 'sita', cam: 'sitaC', mark: 'hello', el: 'ΓΕΙΑ ΣΑΣ! Είμαι η ΕΞΥΠΝΗ ΣΙΤΑ! Εύκολη τοποθέτηση! ΧΩΡΙΣ ΕΙΔΙΚΟ! ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: "HELLO! I'm the SMART SCREEN DOOR! Easy installation! NO TECHNICIAN! CALL NOW!" },
   { act: 'fall', d: 2, cam: 'wide' },
   { who: 'giannos', cam: 'work', el: 'Δεν… δεν χρειάζεται να σε πάρει κανείς τηλέφωνο. Είσαι ήδη εδώ.', en: "No… nobody needs to call you. You're already here." },
   { who: 'sita', cam: 'sita', el: 'ΚΑΙ ΔΕΝ ΤΕΛΕΙΩΣΑΜΕ!', en: "AND THAT'S NOT ALL!" },
@@ -29,7 +29,7 @@ const steps = [
   { who: 'vasilis', cam: 'door', el: "Είδατε; Σας το 'λεγα ότι ήταν έξυπνη.", en: 'See? I told you it was smart.' },
   { who: 'vasilis', cam: 'door', mark: 'traka', el: 'Έχεις ένα τσιγάρο;', en: 'Got a cigarette?' },
   { act: 'win', d: .8, cam: 'win' },
-  { who: 'maria', cam: 'win', el: 'Βλέπεις, Μίμη; Ακόμα κι η σίτα νοικοκυρεύτηκε.', en: 'See, Mimis? Even the screen has settled down.' },
+  { who: 'maria', cam: 'win', el: 'Βλέπεις, Μίμη; Ακόμα κι η σίτα νοικοκυρεύτηκε.', en: 'See, Mimis? Even the screen door has settled down.' },
   { act: 'end', d: 1.4, cam: 'mimis' },
 ];
 let M;

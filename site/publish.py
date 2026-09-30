@@ -57,6 +57,11 @@ def main(argv):
     shutil.copyfile(mp4, tmp); tmp.rename(stem.with_suffix('.mp4'))
     if page.exists():
         shutil.copyfile(page, stem.with_suffix('.html'))
+    subs = []
+    for lang in ('el', 'en'):                                 # the subtitle tracks export_mp4.js wrote next to the video (clean-picture renders)
+        v = mp4.with_suffix(f'.{lang}.vtt')
+        if v.exists():
+            shutil.copyfile(v, d / f'r{n:02d}.{lang}.vtt'); subs.append(lang)
     ff = ffmpeg()
     info = subprocess.run([ff, '-hide_banner', '-i', str(mp4)], capture_output=True, text=True).stderr
     m = re.search(r'Duration: (\d+):(\d+):([\d.]+)', info)
@@ -64,7 +69,7 @@ def main(argv):
     poster(ff, cfg, ep, stem, dur)
     sys.path.insert(0, str(HERE)); from server import snapshot
     draft = snapshot(ep)[-1]['n'] if page.exists() else None           # the draft this render came from
-    meta = {'n': n, 'ep': ep, 'slug': slug, 'draft': draft, 'dur': round(dur, 1), 'size': stem.with_suffix('.mp4').stat().st_size,
+    meta = {'n': n, 'ep': ep, 'slug': slug, 'draft': draft, 'subs': subs, 'dur': round(dur, 1), 'size': stem.with_suffix('.mp4').stat().st_size,
             'date': time.strftime('%d/%m/%Y'), 'ts': time.strftime('%Y-%m-%dT%H:%M:%S'), 'html': page.exists()}
     stem.with_suffix('.json').write_text(json.dumps(meta, ensure_ascii=False))   # written last: the site only lists complete releases
     for old in sorted(have)[:max(0, len(have) - (KEEP - 1))] if KEEP else []:

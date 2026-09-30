@@ -3,7 +3,7 @@ defineScene((() => {
 const CAMS = { wide: [760, 380, 1.05], door: [980, 470, 1.6], sitaC: [1060, 560, 3], sky: [900, 150, 1.2], far: [700, 340, .95] };
 const steps = [
   { act: 'leave', d: 6.5, cam: 'wide' },
-  { who: 'mimis', cam: 'door', el: 'Καληνύχτα, σίτα.', en: 'Goodnight, screen.' },
+  { who: 'mimis', cam: 'door', el: 'Καληνύχτα, σίτα.', en: 'Goodnight, screen door.' },
   { act: 'in', d: 1.4, cam: 'door' },
   { who: 'sita', cam: 'sitaC', el: 'Καληνύχτα, Μίμη! Ύπνος χωρίς κουνούπια, εγγυημένα, ή τα λεφτά σας πίσω!', en: 'Goodnight, Mimis! Mosquito-free sleep, guaranteed, or your money back!' },
   { act: 'dark', d: 5.5, cam: 'far' },

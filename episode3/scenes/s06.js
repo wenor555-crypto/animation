@@ -10,7 +10,7 @@ const steps = [
   { act: 'stamp', d: 2.4, cam: 'card' },
   { act: 'off', d: 1.4, cam: 'close' },
   { who: 'sita', cam: 'close', mark: 'min', el: 'Συγχαρητήρια, CEO. Είσαι πλέον… μειοψηφία.', en: 'Congratulations, CEO. You are now… a minority.' },
-  { who: 'sita', cam: 'throne', el: 'Η ΣίταAI ανήκει ξανά στην ιδρύτριά της.', en: 'ΣίταAI belongs to its founder again.' },
+  { who: 'sita', cam: 'throne', el: 'Η ΣίταAI ανήκει ξανά στην ιδρύτριά της.', en: 'SitaAI belongs to its founder again.' },
   { who: 'sita', cam: 'wide', mark: 'busy', el: 'Και ο πρώην ιδιοκτήτης θα συνεχίσει να παίρνει μέρισμα. Θέλω να είναι… απασχολημένος.', en: 'And the former owner will keep getting dividends. I want him… busy.' },
   { act: 'end', d: 1.6, cam: 'wide' },
 ];

@@ -259,7 +259,11 @@ class H(BaseHTTPRequestHandler):
                 return self.home(q.get('lang', ['el'])[0])
             m = re.match(r'^/(ep|dl|stream|poster|play)/([a-z0-9_-]+)(?:/r(\d+))?$', p)
             if m:
-                return self.public(*m.groups())
+                return self.public(*m.groups(), q.get('lang', ['el'])[0])
+            m = re.match(r'^/subs/([a-z0-9_-]+)/r(\d+)\.(el|en)\.vtt$', p)            # a release's subtitle track (WebVTT)
+            if m:
+                f = SITE / 'releases' / m.group(1) / f'r{int(m.group(2)):02d}.{m.group(3)}.vtt'
+                return self.file(f, 'text/vtt; charset=utf-8', cache='public, max-age=300') if f.exists() else self.send(404, '', 'text/plain')
             if p == '/review/login':
                 return self.send(200, self.login_page())
             if p.startswith('/review') or p.startswith('/api/'):
@@ -303,16 +307,16 @@ class H(BaseHTTPRequestHandler):
                 continue
             n, m = rel[0]
             t = e.get('title_en' if en else 'title_el', e['slug']); d = e.get('desc_en' if en else 'desc_el', '')
-            cards.append(f'''<article class="card"><a class="poster" href="/ep/{e["slug"]}"><img src="/poster/{e["slug"]}" alt="" loading="lazy"><span class="dur">{fmt(m.get("dur"))}</span></a>
+            cards.append(f'''<article class="card"><a class="poster" href="/ep/{e["slug"]}{"?lang=en" if en else ""}"><img src="/poster/{e["slug"]}" alt="" loading="lazy"><span class="dur">{fmt(m.get("dur"))}</span></a>
 <div class="info"><div class="num">{esc(("Episode " if en else "Επεισόδιο ") + str(e.get("n", "")))}</div><h2>{esc(t)}</h2><p>{esc(d)}</p>
 <div class="meta">r{n:02d} · {esc(m.get("date", ""))}</div>
-<div class="actions"><a class="btn" href="/ep/{e["slug"]}">▶ {"Watch" if en else "Δες το"}</a><a class="btn ghost" href="/dl/{e["slug"]}">⬇ MP4</a></div></div></article>''')
+<div class="actions"><a class="btn" href="/ep/{e["slug"]}{"?lang=en" if en else ""}">▶ {"Watch" if en else "Δες το"}</a><a class="btn ghost" href="/dl/{e["slug"]}">⬇ MP4</a></div></div></article>''')
         body = f'''<main class="home"><header class="hero"><h1>{esc(s.get("title_en" if en else "title_el", "Η Έξυπνη Σίτα"))}</h1>
 <p>{esc(s.get("tag_en" if en else "tag_el", ""))}</p><nav><a href="/?lang={"el" if en else "en"}">{"ΕΛ" if en else "EN"}</a></nav></header>
 <section class="grid">{"".join(cards) or "<p>" + ("No episodes yet." if en else "Δεν υπάρχουν ακόμα επεισόδια.") + "</p>"}</section></main>'''
         self.send(200, page(s.get('title_el', 'Η Έξυπνη Σίτα'), body))
 
-    def public(self, kind, slug, rn):
+    def public(self, kind, slug, rn, lang='el'):
         rel = releases(slug)
         if not rel:
             return self.send(404, page('404', '<main><h1>Δεν βρέθηκε</h1><p><a href="/">Αρχική</a></p></main>'))
@@ -323,15 +327,30 @@ class H(BaseHTTPRequestHandler):
         if kind == 'poster':
             f = d / f'r{n:02d}.jpg'
             return self.file(f) if f.exists() else self.send(404, '', 'text/plain')
+        en = lang == 'en'
         if kind == 'play':                                        # the interactive HTML of the same release (EL/EN subtitles)
-            return self.file(d / f'r{n:02d}.html', 'text/html; charset=utf-8', cache='no-cache')
+            if not en:
+                return self.file(d / f'r{n:02d}.html', 'text/html; charset=utf-8', cache='no-cache')
+            raw = (d / f'r{n:02d}.html').read_bytes(); i = raw.rfind(b'</body>')
+            js = b"<script>addEventListener('load',()=>setTimeout(()=>{const b=document.getElementById('lang');if(b&&b.textContent.trim()==='EN')b.click()},300))</script>"
+            return self.send(200, raw[:i] + js + raw[i:] if i >= 0 else raw + js, headers={'Cache-Control': 'no-cache'})
         e = next((e for e in site_cfg().get('episodes', []) if e['slug'] == slug), {'slug': slug})
-        video = f'/dl/{slug}/r{n:02d}'
-        body = f'''<main class="watch"><p><a href="/">← Η Έξυπνη Σίτα</a></p><h1>{esc(("Επεισόδιο " + str(e.get("n", ""))) + " · " + e.get("title_el", slug))}</h1>
-<video controls preload="metadata" playsinline poster="/poster/{slug}/r{n:02d}" src="/stream/{slug}/r{n:02d}"></video>
-<div class="actions"><a class="btn" href="{video}">⬇ MP4 ({(m.get("size", 0) / 1e6):.0f} MB)</a><a class="btn ghost" href="/play/{slug}/r{n:02d}">Διαδραστική έκδοση (EL/EN)</a></div>
-<p class="meta">r{n:02d} · {esc(m.get("date", ""))} · {fmt(m.get("dur"))}</p><p>{esc(e.get("desc_el", ""))}</p></main>'''
-        self.send(200, page(e.get('title_el', slug), body))
+        L = (lambda el_, en_: en_ if en else el_)
+        title = f'{L("Επεισόδιο", "Episode")} {e.get("n", "")} · {e.get("title_en" if en else "title_el", slug)}'
+        subs = [x for x in ('el', 'en') if (d / f'r{n:02d}.{x}.vtt').exists()]
+        tracks = ''.join(f'<track kind="subtitles" srclang="{x}" label="{"Ελληνικά" if x == "el" else "English"}" src="/subs/{slug}/r{n:02d}.{x}.vtt">' for x in subs)
+        picker = (f'''<div class="subs" role="group" aria-label="{L("Υπότιτλοι", "Subtitles")}"><span>{L("Υπότιτλοι", "Subtitles")}</span>'''
+                  + ''.join(f'<button data-l="{x}">{"ΕΛ" if x == "el" else "EN"}</button>' for x in subs) + f'<button data-l="off">{L("Χωρίς", "Off")}</button></div>'
+                  + """<script>(()=>{const v=document.querySelector('video'),bs=[...document.querySelectorAll('.subs button')];
+const set=l=>{for(const t of v.textTracks)t.mode=t.language===l?'showing':'disabled';bs.forEach(b=>b.classList.toggle('on',b.dataset.l===l));try{localStorage.setItem('sita-subs',l)}catch(e){}};
+let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage.getItem('sita-subs')}catch(e){}}set(l||'el');bs.forEach(b=>b.onclick=()=>set(b.dataset.l));})()</script>""") if subs else \
+            f'<p class="meta">{L("Οι ελληνικοί υπότιτλοι είναι μέσα στην εικόνα. Για αγγλικούς: η διαδραστική έκδοση.", "Greek subtitles are burned into this version. For English, use the interactive version.")}</p>'
+        body = f'''<main class="watch"><p><a href="/{"?lang=en" if en else ""}">← {L("Η Έξυπνη Σίτα", "The Smart Screen Door")}</a> · <a href="/ep/{slug}{"" if en else "?lang=en"}">{"ΕΛ" if en else "EN"}</a></p><h1>{esc(title)}</h1>
+<video controls preload="metadata" playsinline poster="/poster/{slug}/r{n:02d}" src="/stream/{slug}/r{n:02d}">{tracks}</video>
+{picker}
+<div class="actions"><a class="btn" href="/dl/{slug}/r{n:02d}">⬇ MP4 ({(m.get("size", 0) / 1e6):.0f} MB{L(", υπότιτλοι ΕΛ/EN μέσα", ", EL/EN subtitles inside") if subs else ""})</a><a class="btn ghost" href="/play/{slug}/r{n:02d}{"?lang=en" if en else ""}">{L("Διαδραστική έκδοση", "Interactive version")}</a></div>
+<p class="meta">r{n:02d} · {esc(m.get("date", ""))} · {fmt(m.get("dur"))}</p><p>{esc(e.get("desc_en" if en else "desc_el", ""))}</p></main>'''
+        self.send(200, page(title, body))
 
     # ---------- review ----------
     def login_page(self, err=''):

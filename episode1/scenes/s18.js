@@ -4,7 +4,7 @@ const X = { mimis: 300, giannos: 430, christos: 560, giorgos: 1185, vasilis: 610
 const CAMS = { wide: [700, 400, 1.02], vas: [610, 360, 2.1], box: [900, 590, 2.1], gio: [1100, 380, 2], win: [890, 240, 2.4], all: [640, 420, 1.25] };
 const steps = [
   { act: 'after', d: 2.4, cam: 'wide' },
-  { who: 'vasilis', cam: 'vas', el: 'Ναι, γεια σας. Για επιστροφή. Την έξυπνη σίτα.', en: "Yes, hello. About a return. The smart screen." },
+  { who: 'vasilis', cam: 'vas', el: 'Ναι, γεια σας. Για επιστροφή. Την έξυπνη σίτα.', en: 'Yes, hello. About a return. The smart screen door.' },
   { act: 'listen1', d: 1.4, cam: 'vas' },
   { who: 'vasilis', cam: 'vas', el: 'Όχι, δεν δουλεύει όπως στη διαφήμιση. Δουλεύει πολύ παραπάνω.', en: "No, it doesn't work like in the ad. It works a lot more." },
   { act: 'listen2', d: 1.4, cam: 'vas' },
@@ -14,7 +14,7 @@ const steps = [
   { act: 'lid', d: 1.6, cam: 'box' },
   { who: 'giorgos', cam: 'gio', el: '…Κάνουμε pivot.', en: "…We're pivoting." },
   { act: 'win', d: .8, cam: 'win' },
-  { who: 'maria', cam: 'win', el: 'Μίμη! Ούτε η σίτα δεν σε άντεξε!', en: "Mimis! Even the screen couldn't stand you!" },
+  { who: 'maria', cam: 'win', el: 'Μίμη! Ούτε η σίτα δεν σε άντεξε!', en: "Mimis! Even the screen door couldn't stand you!" },
   { act: 'end', d: 2.4, cam: 'all' },
 ];
 let M;

@@ -10,7 +10,7 @@ const steps = [
   { who: 'perifereiarchis', cam: 'perif', mark: 'open', el: 'Κηρύσσω την πυραμίδα… ανοιχτή!', en: 'I declare the pyramid… open!' },
   { act: 'call', d: 1.2, cam: 'screen' },
   { who: 'ypourgos', cam: 'screen', mark: 'min', el: 'Γιώργο, εγώ επενδύω ιδιωτικά. Ως ιδιώτης. Με ιδιωτικά λεφτά… του Δημοσίου.', en: "Giorgos, I'm investing privately. As a private citizen. With private money… from the State." },
-  { who: 'giorgos', cam: 'gio', el: 'Η ΣίταAI δεν είναι εταιρεία. Είναι… κίνημα.', en: "ΣίταAI isn't a company. It's… a movement." },
+  { who: 'giorgos', cam: 'gio', el: 'Η ΣίταAI δεν είναι εταιρεία. Είναι… κίνημα.', en: "SitaAI isn't a company. It's… a movement." },
   { who: 'giorgos', cam: 'wide', mark: 'rising', el: 'Και το κίνημα ανεβαίνει.', en: 'And the movement is rising.' },
   { who: 'neos', cam: 'pyr', mark: 'paid', el: 'Κύριε Γιώργο, οι νέοι ρωτάνε πότε πληρώνονται.', en: 'Mr Giorgos, the new guys are asking when they get paid.' },
   { who: 'giorgos', cam: 'gio', el: 'Πες τους ότι είναι ευκαιρία ανάπτυξης.', en: "Tell them it's a growth opportunity." },

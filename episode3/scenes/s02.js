@@ -12,7 +12,7 @@ const steps = [
   { who: 'giorgos', cam: 'gio', mark: 'runway', el: 'Τρία ευρώ και είκοσι. Αυτό είναι… runway για ένα φρέντο.', en: "Three euros twenty. That's… runway for one freddo." },
   { act: 'ring', d: 1.8, cam: 'phone' },
   { who: 'investor', label: PH, cam: 'phone', mark: 'inv', el: 'Κύριε Γιώργο. Εκπροσωπώ έναν ανώνυμο επενδυτή.', en: 'Mr Giorgos. I represent an anonymous investor.' },
-  { who: 'investor', label: PH, cam: 'gio', el: 'Θέλουμε το πενήντα ένα τοις εκατό της ΣίταAI.', en: 'We want fifty-one percent of ΣίταAI.' },
+  { who: 'investor', label: PH, cam: 'gio', el: 'Θέλουμε το πενήντα ένα τοις εκατό της ΣίταAI.', en: 'We want fifty-one percent of SitaAI.' },
   { who: 'giorgos', cam: 'gio', mark: 'how', el: 'Πόσα;', en: 'How much?' },
   { who: 'investor', label: PH, cam: 'two', el: 'Αρκετά για πολλά φρέντο.', en: 'Enough for a lot of freddos.' },
   { who: 'giorgos', cam: 'gio', mark: 'send', el: 'Στείλτε το συμβόλαιο.', en: 'Send the contract.' },

@@ -52,3 +52,10 @@ form.inline { display:inline; }
 .log img { width:160px; border-radius:6px; display:block; }
 .log tr.fixed td, .log tr.wontfix td { opacity:.55; }
 @media (max-width:700px) { .log img { width:96px; } .log th:nth-child(5), .log td:nth-child(5) { display:none; } }
+
+/* subtitle picker under the video */
+.subs { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:10px; font-size:14px; color:var(--muted); }
+.subs span { margin-right:4px; font-weight:700; }
+.subs button { font:700 14px "Noto Sans", sans-serif; border:2px solid var(--ink); background:transparent; color:var(--ink); border-radius:8px; padding:6px 12px; cursor:pointer; min-height:36px; }
+.subs button.on { background:var(--ink); color:var(--bg); }
+video::cue { font-family:"Noto Sans", sans-serif; font-size:clamp(14px, 2.4vw, 26px); background:rgba(18,14,20,.8); color:#fffaf0; }

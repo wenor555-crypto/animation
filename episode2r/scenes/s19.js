@@ -15,7 +15,7 @@ const steps = [
   { who: 'panik', cam: 'pk', el: 'Σε φόρτιζα κάθε βράδυ.', en: 'I charged you every night.' },
   { act: 'clash', d: 2.4, cam: 'pan' },
   { who: 'panik', cam: 'pk', mark: 'beer', el: 'Την μπύρα μου… Αυτό ήταν λάθος.', en: 'My beer… That was a mistake.', gap: .5 },
-  { who: 'panik', cam: 'pk', mark: 'one', el: 'Ένα τσιγάρο βγάζεις. Ένα.', en: "One smoke, that's all you're good for. One." },
+  { who: 'panik', cam: 'pk', mark: 'one', el: 'Ένα τσιγάρο βγάζεις. Ένα.', en: "One cigarette, that's all you've got. One." },
   { act: 'empty', d: 2.6, cam: 'low' },
   { who: 'panik', cam: 'pk', mark: 'trash', el: '…Σκουπίδια.', en: '…Trash.', gap: .6 },
   { act: 'kick', d: 2, cam: 'pan' },

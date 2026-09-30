@@ -40,7 +40,7 @@ const steps = [
   { act: 's7', d: 3, cam: 'drawer' },
   { who: 'sita', label: VO, cam: 'drawer', el: 'ΒΗΜΑ ΕΒΔΟΜΟ! Ηλεκτρικές ρακέτες! Τρεις χιλιάδες βολτ!', en: 'STEP SEVEN! Electric rackets! Three thousand volts!' },
   { act: 'fly', d: 1.4, cam: 'sky' },
-  { who: 'sita', label: VO, cam: 'sky', mark: 'all', el: 'Ήταν για τα κουνούπια. Πλέον… είναι για ΟΛΑ τα παράσιτα.', en: 'They were for mosquitoes. Now… they are for ALL pests.' },
+  { who: 'sita', label: VO, cam: 'sky', mark: 'all', el: 'Ήταν για τα κουνούπια. Πλέον… είναι για ΟΛΑ τα παράσιτα.', en: "They were for mosquitoes. Now… they're for ALL parasites." },
   { act: 'hen', d: 3.4, cam: 'sky' },
 ];
 let M;

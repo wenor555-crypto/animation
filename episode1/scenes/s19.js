@@ -7,7 +7,7 @@ const steps = [
   { who: 'mimis', cam: 'two', el: 'Τι φτιάχνεις;', en: 'What are you making?' },
   { who: 'christos', cam: 'chr', el: 'Τι έγινε χθες.', en: 'What happened yesterday.' },
   { act: 'real', d: 7.2, cam: 'real' },
-  { who: 'mimis', cam: 'two', el: 'Χθες έλιωσε η κόλλα κι έπεσε η σίτα.', en: 'Yesterday the glue melted and the screen fell off.' },
+  { who: 'mimis', cam: 'two', el: 'Χθες έλιωσε η κόλλα κι έπεσε η σίτα.', en: 'Yesterday the glue melted and the screen door fell off.' },
   { act: 'beat', d: 1.4, cam: 'chr' },
   { who: 'christos', cam: 'chr', mark: 'sell', el: '…Ναι. Αυτό δεν πουλάει.', en: "…Yeah. That doesn't sell." },
   { act: 'end', d: 2, cam: 'desk' },

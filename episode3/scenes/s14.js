@@ -6,7 +6,7 @@ const X = { giorgos: 900, neos: 1080, vasilis: 300, lochias: 150, hamad: 480 };
 const CAMS = { wide: [640, 400, 1], gio: [900, 360, 2], neo: [1060, 380, 2], vas: [300, 420, 2], loch: [170, 380, 2], ham: [480, 420, 2], stage: [960, 380, 1.5] };
 const steps = [
   { act: 'room', d: 2.6, cam: 'wide' },
-  { who: 'giorgos', cam: 'gio', el: 'Κύριοι. Η ΣίταAI δεν πουλάει προϊόν. Πουλάει… ευκαιρία.', en: "Gentlemen. ΣίταAI doesn't sell a product. It sells… opportunity." },
+  { who: 'giorgos', cam: 'gio', el: 'Κύριοι. Η ΣίταAI δεν πουλάει προϊόν. Πουλάει… ευκαιρία.', en: "Gentlemen. SitaAI doesn't sell a product. It sells… opportunity." },
   { who: 'giorgos', cam: 'stage', el: 'Αγοράζετε ένα πακέτο. Φέρνετε δύο φίλους. Και μετά απλώς… περιμένετε.', en: 'You buy a package. You bring two friends. And then you just… wait.' },
   { who: 'neos', cam: 'neo', el: 'Εγώ έφερα αυτόν.', en: 'I brought him.' },
   { who: 'giorgos', cam: 'gio', el: 'Κι αυτός;', en: 'And him?' },

@@ -6,7 +6,7 @@ const CAMS = {
   vasilis: [960, 380, 1.9], vclose: [960, 330, 2.8], door: [1030, 520, 1.9], velcro: [1010, 470, 3.4], thumb: [995, 480, 4.6], two: [760, 420, 1.3],
 };
 const steps = [
-  { who: 'vasilis', cam: 'vasilis', el: '«Έξυπνη σίτα! Εύκολη τοποθέτηση χωρίς ειδικό! Εννιά ζευγάρια ισχυροί μαγνήτες! Είκοσι πινέζες! Δώδεκα αυτοκόλλητα βέλκρο!»', en: '"Smart screen! Easy installation, no technician! Nine pairs of powerful magnets! Twenty pins! Twelve adhesive velcro strips!"' },
+  { who: 'vasilis', cam: 'vasilis', el: '«Έξυπνη σίτα! Εύκολη τοποθέτηση χωρίς ειδικό! Εννιά ζευγάρια ισχυροί μαγνήτες! Είκοσι πινέζες! Δώδεκα αυτοκόλλητα βέλκρο!»', en: '"Smart screen door! Easy installation, no technician! Nine pairs of powerful magnets! Twenty pins! Twelve adhesive velcro strips!"' },
   { who: 'giannos', cam: 'giannos', el: 'Και ποιο είναι το έξυπνο;', en: "And what's smart about it?" },
   { who: 'vasilis', cam: 'vasilis', el: 'Κλείνει μόνη της.', en: 'It closes by itself.' },
   { who: 'giannos', cam: 'giannos', el: 'Κι η πόρτα του ψυγείου κλείνει μόνη της. Δεν τη λέμε έξυπνη.', en: "The fridge door closes by itself too. We don't call it smart." },

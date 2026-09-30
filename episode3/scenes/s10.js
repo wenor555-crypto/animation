@@ -5,7 +5,7 @@ const X = { giorgos: 600, neos: 880 };
 const CAMS = { chart: [0, 0, 1], wide: [640, 420, 1.1], gio: [600, 380, 2.1], neo: [880, 380, 2.1], two: [740, 400, 1.5], napkin: [0, 0, 1] };
 const steps = [
   { act: 'chart', d: 2.2, cam: 'chart' },
-  { who: 'tv', cam: 'chart', mark: 'up', el: 'Η ΣίταAI ανεβαίνει τετρακόσια τοις εκατό. Κανείς δεν ξέρει γιατί.', en: 'ΣίταAI is up four hundred percent. Nobody knows why.' },
+  { who: 'tv', cam: 'chart', mark: 'up', el: 'Η ΣίταAI ανεβαίνει τετρακόσια τοις εκατό. Κανείς δεν ξέρει γιατί.', en: 'SitaAI is up four hundred percent. Nobody knows why.' },
   { who: 'giorgos', cam: 'gio', mark: 'vision', el: 'Εγώ ξέρω. Είναι το όραμα.', en: "I know. It's the vision." },
   { act: 'enter', d: 2, cam: 'wide' },
   { who: 'neos', cam: 'neo', el: 'Κύριε Γιώργο, μας ήρθε μέρισμα. Από τις Μπαχάμες.', en: "Mr Giorgos, we've got a dividend. From the Bahamas." },
