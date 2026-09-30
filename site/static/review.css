@@ -38,6 +38,11 @@
 .rv-body { flex:1; min-width:0; font-size:14px; }
 .rv-meta { font-size:12px; color:var(--muted); }
 .rv-old { color:#e89a1a; font-weight:700; }
+.rv-cur { font-weight:700; }
+.rv-ver { font:700 13px "Noto Sans", sans-serif; border:2px solid var(--line, #ccc); border-radius:8px; padding:6px; background:var(--bg); color:var(--ink); max-width:220px; }
+.rv-oldver { background:#e89a1a; color:#231a2e; font-weight:700; font-size:14px; padding:8px 12px; border-radius:8px; margin-bottom:8px; }
+.rv-oldver a { color:#231a2e; }
+.rv-allv { display:inline-flex; gap:6px; align-items:center; font-size:13px; color:var(--muted); margin:10px 4px 0; cursor:pointer; }
 .rv-fix { font-size:12px; font-weight:700; color:#2e9e5b; }
 .rv-shot img { width:120px; border-radius:6px; display:block; }
 .rv-del { border:0; background:none; cursor:pointer; font-size:16px; opacity:.6; padding:6px; }

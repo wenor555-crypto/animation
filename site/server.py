@@ -9,9 +9,10 @@ Standard library only. Binds 127.0.0.1; the public hostname reaches it through t
 Folders (env overrides):
   SITA_RENDER  ~/sita-render   dist/<ep>.html = drafts for review
   SITA_SITE    ~/sita-site     releases/<slug>/rNN.{mp4,html,json,jpg}, review/<ep>.jsonl, review/shots/<ep>/<id>.jpg,
+                               drafts/<ep>/vNN.{html,json} (every draft that ever landed in dist/, kept for review),
                                secret.json (review passphrase + cookie key, mode 600, created on first run)
 """
-import base64, hashlib, hmac, html, json, mimetypes, os, re, secrets, sys, threading, time, urllib.parse
+import base64, hashlib, hmac, html, json, mimetypes, os, re, secrets, shutil, sys, threading, time, urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -68,6 +69,52 @@ def releases(slug):
     return sorted(out, key=lambda x: -x[0])
 
 
+_HASH = {}
+
+
+def dist_hash(f):
+    """sha1 (10 hex) of a draft, cached by path, mtime and size so a 6 MB page isn't hashed on every request."""
+    st = f.stat(); k = (str(f), st.st_mtime, st.st_size)
+    if k not in _HASH:
+        _HASH[k] = hashlib.sha1(f.read_bytes()).hexdigest()[:10]
+    return _HASH[k]
+
+
+def drafts(ep):
+    """Every kept revision of a draft, oldest first: [{n, build, ts, size}]."""
+    d = SITE / 'drafts' / ep
+    out = []
+    for f in d.glob('v*.json') if d.is_dir() else []:
+        try:
+            out.append(json.loads(f.read_text()))
+        except (OSError, ValueError):
+            pass
+    return sorted(out, key=lambda m: m['n'])
+
+
+def snapshot(ep):
+    """Keep the draft now in dist/ as the next revision vNN if its content is new. Returns all revisions."""
+    f = RENDER / 'dist' / f'{ep}.html'
+    if not f.exists() or any(m['build'] == dist_hash(f) for m in drafts(ep)):
+        return drafts(ep)
+    with LOCK:
+        ds = drafts(ep); d = SITE / 'drafts' / ep; d.mkdir(parents=True, exist_ok=True)
+        tmp = d / '.incoming.html'; shutil.copyfile(f, tmp)
+        h = hashlib.sha1(tmp.read_bytes()).hexdigest()[:10]          # hash the copy: the upload may have changed under us
+        if any(m['build'] == h for m in ds):
+            tmp.unlink(); return ds
+        n = (ds[-1]['n'] if ds else 0) + 1
+        tmp.rename(d / f'v{n:02d}.html')
+        meta = {'n': n, 'build': h, 'ts': time.strftime('%d/%m/%Y %H:%M', time.localtime(f.stat().st_mtime)), 'size': f.stat().st_size}
+        (d / f'v{n:02d}.json').write_text(json.dumps(meta, ensure_ascii=False))
+        return ds + [meta]
+
+
+def review_eps():
+    names = {f.stem for f in (RENDER / 'dist').glob('*.html')} | {d.name for d in (SITE / 'drafts').glob('*') if d.is_dir()}
+    return sorted(n for n in names if NAME.match(n))
+
+
 def events(ep):
     p = SITE / 'review' / f'{ep}.jsonl'
     if not p.exists():
@@ -83,10 +130,10 @@ def events(ep):
 
 def notes(ep):
     """Fold the append-only log into the current notes (status and deletions applied)."""
-    by = {}
+    by, ver = {}, {m['build']: m['n'] for m in drafts(ep)}
     for e in events(ep):
         if e.get('ev') == 'note':
-            by.setdefault(e['id'], {**e, 'status': 'open'})
+            by.setdefault(e['id'], {**e, 'status': 'open', 'ver': ver.get(e.get('build'))})
         elif e.get('ev') == 'status' and e.get('id') in by:
             by[e['id']].update(status=e['status'], rev=e.get('rev', ''), fixnote=e.get('note', ''), fixed_at=e['ts'])
         elif e.get('ev') == 'delete':
@@ -308,29 +355,34 @@ class H(BaseHTTPRequestHandler):
 
     def review_get(self, p, who):
         if p in ('/review', '/review/'):
-            rows = []
-            for f in sorted((RENDER / 'dist').glob('*.html')):
-                ep = f.stem
-                if not NAME.match(ep):
+            rows, alias = [], site_cfg().get('aliases', {})
+            for ep in review_eps():
+                ds = snapshot(ep)
+                if not ds:
                     continue
                 ns = notes(ep); op = sum(n['status'] == 'open' for n in ns)
-                rows.append(f'<li><a href="/review/{ep}">{ep}</a> <span class="meta">{time.strftime("%d/%m %H:%M", time.localtime(f.stat().st_mtime))} · '
-                            f'{op} ανοιχτά / {len(ns)} σχόλια</span> <a class="meta" href="/review/{ep}/log">log</a></li>')
+                vers = ' '.join(f'<a href="/review/{ep}/v{m["n"]}" title="{esc(m["ts"])}">v{m["n"]}</a>' for m in reversed(ds))
+                rels = ' '.join(f'<a href="/ep/{alias.get(ep, ep)}/r{n:02d}" title="{esc(m.get("date", ""))}">r{n:02d}</a>' for n, m in releases(alias.get(ep, ep)) if m.get('ep') == ep)
+                rows.append(f'<li><a href="/review/{ep}">{ep}</a> <span class="meta">v{ds[-1]["n"]} · {esc(ds[-1]["ts"])} · {op} ανοιχτά / {len(ns)} σχόλια</span> '
+                            f'<a class="meta" href="/review/{ep}/log">log</a><div class="meta">Drafts: {vers}{" · MP4: " + rels if rels else ""}</div></li>')
             return self.send(200, page('Review', f'<main><h1>Review</h1><p class="meta">{esc(who)} · <form class="inline" method="post" action="/review/logout"><button class="link">έξοδος</button></form></p><ul class="list">{"".join(rows)}</ul></main>'))
-        m = re.match(r'^/review/([a-z0-9_-]+)(?:/(log|notes\.md|notes\.csv))?$', p)
+        m = re.match(r'^/review/([a-z0-9_-]+)(?:/v(\d+)|/(log|notes\.md|notes\.csv))?$', p)
         if m:
-            ep, sub = m.groups()
+            ep, vn, sub = m.groups()
             if sub == 'log':
                 return self.log_page(ep)
             if sub == 'notes.md':
                 return self.send(200, notes_md(ep), 'text/markdown; charset=utf-8', {'Content-Disposition': f'attachment; filename="{ep}_notes.md"'})
             if sub == 'notes.csv':
                 return self.send(200, notes_csv(ep), 'text/csv; charset=utf-8', {'Content-Disposition': f'attachment; filename="{ep}_notes.csv"'})
-            f = RENDER / 'dist' / f'{ep}.html'
-            if not f.exists():
+            ds = snapshot(ep)
+            cur = next((m for m in ds if vn and m['n'] == int(vn)), ds[-1] if ds and not vn else None)
+            if not cur:
                 return self.send(404, page('404', '<main><h1>Δεν υπάρχει αυτό το draft</h1><p><a href="/review">Review</a></p></main>'))
-            raw = f.read_bytes(); build = hashlib.sha1(raw).hexdigest()[:10]
-            inject = (f'<link rel="stylesheet" href="/static/review.css"><script>window.REVIEW={json.dumps({"ep": ep, "build": build, "user": who, "built": time.strftime("%d/%m %H:%M", time.localtime(f.stat().st_mtime))}, ensure_ascii=False)}</script>'
+            raw = (SITE / 'drafts' / ep / f'v{cur["n"]:02d}.html').read_bytes()
+            info = {'ep': ep, 'build': cur['build'], 'ver': cur['n'], 'latest': ds[-1]['n'], 'built': cur['ts'], 'user': who,
+                    'versions': [{'n': m['n'], 'ts': m['ts']} for m in ds]}
+            inject = (f'<link rel="stylesheet" href="/static/review.css"><script>window.REVIEW={json.dumps(info, ensure_ascii=False)}</script>'
                       '<script src="/static/review.js"></script>').encode()
             i = raw.rfind(b'</body>')
             out = raw[:i] + inject + raw[i:] if i >= 0 else raw + inject
@@ -346,7 +398,7 @@ class H(BaseHTTPRequestHandler):
 
     def log_page(self, ep):
         ns = notes(ep)
-        rows = ''.join(f'''<tr class="{n["status"]}"><td><a href="/review/{ep}#t={n["t"]:.2f}">{fmt(n["t"])}</a></td><td>{esc(n.get("sceneTitle") or n.get("scene"))}<div class="meta">{esc(n.get("line", {}).get("who", ""))} {esc(n.get("line", {}).get("el", ""))}</div></td>
+        rows = ''.join(f'''<tr class="{n["status"]}"><td><a href="/review/{ep}{f'/v{n["ver"]}' if n.get("ver") else ''}#t={n["t"]:.2f}">{fmt(n["t"])}</a><div class="meta">{f'v{n["ver"]}' if n.get("ver") else ''}</div></td><td>{esc(n.get("sceneTitle") or n.get("scene"))}<div class="meta">{esc(n.get("line", {}).get("who", ""))} {esc(n.get("line", {}).get("el", ""))}</div></td>
 <td>{esc(CATS.get(n.get("cat"), n.get("cat")))}</td><td>{esc(n.get("text"))}</td><td>{f'<a href="/review/shot/{ep}/{n["id"]}.jpg"><img src="/review/shot/{ep}/{n["id"]}.jpg" alt=""></a>' if n.get("shot") else ""}</td>
 <td>{esc(n["status"])}{(" " + esc(n.get("rev"))) if n.get("rev") else ""}<div class="meta">{esc(n.get("by"))} · {esc(n.get("ts", "")[:16].replace("T", " "))}</div></td></tr>''' for n in ns)
         self.send(200, page(f'{ep} · log', f'''<main class="wide"><p><a href="/review">← Review</a> · <a href="/review/{ep}">▶ {ep}</a></p><h1>{ep} · σχόλια</h1>
@@ -401,22 +453,23 @@ def notes_md(ep):
     out = [f'# {ep} · σχόλια', '']
     for n in notes(ep):
         mark = {'open': '[ ]', 'fixed': '[x]', 'wontfix': '[-]'}[n['status']]
+        v = f' v{n["ver"]}' if n.get('ver') else ''
         ln = n.get('line', {})
         text = f' · {n["text"]}' if n.get('text') else ''
         said = f' _(ατάκα, {ln.get("who", "")}: «{ln["el"]}»)_' if ln.get('el') else ''
         rev = f' · {n["rev"]}' if n.get('rev') else ''
         when = n.get('ts', '')[:16].replace('T', ' ')
-        out.append(f'- {mark} **{fmt(n["t"])}** {n.get("sceneTitle") or n.get("scene")} · {CATS.get(n["cat"], n["cat"])}{text}{said} — {n.get("by")}, {when}{rev}')
+        out.append(f'- {mark} **{fmt(n["t"])}**{v} {n.get("sceneTitle") or n.get("scene")} · {CATS.get(n["cat"], n["cat"])}{text}{said} — {n.get("by")}, {when}{rev}')
     return '\n'.join(out) + '\n'
 
 
 def notes_csv(ep):
     import csv, io
     b = io.StringIO(); w = csv.writer(b)
-    w.writerow(['id', 'time', 'scene', 'line_who', 'line', 'category', 'text', 'x', 'y', 'by', 'at', 'status', 'rev', 'build'])
+    w.writerow(['id', 'version', 'time', 'scene', 'line_who', 'line', 'category', 'text', 'x', 'y', 'by', 'at', 'status', 'rev', 'build'])
     for n in notes(ep):
         ln = n.get('line', {})
-        w.writerow([n['id'], fmt(n['t']), n.get('sceneTitle') or n.get('scene'), ln.get('who', ''), ln.get('el', ''), n['cat'], n.get('text', ''),
+        w.writerow([n['id'], f'v{n["ver"]}' if n.get('ver') else '', fmt(n['t']), n.get('sceneTitle') or n.get('scene'), ln.get('who', ''), ln.get('el', ''), n['cat'], n.get('text', ''),
                     n.get('x'), n.get('y'), n.get('by'), n.get('ts'), n['status'], n.get('rev', ''), n.get('build', '')])
     return '﻿' + b.getvalue()
 

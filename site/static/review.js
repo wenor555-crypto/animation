@@ -102,12 +102,19 @@
 
   /* ---------- the notes bar + list under the player ---------- */
   const panel = el('section', 'rv-panel');
-  panel.innerHTML = `<div class="rv-head"><b>REVIEW</b> <span>${esc(R.ep)} · build ${esc(R.build)} · ${esc(R.built)}</span> <span class="rv-q"></span>
+  const vurl = n => `/review/${R.ep}${n === R.latest ? '' : '/v' + n}`;
+  const vopts = [...R.versions].reverse().map(v => `<option value="${v.n}"${v.n === R.ver ? ' selected' : ''}>v${v.n} · ${esc(v.ts)}${v.n === R.latest ? ' (τελευταίο)' : ''}</option>`).join('');
+  panel.innerHTML = `${R.ver !== R.latest ? `<div class="rv-oldver">Βλέπεις το παλιό revision <b>v${R.ver}</b> · <a href="${vurl(R.latest)}">πήγαινε στο τελευταίο (v${R.latest})</a></div>` : ''}
+    <div class="rv-head"><b>REVIEW</b> <span>${esc(R.ep)}</span> <select class="rv-ver" title="Revision">${vopts}</select> <span class="rv-q"></span>
     <span class="rv-sp"></span><button class="rv-pin" title="Οπτικός έλεγχος εδώ (V)">📍 Σημάδι</button><button class="rv-com" title="Σχόλιο (C)">✍️ Σχόλιο</button>
     <a href="/review/${R.ep}/log" target="_blank">log</a></div>
+    <label class="rv-allv"><input type="checkbox" class="rv-all"> Σχόλια από όλα τα revision</label>
     <div class="rv-track" title="Σχόλια στον χρόνο"></div><div class="rv-help">Πάτα πάνω στο καρέ για γρήγορο μενού · V = σημάδι χωρίς παύση · C = σχόλιο</div><ol class="rv-list"></ol>`;
   document.querySelector('.bar').after(panel);
-  const track = panel.querySelector('.rv-track'), list = panel.querySelector('.rv-list');
+  const track = panel.querySelector('.rv-track'), list = panel.querySelector('.rv-list'), allv = panel.querySelector('.rv-all');
+  panel.querySelector('.rv-ver').onchange = e => { location.href = vurl(+e.target.value); };
+  allv.checked = !!store.get('rv-allv'); allv.onchange = () => { store.set('rv-allv', allv.checked); draw(); };
+  const shown = () => allv.checked ? NOTES : NOTES.filter(n => n.ver === R.ver);
   const pin = () => { const h = here(); note('visual', null, 'σημάδι για οπτικό έλεγχο', snapshot(null, null)); return h; };
   const comment = () => { const was = playing(); pause(); closeMenu(); ask('comment', null, snapshot(null, null), was); };
   panel.querySelector('.rv-pin').onclick = pin;
@@ -120,21 +127,24 @@
   });
   function status() { const q = (store.get(QKEY) || []).length; panel.querySelector('.rv-q').textContent = q ? `· ${q} σε αναμονή` : ''; }
   function draw() {
-    const dur = EPISODE.dur;
-    track.innerHTML = NOTES.map(n => `<button class="rv-mk ${n.status}" data-id="${n.id}" style="left:${(n.t / dur * 100).toFixed(3)}%;--c:${CATS[n.cat]?.col || '#888'}" title="${fmt(n.t)} ${esc(CATS[n.cat]?.el)} ${esc(n.text)}"></button>`).join('');
-    list.innerHTML = NOTES.map(n => {
-      const c = CATS[n.cat] || CATS.comment, old = n.build && n.build !== R.build;
-      return `<li id="rv-${n.id}" class="${n.status}"><button class="rv-t" data-t="${n.t}">${fmt(n.t)}</button><span class="rv-ic" style="--c:${c.col}">${c.icon}</span>
-        <div class="rv-body"><div>${n.text ? esc(n.text) : `<i>${esc(c.el)}</i>`}</div><div class="rv-meta">${esc(n.sceneTitle || n.scene)}${n.line?.el ? ` · ${esc(n.line.who)}: «${esc(n.line.el.slice(0, 80))}»` : ''} · ${esc(n.by)}${old ? ' · <span class="rv-old">παλιό build</span>' : ''}</div>
+    const dur = EPISODE.dur, S = shown();
+    allv.parentElement.lastChild.textContent = ` Σχόλια από όλα τα revision (${NOTES.length})`;
+    track.innerHTML = S.map(n => `<button class="rv-mk ${n.status}" data-id="${n.id}" style="left:${(n.t / dur * 100).toFixed(3)}%;--c:${CATS[n.cat]?.col || '#888'}" title="${fmt(n.t)} ${esc(CATS[n.cat]?.el)} ${esc(n.text)}"></button>`).join('');
+    list.innerHTML = S.map(n => {
+      const c = CATS[n.cat] || CATS.comment, old = n.ver !== R.ver;
+      return `<li id="rv-${n.id}" class="${n.status}"><button class="rv-t" data-t="${n.t}" data-v="${n.ver || ''}">${fmt(n.t)}</button><span class="rv-ic" style="--c:${c.col}">${c.icon}</span>
+        <div class="rv-body"><div>${n.text ? esc(n.text) : `<i>${esc(c.el)}</i>`}</div><div class="rv-meta">${esc(n.sceneTitle || n.scene)}${n.line?.el ? ` · ${esc(n.line.who)}: «${esc(n.line.el.slice(0, 80))}»` : ''} · ${esc(n.by)} · <span class="${old ? 'rv-old' : 'rv-cur'}">v${n.ver || '?'}</span></div>
         ${n.status !== 'open' ? `<div class="rv-fix">${n.status === 'fixed' ? '✓ Διορθώθηκε' : '– Μένει ως έχει'}${n.rev ? ' · ' + esc(n.rev) : ''}${n.fixnote ? ' · ' + esc(n.fixnote) : ''}</div>` : ''}</div>
         ${n.shot ? `<a class="rv-shot" href="/review/shot/${R.ep}/${n.id}.jpg" target="_blank"><img src="/review/shot/${R.ep}/${n.id}.jpg" alt="" loading="lazy"></a>` : ''}
         <button class="rv-del" data-id="${n.id}" title="Διαγραφή">🗑</button></li>`;
-    }).join('') || '<li class="rv-empty">Κανένα σχόλιο ακόμα. Πάτα πάνω στο καρέ όπου δεις κάτι.</li>';
+    }).join('') || `<li class="rv-empty">${NOTES.length ? 'Κανένα σχόλιο σε αυτό το revision.' : 'Κανένα σχόλιο ακόμα.'} Πάτα πάνω στο καρέ όπου δεις κάτι.</li>`;
     status();
   }
   track.onclick = e => { const b = e.target.closest('.rv-mk'); if (!b) return; const n = NOTES.find(n => n.id === b.dataset.id); jump(n.t); const li = $('rv-' + n.id); li?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); li?.classList.add('rv-hl'); setTimeout(() => li?.classList.remove('rv-hl'), 1500); };
   list.onclick = async e => {
-    const t = e.target.closest('.rv-t'); if (t) { jump(+t.dataset.t); stage.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+    const t = e.target.closest('.rv-t');
+    if (t && t.dataset.v && +t.dataset.v !== R.ver) { location.href = vurl(+t.dataset.v) + '#t=' + t.dataset.t; return; }   // a note on another revision: open that one
+    if (t) { jump(+t.dataset.t); stage.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
     const d = e.target.closest('.rv-del'); if (d && confirm('Διαγραφή αυτού του σχολίου;')) { try { await post('delete', { id: d.dataset.id }); } catch (err) { } load(); }
   };
 

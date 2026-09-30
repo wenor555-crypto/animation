@@ -5,7 +5,8 @@
   python3 publish.py episode1 --mp4 video/episode1.mp4
   python3 publish.py episode1 --poster                     # redo only the card image of the latest release
 
-The slug comes from site.json ("aliases": the remake episode2r is published as episode2). Keeps the last KEEP revisions.
+The slug comes from site.json ("aliases": the remake episode2r is published as episode2). Every revision is kept
+(SITA_KEEP=N keeps only the last N), and each one records which draft revision (vNN in the review) it was rendered from.
 """
 import json, os, re, shutil, subprocess, sys, time
 from pathlib import Path
@@ -13,7 +14,7 @@ from pathlib import Path
 RENDER = Path(os.environ.get('SITA_RENDER', '~/sita-render')).expanduser()
 SITE = Path(os.environ.get('SITA_SITE', '~/sita-site')).expanduser()
 HERE = Path(__file__).resolve().parent
-KEEP = 3
+KEEP = int(os.environ.get('SITA_KEEP', 0))            # 0 = keep every revision
 
 
 def ffmpeg():
@@ -61,13 +62,15 @@ def main(argv):
     m = re.search(r'Duration: (\d+):(\d+):([\d.]+)', info)
     dur = int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3)) if m else 0
     poster(ff, cfg, ep, stem, dur)
-    meta = {'n': n, 'ep': ep, 'slug': slug, 'dur': round(dur, 1), 'size': stem.with_suffix('.mp4').stat().st_size,
+    sys.path.insert(0, str(HERE)); from server import snapshot
+    draft = snapshot(ep)[-1]['n'] if page.exists() else None           # the draft this render came from
+    meta = {'n': n, 'ep': ep, 'slug': slug, 'draft': draft, 'dur': round(dur, 1), 'size': stem.with_suffix('.mp4').stat().st_size,
             'date': time.strftime('%d/%m/%Y'), 'ts': time.strftime('%Y-%m-%dT%H:%M:%S'), 'html': page.exists()}
     stem.with_suffix('.json').write_text(json.dumps(meta, ensure_ascii=False))   # written last: the site only lists complete releases
-    for old in sorted(have)[:max(0, len(have) - (KEEP - 1))]:
+    for old in sorted(have)[:max(0, len(have) - (KEEP - 1))] if KEEP else []:
         for f in d.glob(f'r{old:02d}.*'):
             f.unlink()
-    print(f'PUBLISHED {slug} r{n:02d} ({meta["size"] / 1e6:.0f} MB, {dur / 60:.1f} min)')
+    print(f'PUBLISHED {slug} r{n:02d}{f" (from draft v{draft})" if draft else ""} ({meta["size"] / 1e6:.0f} MB, {dur / 60:.1f} min)')
 
 
 if __name__ == '__main__':

@@ -4,11 +4,12 @@
   python3 reviewctl.py pull EP [--all]            compact table of the open notes (--all: every note)
   python3 reviewctl.py done EP ID [ID…] [--rev rNN] [--note TEXT] [--wontfix] [--reopen]
   python3 reviewctl.py list                        drafts and their open-note counts
+  python3 reviewctl.py snapshot                    keep every new draft in dist/ as its next revision (run.sh does this every 5 minutes)
   python3 reviewctl.py passwd USER                 set a review account (password read from stdin, stored as a salted hash;
                                                    once an account exists the shared passphrase is dropped)
 """
 import json, secrets, sys, time
-from server import CATS, RENDER, SITE, append, fmt, notes, pw_hash, secret
+from server import CATS, SITE, append, drafts, fmt, notes, pw_hash, review_eps, secret, snapshot
 
 
 def opt(a, name, default=''):
@@ -20,9 +21,13 @@ def opt(a, name, default=''):
 def main(a):
     cmd = a.pop(0) if a else 'list'
     if cmd == 'list':
-        for f in sorted((RENDER / 'dist').glob('*.html')):
-            ns = notes(f.stem)
-            print(f'{f.stem}: {sum(n["status"] == "open" for n in ns)} open / {len(ns)}')
+        for ep in review_eps():
+            ds, ns = drafts(ep), notes(ep)
+            print(f'{ep}: v{ds[-1]["n"] if ds else "-"} · {sum(n["status"] == "open" for n in ns)} open / {len(ns)}')
+        return
+    if cmd == 'snapshot':
+        for ep in review_eps():
+            snapshot(ep)
         return
     if cmd == 'pull':
         allof = '--all' in a
@@ -34,8 +39,8 @@ def main(a):
             xy = f' @{n["x"]},{n["y"]}' if n.get('x') is not None else ''
             said = f' | {ln.get("who")}: «{ln.get("el")[:70]}»' if ln.get('el') else ''
             st = '' if n['status'] == 'open' else f' [{n["status"]} {n.get("rev", "")}]'
-            print(f'{n["id"]} {fmt(n["t"])} {n["scene"]}+{n["lt"]:.1f}s {CATS.get(n["cat"], n["cat"])}{xy}{" shot" if n.get("shot") else ""}'
-                  f' | {n.get("text") or "-"}{said} | {n["by"]} {n["ts"][5:16]} b:{n.get("build", "")}{st}')
+            print(f'{n["id"]} v{n.get("ver") or "?"} {fmt(n["t"])} {n["scene"]}+{n["lt"]:.1f}s {CATS.get(n["cat"], n["cat"])}{xy}{" shot" if n.get("shot") else ""}'
+                  f' | {n.get("text") or "-"}{said} | {n["by"]} {n["ts"][5:16]}{st}')
         return
     if cmd == 'done':
         rev, note = opt(a, '--rev'), opt(a, '--note')
