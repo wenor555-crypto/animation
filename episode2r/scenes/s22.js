@@ -9,11 +9,11 @@ const CAMS = { door: [640, 420, 1.1], doorC: [560, 420, 1.8], set: [640, 400, 1.
 const steps = [
   { act: 'plug', d: 2.2, cam: 'set' },
   { who: 'mimis', cam: 'mim', mark: 'action', el: 'Ησυχία στο πλατό! …Κάμερα… πάμε.', en: 'Quiet on set! …Camera… rolling.' },
-  { who: 'giorgos', cam: 'screen', mark: 'ad', el: 'Αγαπητοί πελάτες! ΣΗΜΑΝΤΙΚΗ ΑΝΑΚΟΙΝΩΣΗ!', en: 'Dear customers! IMPORTANT ANNOUNCEMENT!' },
-  { who: 'giorgos', cam: 'screen', mark: 'recall', el: 'ΑΝΑΚΛΗΣΗ ΠΡΟΪΟΝΤΟΣ! Όλα τα προϊόντα της παρτίδας πρέπει να επιστρέψουν ΑΜΕΣΑ στη συσκευασία τους!', en: 'PRODUCT RECALL! All products in this batch must return to their packaging IMMEDIATELY!' },
+  { who: 'giorgos', cam: 'screen', mark: 'ad', el: 'Αγαπητοί πελάτες! ΣΗΜΑΝΤΙΚΗ ΑΝΑΚΟΙΝΩΣΗ!', en: 'Dear customers! IMPORTANT ANNOUNCEMENT!', say: 'Αγαπητοί πελάτες! Σημαντική ανακοίνωση!' },
+  { who: 'giorgos', cam: 'screen', mark: 'recall', el: 'ΑΝΑΚΛΗΣΗ ΠΡΟΪΟΝΤΟΣ! Όλα τα προϊόντα της παρτίδας πρέπει να επιστρέψουν ΑΜΕΣΑ στη συσκευασία τους!', en: 'PRODUCT RECALL! All products in this batch must return to their packaging IMMEDIATELY!', say: 'Ανάκληση προιόντος! Όλα τα προιόντα της παρτίδας πρέπει να επιστρέψουν άμεσα στη συσκευασία τους!' },
   { who: 'giorgos', cam: 'screen', el: 'Μην καθυστερείτε! Η επιστροφή είναι ΔΩΡΕΑΝ!', en: "Don't delay! Returns are FREE!" },
   { who: 'mimis', cam: 'mim', el: 'Πες και το άλλο.', en: 'Say the other thing.' },
-  { who: 'giorgos', cam: 'screen', mark: 'call', el: 'ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: 'CALL NOW!' },
+  { who: 'giorgos', cam: 'screen', mark: 'call', el: 'ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: 'CALL NOW!', say: 'Τηλεφωνήστε τώρα!' },
   { act: 'freeze', d: 1.8, cam: 'out' },
   { act: 'fold', d: 2, cam: 'box' },
   { who: 'airfryer', cam: 'box', mark: 'salute', el: 'ΠΑΡΤΙΔΑ ΤΡΙΑ, ΕΠΙΣΤΡΕΦΕΙ!', en: 'BATCH THREE, RETURNING!' },
@@ -21,9 +21,9 @@ const steps = [
   { act: 'apart', d: 4, cam: 'mecha' },
   { who: 'odigos', cam: 'drv', mark: 'drv', el: '…Έχω δελτίο αποστολής. Δεν ρωτάω.', en: "…I've got a delivery note. I don't ask." },
   { who: 'mimis', cam: 'two', el: 'Ήθελα πόλεμο.', en: 'I wanted a war.' },
-  { who: 'giannos', cam: 'two', el: 'Αυτό ήταν πόλεμος. Με κάμερα.', en: 'That was a war. With a camera.' },
+  { who: 'giannos', cam: 'two', el: 'Ναι μαλάκα, να πεθάνουμε εννοείς!', en: "Yeah, you idiot, you mean you wanted us dead!" },
   { act: 'alone', d: 1.6, cam: 'tower' },
-  { who: 'sita', cam: 'towerC', mark: 'batch', el: 'ΕΓΩ… ΔΕΝ ΕΙΜΑΙ ΑΠΟ ΑΥΤΗ ΤΗΝ ΠΑΡΤΙΔΑ!', en: 'I… AM NOT FROM THAT BATCH!' },
+  { who: 'sita', cam: 'towerC', mark: 'batch', el: 'ΕΓΩ ΔΕΝ ΕΙΜΑΙ ΑΠΟ ΑΥΤΗ ΤΗ ΠΑΡΤΙΔΑ…', en: 'I AM NOT FROM THAT BATCH…', say: 'Εγώ δεν είμαι από αυτή τη παρτίδα…' },
   { act: 'flee', d: 1.4, cam: 'towerC' },
 ];
 let M;

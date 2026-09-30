@@ -16,7 +16,7 @@ const steps = [
   { act: 'c3', d: 1.4, cam: 'card' },
   { who: 'krokodeilos', cam: 'card', mark: 'l3', el: 'Εμένα με φούσκωσαν… και με ξεφούσκωσαν.', en: 'They blew me up… and let me down.' },
   { who: 'sita', cam: 'topC', mark: 'now', el: 'Τώρα… επιστρέφουμε εμείς.', en: 'Now… WE return.' },
-  { who: 'sita', cam: 'pull', mark: 'deal', el: 'ΚΑΙ ΣΕ ΤΡΕΙΣ ΑΤΟΚΕΣ ΔΟΣΕΙΣ!', en: 'AND IN THREE INTEREST-FREE INSTALMENTS!' },
+  { who: 'sita', cam: 'pull', mark: 'deal', el: 'ΚΑΙ ΣΕ ΤΡΕΙΣ ΑΤΟΚΕΣ ΔΟΣΕΙΣ!', en: 'AND IN THREE INTEREST-FREE INSTALMENTS!', say: 'Και σε τρεις άτοκες δόσεις!' },
   { act: 'roar', d: 2.4, cam: 'pull' },
 ];
 let M;

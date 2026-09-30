@@ -21,7 +21,7 @@ const steps = [
   { act: 'sit', d: 2.2, cam: 'chair' },
   { who: 'vasilis', cam: 'chair', mark: 'mine', el: 'Η καρέκλα μου.', en: 'My chair.' },
   { act: 'redlight', d: 3.2, cam: 'red' },
-  { who: 'mimis', cam: 'red', mark: 'both', el: '…Ήρθαν κι από τα δύο.', en: '…Both of them came.' },
+  { who: 'mimis', cam: 'red', mark: 'both', el: '…Έφερε και παρέα.', en: '…She brought company.' },
   { act: 'end', d: 1.4, cam: 'red' },
 ];
 let M;

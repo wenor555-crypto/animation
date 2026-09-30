@@ -1,4 +1,4 @@
-/* Ep.2 remake, Scene 17 – «Το σχέδιο»: back in the coop, laser stings and feathers in their hair. The plan comes out of the clash
+/* Ep.2 remake, Scene 17 – «Το σχέδιο»: back in the coop, plasters over the laser stings. The plan comes out of the clash
    between the three: Μίμης (war), Γιάννος (logic), Γιώργος (agrees with everyone). Then the new guy bursts in: promoted. */
 defineScene((() => {
 const X = { mimis: 330, giorgos: 560, giannos: 800, christos: 1030, neos: 1300 };
@@ -7,7 +7,7 @@ const steps = [
   { act: 'open', d: 2.2, cam: 'wide' },
   { act: 'pin', d: 1.6, cam: 'pinC' },
   { who: 'mimis', cam: 'mim', el: 'Κερδίζαμε.', en: 'We were winning.' },
-  { who: 'giannos', cam: 'gia', el: 'Χάναμε πιο αργά.', en: 'We were losing more slowly.' },
+  { who: 'giannos', cam: 'gia', el: 'Σε ποιο σύμπαν;', en: 'In what universe?' },
   { who: 'giannos', cam: 'three', mark: 'logic', el: 'Σκεφτείτε. Είναι προϊόντα τηλεπώλησης. Υπακούν σε ό,τι μοιάζει με διαφήμιση.', en: 'Think. They are TV-shop products. They obey anything that looks like an ad.' },
   { who: 'giorgos', cam: 'gio', mark: 'turf', el: 'Διαφήμιση; Αυτό είναι το γήπεδό μου.', en: 'An ad? That is my turf.' },
   { who: 'mimis', cam: 'mim', el: 'Και η σίτα θέλει τον Panik. Άρα της δίνουμε τον Panik.', en: 'And the σίτα wants Panik. So we give her Panik.' },
@@ -21,9 +21,9 @@ const steps = [
   { who: 'giannos', cam: 'gia', el: 'Ποιο αρχηγείο;', en: 'What headquarters?' },
   { who: 'neos', cam: 'neo', mark: 'hq', el: 'Την τηλεόραση του καφενείου. Όλος ο στρατός παίρνει διαταγές από εκεί.', en: 'The TV at the café. The whole army takes its orders from it.' },
   { who: 'mimis', cam: 'mim', mark: 'one', el: '…Μία οθόνη.', en: '…One screen.', gap: .6 },
-  { who: 'giannos', cam: 'gia', mark: 'host', el: 'Τη σκηνοθετείς εσύ. Και θέλουμε παρουσιαστή. Κάποιον που λέει ψέματα με χαμόγελο.', en: 'You direct it. And we need a presenter. Someone who lies with a smile.' },
+  { who: 'giannos', cam: 'gia', mark: 'host', el: 'Τη σκηνοθετείς εσύ. Και θέλουμε παρουσιαστή. Κάποιον που λέει ψέματα με χαμόγελο.', en: 'You direct it. And we need a presenter. Someone who lies with a smile.', say: 'Τη σκηνοθετείς εσύ. Και θέλουμε παρουσιαστή. Κάπιον που λέει ψέματα με χαμόγελο.' },
   { act: 'stare', d: 1.8, cam: 'three' },
-  { who: 'giorgos', cam: 'gioC', mark: 'oops', el: 'Επιτέλους κάποιος το είπε. …Θέλω το όνομά μου στους τίτλους.', en: 'Finally someone said it. …I want my name in the credits.' },
+  { who: 'giorgos', cam: 'gioC', mark: 'oops', el: 'Σύμφωνοι. Αλλά η εκπομπή βγαίνει από την εταιρεία μου. Και τα δικαιώματα τα κρατάω εγώ.', en: 'Deal. But the show goes out under my company. And I keep the rights.' },
   { who: 'mimis', cam: 'mim', mark: 'school', el: 'Πέντε χρόνια σχολή κινηματογράφου. Επιτέλους.', en: 'Five years of film school. At last.' },
   { who: 'christos', cam: 'chr', mark: 'team', el: 'Θα πετύχει. Είναι το κεφάλαιο όπου η ομάδα ενώνεται.', en: "It'll work. It's the chapter where the team comes together." },
   { act: 'end', d: 1.4, cam: 'wide' },
@@ -56,7 +56,6 @@ function pinnedPage(t) {
   poly([[-50, 90], [-38, 30], [-5, 20], [28, 30], [40, 90]], '#2a2a2a', { lw: 2 });
   ctx.restore();
 }
-function feathers2(x, y) { for (let i = 0; i < 3; i++) blob(x - 20 + i * 18, y - 250 - (i % 2) * 8, 7, 3, '#f7f4ee', { lw: 1.5, rot: i }); }
 function render(t, _M, sc) {
   M = _M;
   const c = shotCam(sc, t, CAMS);
@@ -65,14 +64,13 @@ function render(t, _M, sc) {
   const la = (who, rest) => lookAtSpeaker(t, who, X, rest);
   const stare = inM(t, M.stare, 0, 1.2) || inM(t, M.oops, -2, 0);
   const at = who => stare && who !== 'giorgos' ? [clamp((X.giorgos - X[who]) / 150, -1, 1), .1] : la(who, [0, .1]);
-  const sore = (x, y, s = 1) => { blob(x, y, 5 * s, 4 * s, '#e05a4a', { lw: 1.5 }); };
   stand(X.mimis, 'mimis', 1, { t, talk: talk('mimis', t), look: at('mimis'), lid: !inM(t, M.school), brow: inM(t, M.school) ? 'up' : 'frown', mouth: inM(t, M.school, .5, 99) ? 'smile' : 'flat', R: gesture(t, talk('mimis', t)) });
-  sore(X.mimis + 20, standY() - 200); feathers2(X.mimis, standY());
+  plaster(X.mimis + 32, standY() - 188, -.5);                       // laser stings from the battle: plasters
   const gtk = talk('giorgos', t);
   stand(X.giorgos, 'giorgos', 1, { t, talk: gtk, look: stare ? [0, .1] : la('giorgos', [0, .1]), brow: inM(t, M.oops) || inM(t, M.turf) ? 'up' : 'flat', mouth: inM(t, M.oops) ? 'smile' : 'smirk', R: gesture(t, gtk) });
-  sore(X.giorgos - 16, standY() - 180); feathers2(X.giorgos, standY() + 10);
+  plaster(X.giorgos - 37, standY() - 189, .4); plaster(X.giorgos + 20, standY() - 232, -.2, .8);
   stand(X.giannos, 'giannos', 1, { t, talk: talk('giannos', t), look: at('giannos'), brow: 'flat', mouth: 'flat', R: inM(t, M.plan) ? [-110, -230] : gesture(t, talk('giannos', t)) });
-  sore(X.giannos + 10, standY() - 220);
+  plaster(X.giannos + 12, standY() - 226, .3);
   stand(X.christos, 'christos', 1.05, { t, talk: talk('christos', t), look: at('christos'), mouth: 'flat', itemL: 'sketch', L: [-30, -110], R: [30 + Math.sin(t * 12) * 8, -100] });
   if (t > M.burst.a) { const [nx, nw] = path(t, [[M.burst.a, 1260], [M.burst.b, 1180]]); stand(nx, 'neos', .95, { t, talk: talk('neos', t), legs: nw ? 'walk' : 'stand', look: la('neos', [-1, 0]), brow: 'up', mouth: 'smile', dir: -1, R: [60, -200], L: [-44, -24] });
     ctx.save(); ctx.translate(nx - 10, standY(.95) - 120); rect(-18, -10, 36, 14, '#ffd23f', { lw: 2 }); txt('REGIONAL MGR', 0, -3, 5, INK, { font: TVFONT, weight: 900 }); ctx.restore(); }

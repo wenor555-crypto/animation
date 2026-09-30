@@ -6,7 +6,7 @@ const CAMS = { wide: [640, 420, 1.1], screen: [0, 0, 1], vas: [470, 380, 2.2], v
 const steps = [
   { act: 'open', d: 2.6, cam: 'wide' },
   { who: 'tv', cam: 'screen', mark: 'pitch', el: 'Η ΕΞΥΠΝΗ ΚΑΡΕΚΛΑ ΠΑΡΑΛΙΑΣ! Ανοίγει μόνη της! Κλείνει μόνη της!', en: 'THE SMART BEACH CHAIR! It opens by itself! It closes by itself!' },
-  { who: 'tv', cam: 'screen', mark: 'call', el: 'ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: 'CALL NOW!' },
+  { who: 'tv', cam: 'screen', mark: 'call', el: 'ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: 'CALL NOW!', say: 'Τηλεφωνήστε τώρα!' },
   { act: 'dial', d: 3.2, cam: 'vas' },
   { who: 'vasilis', cam: 'vas', el: 'Ναι, γεια σας. Θέλω μία καρέκλα. Την έξυπνη.', en: 'Yes, hello. I want one chair. The smart one.' },
   { act: 'beat', d: .9, cam: 'tvS' },

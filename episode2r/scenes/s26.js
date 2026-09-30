@@ -3,7 +3,7 @@
    Cut: a dry ravine outside the village, a red LED blinks once in the rubbish. Cut: Κώστας's phone, face down, buzzing: +86. He declines.
    Black. A clack: «Τηλεφωνήστε… τώρα.» End card. */
 defineScene((() => {
-const CAMS = { desk: [640, 420, 1.1], page: [0, 0, 1], two: [620, 380, 1.8], win: [1040, 300, 1.8], look: [640, 380, 1.5], rav: [640, 470, 1.4], table: [640, 520, 2], phone: [0, 0, 1], black: [0, 0, 1] };
+const CAMS = { desk: [640, 420, 1.1], page: [0, 0, 1], two: [620, 380, 1.8], win: [1040, 300, 1.8], look: [760, 360, 1.25], rav: [640, 470, 1.4], table: [640, 520, 2], phone: [0, 0, 1], black: [0, 0, 1] };
 const steps = [
   { act: 'ink', d: 3, cam: 'page' },
   { who: 'mimis', cam: 'page', mark: 'no', el: 'Πάλι δεν έγινε έτσι.', en: "That's not how it happened. Again." },
@@ -105,8 +105,8 @@ function render(t, _M, sc) {
   // the window: the alley outside, night; the real Jumbo truck reversing into it
   rect(880, 130, 330, 260, '#1a2240', { lw: 5 });
   ctx.save(); ctx.beginPath(); ctx.rect(880, 130, 330, 260); ctx.clip();
-  if (t > M.horn.a) { ctx.save(); ctx.translate(lerp(1500, 1060, ease(tk)), 380); ctx.scale(.45, .45); jumboTruck(0, 0, t, { dir: 1, door: 1, inside: '#c9995a', lights: 1, hazard: 1, moving: tk < 1 });
-    for (let i = 0; i < 6; i++) rect(-350 + (i % 3) * 60, -280 + Math.floor(i / 3) * 70, 56, 64, '#c9995a', { lw: 3 }); ctx.restore(); }
+  // side view with the doors shut, so the JUMBO logo reads; it stops whole inside the window frame
+  if (t > M.horn.a) { ctx.save(); ctx.translate(lerp(1500, 1047, ease(tk)), 382); ctx.scale(.42, .42); jumboTruck(0, 0, t, { dir: 1, lights: 1, hazard: 1, moving: tk < 1 }); ctx.restore(); }
   ctx.restore();
   curve([[1045, 130], [1045, 390]], 5); curve([[880, 260], [1210, 260]], 5);
   // posters: the Ep. 1 volume cover

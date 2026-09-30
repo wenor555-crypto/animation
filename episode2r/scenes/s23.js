@@ -1,5 +1,5 @@
 /* Ep.2 remake, Scene 23 – «Όλη η ισχύς»: with no army left to feed, the σίτα routes all her power into the laser. Now it doesn't sting,
-   it cuts: the beam carves the square (a burning trench), the gang dives for cover. Γιάννος: «Αυτό δεν τσούζει πια.»
+   it cuts: the beam carves the square (a burning trench), the gang dives for cover. Γιάννος: «Φακ… θα μας κάψει.»
    Panik, hood up: «Ωραία. Βαρέθηκα τα τσιμπήματα.» He starts to climb. */
 defineScene((() => {
 const CAMS = { top: [TWX + 122, TWTOP - 50, 2.8], tower: [TWX + 145, 330, .95], sq: [640, 420, 1], gia: [520, 420, 2], pk: [760, 400, 2], base: [TWX + 170, 520, 1.6] };
@@ -7,7 +7,7 @@ const steps = [
   { act: 'charge', d: 2.2, cam: 'top' },
   { who: 'sita', cam: 'top', mark: 'all', el: 'Όλη η ενέργεια… σε μένα.', en: 'All the power… to me.' },
   { act: 'cut', d: 3, cam: 'sq' },
-  { who: 'giannos', cam: 'gia', mark: 'nosting', el: 'Αυτό δεν τσούζει πια.', en: "That doesn't sting any more." },
+  { who: 'giannos', cam: 'gia', mark: 'nosting', el: 'Φακ… θα μας κάψει.', en: 'Fuck… it will burn us.' },
   { who: 'panik', cam: 'pk', mark: 'bored', el: 'Ωραία. Βαρέθηκα τα τσιμπήματα.', en: "Good. I'm sick of the stings." },
   { act: 'climb', d: 2.4, cam: 'base' },
 ];

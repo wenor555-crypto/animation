@@ -41,7 +41,7 @@ function render(t, _M, sc) {
     const e = out(i); if (e <= 0) continue;
     const x = lerp(-120, X[who], e);
     stand(x, who, .9, { t, talk: talk(who, t), look: la(who, [1, 0]), brow: who === 'giorgos' ? 'up' : 'worry', mouth: who === 'mimis' && inM(t, M.thanks) ? 'frown' : 'flat', L: [-44, -24], R: who === 'giorgos' && inM(t, M.neos) ? gesture(t, talk('giorgos', t)) : [44, -24] });
-    for (let f = 0; f < 3; f++) { ctx.save(); ctx.translate(x - 20 + f * 18, standY(.9) - 240 + (f % 2) * 8); ctx.rotate(f - 1); blob(0, 0, 8, 3, '#f6f2e8', { lw: 1.2 }); ctx.restore(); }
+    feather(x + (i % 2 ? 14 : -12), standY(.9) - 236, (i % 2 ? .5 : -.45), 1.1);   // one clear hen feather stuck in the hair
   }
   ctx.restore();
   applyLight('dusk', .55);

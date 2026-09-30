@@ -50,7 +50,7 @@ The whole episode is **one day**: morning → noon → golden hour → dusk → 
 |---|---|---|---|
 | **Η σίτα** | Revenge on Panik, and her company back | Vendetta blinds her: she ignores everything that isn't Panik, so she never sees the recall coming | Beaten by the three things she looked down on: a drunk, a ταψί, and an advert (Ep. 3's first scene says exactly this) |
 | **Γιώργος** | To come out on top: the credit, the company, the money, without risk | An egoistic, happy-go-lucky kid who (roughly) knows what he's doing: every move is for his own position, so nobody can count on him | He does the two things that win the war, and both for himself: the recall, because it's his stage («Θέλω το όνομά μου στους τίτλους»), and the ταψί up the bell tower, because Μίμης is filming. He's never the fool of the gang. The bill for «ΔΩΡΕΑΝ επιστροφή» lands on his company (Ep. 3 opens with him broke) |
-| **Μίμης** | War. Now. | He charges without a plan, and loses the first battle | He directs the recall like a war film: «Αυτό ήταν πόλεμος. Με κάμερα.» |
+| **Μίμης** | War. Now. | He charges without a plan, and loses the first battle | He directs the recall like a war film; «Ήθελα πόλεμο.» «Ναι μαλάκα, να πεθάνουμε εννοείς!» |
 | **Γιάννος** | To be the sensible one | Plans without courage; his gadgets backfire (the jammer kills their own phones) | He admits the plan needs Μίμης's madness and Γιώργος's lies |
 | **Κώστας / Panik** | Κώστας: to be left alone (sober, cynical, not angry). Panik: to fight «the system» | Κώστας is too harmless to be useful; Panik is too drunk to be controlled | Sober Κώστας keeps living through the war without noticing. Panik wins it |
 | **Χρήστος** | To draw it all | Nobody believes him | He draws the ending in the morning: **a ταψί reflecting a beam**. It happens. (A hint of Ep. 3's «ό,τι ζωγραφίσεις θα συμβεί») |
@@ -232,7 +232,7 @@ The sun turns gold.
 - **Γιάννος:** «Είναι προϊόντα τηλεπώλησης. Υπακούν σε ό,τι μοιάζει με διαφήμιση.»
 - The missing piece arrives with **the νέος**: he escaped, «promoted» to Regional Manager. «Όλος ο στρατός παίρνει διαταγές από την τηλεόραση του καφενείου.»
 - The plan: **bait → ανάκληση → the καφενείο TV**.
-- The presenter has to be someone who lies with a smile. Everyone looks at Γιώργος. «Επιτέλους κάποιος το είπε. …Θέλω το όνομά μου στους τίτλους.»
+- The presenter has to be someone who lies with a smile. Everyone looks at Γιώργος. «Σύμφωνοι. Αλλά η εκπομπή βγαίνει από την εταιρεία μου. Και τα δικαιώματα τα κρατάω εγώ.»
 - Χρήστος pins his ταψί drawing on the coop wall. Nobody looks at it.
 
 **18. Δόλωμα.** A beer at sunset. «Έξι το απόγευμα είναι. Δεν είμαι αλκοολικός.» «Για το χωριό.» He drinks, and a manga transformation into Panik: hood, shades, speed lines. «Η πόλη… ξύπνησε.» «Χωριό είναι.» «Για μένα είναι πόλη.»
@@ -257,7 +257,7 @@ The sun turns gold.
 ### ACT 3: «Ανάκληση» (17:30–21:00), night
 **22. Ανάκληση προϊόντος.** Μίμης directs («Ησυχία στο πλατό!»), Χρήστος holds the storyboard, and Γιώργος, in a jacket over the uniform, is the best telemarketer of his life. «ΑΝΑΚΛΗΣΗ ΠΡΟΪΟΝΤΟΣ! …Η επιστροφή είναι ΔΩΡΕΑΝ! ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!»
 - The effects ballet: the mecha comes apart piece by piece, every device folds itself back into its box and marches into the Jumbo truck, and the three lieutenants salute as they go in.
-- The driver: «…Έχω δελτίο αποστολής. Δεν ρωτάω.» Μίμης: «Ήθελα πόλεμο.» Γιάννος: «Αυτό ήταν πόλεμος. Με κάμερα.»
+- The driver: «…Έχω δελτίο αποστολής. Δεν ρωτάω.» Μίμης: «Ήθελα πόλεμο.» Γιάννος: «Ναι μαλάκα, να πεθάνουμε εννοείς!»
 - On the bell tower, alone: «ΕΓΩ… ΔΕΝ ΕΙΜΑΙ ΑΠΟ ΑΥΤΗ ΤΗΝ ΠΑΡΤΙΔΑ!»
 
 **23. Όλη η ισχύς.** With no army to feed, she routes all power to the laser. Now it doesn't sting; it cuts, and the red beam carves the square. «Όλη η ενέργεια… σε μένα.» Panik starts to climb.
@@ -266,7 +266,7 @@ The sun turns gold.
 - Panik climbs through the sweeping beam, which melts tiles next to his hands.
 - «Γιατί εμένα;» «Γιατί ήσουν εκεί.»
 - She has him cornered at the bell, charged to full.
-- Below, Γιώργος runs up the stairs with **the ταψί**, brave because Μίμης is filming him, and throws it: «ΠΙΑΣ' ΤΟ! …Και να πεις σε όλους ποιος στο έδωσε!»
+- Below, Γιώργος runs up the stairs with **the ταψί**, brave because Μίμης is filming him, and throws it: «Πιάσε! Θέλει να μου πάρει τα μέτρα!»
 - Slow motion: the ταψί spinning up through the red light; Panik catches it; the beam hits it and **reflects back into her own lens**. White flash; she's burning again.
 - «Κάηκα για σένα. …Ξανά.» «…Σκουπίδια.»
 - The kick, with a hit-stop and an impact frame. She flies off the tower toward the dark hills.

@@ -48,3 +48,21 @@ function towerSet(t, o = {}) {
   bellTower(TWX, GROUND, t, { red: 1, helmet: o.helmet ?? true });
   poly([[-600, GROUND], [2000, GROUND], [2000, 1400], [-600, 1400]], '#9a948a', { lw: 0 });
 }
+
+/* after the battle: a sticking plaster over a laser sting (reads as an injury at a glance, unlike a red dot) */
+function plaster(x, y, rot = 0, s = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s, s);
+  ctx.beginPath(); ctx.roundRect(-13, -5, 26, 10, 5); ctx.fillStyle = '#e9c49a'; ctx.fill(); ctx.lineWidth = 1.6; ctx.strokeStyle = INK; ctx.stroke();
+  ctx.beginPath(); ctx.roundRect(-4.5, -3.5, 9, 7, 1.5); ctx.fillStyle = '#f6e3c8'; ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.25)'; for (const [dx, dy] of [[-9, -1.5], [-9, 1.5], [9, -1.5], [9, 1.5]]) { ctx.beginPath(); ctx.arc(dx, dy, .7, 0, TAU); ctx.fill(); }
+  ctx.restore();
+}
+/* a hen feather stuck in someone's hair: a clear quill and vane, big enough to read as a feather */
+function feather(x, y, rot = 0, s = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s, s);
+  ctx.beginPath(); ctx.moveTo(0, 6); ctx.bezierCurveTo(-9, -4, -7, -22, 0, -30); ctx.bezierCurveTo(7, -22, 9, -4, 0, 6); ctx.closePath();
+  ctx.fillStyle = '#f7f3ea'; ctx.fill(); ctx.lineWidth = 1.6; ctx.strokeStyle = INK; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, 10); ctx.lineTo(0, -26); ctx.lineWidth = 1.2; ctx.stroke();
+  ctx.beginPath(); for (let i = 0; i < 3; i++) { ctx.moveTo(0, -6 - i * 7); ctx.lineTo(-5, -2 - i * 7); ctx.moveTo(0, -8 - i * 7); ctx.lineTo(5, -4 - i * 7); } ctx.lineWidth = .8; ctx.stroke();
+  ctx.restore();
+}

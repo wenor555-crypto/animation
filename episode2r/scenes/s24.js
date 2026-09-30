@@ -22,15 +22,15 @@ const steps = [
   { who: 'sita', cam: 'duo', el: 'Γιατί εμένα; Από όλες τις σίτες του κόσμου;', en: 'Why me? Of all the σίτες in the world?' },
   { who: 'panik', cam: 'pk', mark: 'there', el: 'Γιατί ήσουν εκεί.', en: 'Because you were there.' },
   { act: 'corner', d: 1.4, cam: 'duo' },
-  { who: 'sita', cam: 'top', mark: 'last', el: 'ΤΕΛΕΥΤΑΙΑ ΠΡΟΣΦΟΡΑ, PANIK!', en: 'FINAL OFFER, PANIK!' },
-  { who: 'giorgos', cam: 'arch', mark: 'catch', el: 'ΠΙΑΣ\' ΤΟ! …Και να πεις σε όλους ποιος στο έδωσε!', en: 'CATCH! …And tell everyone who gave it to you!' },
+  { who: 'sita', cam: 'top', mark: 'last', el: 'ΤΕΛΕΥΤΑΙΑ ΠΡΟΣΦΟΡΑ, PANIK!', en: 'FINAL OFFER, PANIK!', say: 'Τελευτέα προσφορά, Πάνικ!' },
+  { who: 'giorgos', cam: 'arch', mark: 'catch', el: 'Πιάσε! Θέλει να μου πάρει τα μέτρα!', en: 'Catch! She wants to take my measurements!' },
   { act: 'toss', d: 2.6, cam: 'toss' },
   { act: 'reflect', d: 2.2, cam: 'duo' },
   { who: 'sita', cam: 'top', mark: 'burn', el: 'Κάηκα για σένα. …Ξανά.', en: 'I burned for you. …Again.' },
   { who: 'panik', cam: 'pk', mark: 'trash', el: '…Σκουπίδια.', en: '…Trash.', gap: .8 },
   { act: 'kick', d: 2.2, cam: 'duo' },
   { act: 'fly', d: 1.6, cam: 'sky' },
-  { who: 'sita', cam: 'sky', mark: 'far', el: 'Θα επιστρέψω… με ΔΩΡΕΑΝ μεταφορικάαα…', en: "I'll be back… with FREE shippiiing…" },
+  { who: 'sita', cam: 'sky', mark: 'far', el: 'Θα επιστρέψω… με ΔΩΡΕΑΝ μεταφορικάαα…', en: "I'll be back… with FREE shippiiing…", say: 'Θα επιστρέψω… με δωρεάν μεταφορικάαα…' },
   { act: 'page', d: 3, cam: 'page' },
 ];
 let M;

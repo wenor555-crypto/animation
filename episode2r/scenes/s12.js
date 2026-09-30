@@ -11,7 +11,7 @@ const steps = [
   { who: 'sita', label: SCR, cam: 'screen', mark: 'wanted', el: 'Ψάχνουμε έναν άνθρωπο. Κουκούλα. Γυαλιά ηλίου τη νύχτα. Μπύρα στο χέρι.', en: 'We are looking for a man. Hood. Sunglasses at night. A beer in his hand.' },
   { who: 'sita', label: SCR, cam: 'kaf', mark: 'ceo', el: 'Και έναν πρώην CEO.', en: 'And a former CEO.' },
   { act: 'bell', d: 2.6, cam: 'bell' },
-  { who: 'sita', label: SCR, cam: 'poles', mark: 'prize', el: 'Όποιος τους παραδώσει κερδίζει ΔΩΡΕΑΝ μεταφορικά! ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: 'Whoever hands them over wins FREE shipping! CALL NOW!' },
+  { who: 'sita', label: SCR, cam: 'poles', mark: 'prize', el: 'Όποιος τους παραδώσει κερδίζει ΔΩΡΕΑΝ μεταφορικά! ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: 'Whoever hands them over wins FREE shipping! CALL NOW!', say: 'Όποιος τους παραδώσει κερδίζει δωρεάν μεταφορικά! Τηλεφωνήστε τώρα!' },
   { act: 'poles', d: 1.8, cam: 'poles' },
   { act: 'bin', d: 4.2, cam: 'bin' },
   { who: 'mimis', cam: 'wall', mark: 'binl', el: 'Ο κάδος… περπατάει.', en: 'The bin… is walking.' },

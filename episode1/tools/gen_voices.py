@@ -55,7 +55,7 @@ SETTINGS = {'default': {'stability': .5, 'similarity_boost': .8},
 SHOUTY = {'sita', 'tv'}   # stability 0 for lines with '!' or CAPS (the 200% TV-shop voice), .5 for the cold, quiet ones
 # per-episode cast changes: <episode>/voices.json = {"voices": {who: voice_id}, "prefix": {who: "[slurring] "}, "shouty": [who, ...]}
 # (a prefix is an eleven_v3 audio tag sent before the text; it is not spoken and not part of the speech-to-text check)
-PREFIX, SIMPLE, LINE_TAG = {}, set(), {}
+PREFIX, SIMPLE, LINE_TAG, LINE_SAY = {}, set(), {}, {}
 if (HERE / 'voices.json').exists():
     _ep = json.loads((HERE / 'voices.json').read_text(encoding='utf-8'))
     VOICES.update(_ep.get('voices', {})); PREFIX.update(_ep.get('prefix', {})); SHOUTY |= set(_ep.get('shouty', []))
@@ -77,8 +77,8 @@ SAY = {'38': 'τριάντα οχτώ', '9,90': 'εννιά και ενενήν�
        'Ωραία σίτα.': 'Ωραία… σίτα.',   # «ωραία σίτα» runs together into «ωραία είσαι τα»
        'Jumbo': 'Τζάμπο',               # the shop, said the Greek way (not «Τζούμπο»)
        'Temu': 'Τέμου',                 # the app, as Greeks say it
-       'air fryers': 'έαρ φράιερς',     # (the plural first, so it isn't read «έαρ φράιερs»)
-       'air fryer': 'έαρ φράιερ',       # nobody says «φριτέζα αέρος»: the English name, the Greek way
+       'air fryers': 'ερ φράιερ',       # (the plural first; Greeks don't add the «s»)
+       'air fryer': 'ερ φράιερ',        # nobody says «φριτέζα αέρος»: the English name, the Greek way
        'Ποιοι επενδυτές;': 'Ποιοι… επενδυτές;',   # v3 swallows the «Π» and says «οι επενδυτές»
        'μια συκιά': 'μια σικιά',        # v3 swallows the unstressed υ and says «σκιά» (shade) instead of «συκιά» (fig tree)
        'IQOS': 'Άικος',                 # the heated-tobacco device, as Greeks say it
@@ -124,6 +124,9 @@ def scene_lines(page):
             tag = re.search(r"\btag:\s*'([^']*)'", line)   # a per-line eleven_v3 audio tag, e.g.  tag: '[whispers] '
             if tag:
                 LINE_TAG[(w.group(1), text)] = tag.group(1)
+            say = re.search(r"\bsay:\s*" + STR, line)   # what TTS says instead, when the written line is read wrong (subtitles keep el)
+            if say:
+                LINE_SAY[(w.group(1), text)] = (say.group(1) if say.group(1) is not None else say.group(2)).replace("\\'", "'")
     return out
 
 
@@ -368,7 +371,7 @@ def main():
         return
     if '--show' in sys.argv:   # print what TTS will be sent, without calling anything
         for sid, i, who, text, f in todo:
-            said = tts_text(text, lex)
+            said = tts_text(LINE_SAY.get((who, text), text), lex)
             if said != clean(text):
                 print(f'{sid}/{i:02d} {who}: {said}')
         return
@@ -389,7 +392,8 @@ def main():
         vid = VOICES.get(who)
         if not vid:
             log(f'skip {key} ({who}): no voice_id set'); return
-        said = tts_text(text, lex)
+        said = tts_text(text, lex)                     # what the clip is checked against
+        spoken = tts_text(LINE_SAY.get((who, text), text), lex)   # what is sent (a per-line say: overrides the spelling)
         if '--verify' in sys.argv and f.exists():   # re-check an existing clip; regenerate it only if it fails
             v = verdict(said, f.read_bytes())
             if v['ok']:
@@ -399,7 +403,7 @@ def main():
         best = None
         for take in range(1, MAX_TAKES + 1):
             audio = req(f'/text-to-speech/{vid}?output_format={FORMAT}',
-                        {'text': LINE_TAG.get((who, text), PREFIX.get(who, '')) + (phonetic(STRATEGY[take](said)) if who in SIMPLE else STRATEGY[take](said)), 'model_id': MODEL, 'language_code': LANGUAGE,
+                        {'text': LINE_TAG.get((who, text), PREFIX.get(who, '')) + (phonetic(STRATEGY[take](spoken)) if who in SIMPLE else STRATEGY[take](spoken)), 'model_id': MODEL, 'language_code': LANGUAGE,
                          'voice_settings': settings(who, text)}, 'audio/mpeg')
             v = verdict(said, audio)
             if best is None or v['score'] < best[1]['score']:
@@ -410,7 +414,7 @@ def main():
         audio, v, take = best
         f.parent.mkdir(parents=True, exist_ok=True)
         f.write_bytes(audio)
-        record(key, dict(who=who, text=said, sent=STRATEGY[take](said), takes=take, **v))
+        record(key, dict(who=who, text=said, sent=STRATEGY[take](spoken), takes=take, **v))
         log('wrote', f.relative_to(HERE), f'ok (take {take})' if v['ok'] else f'BEST OF {MAX_TAKES}, CHECK BY EAR: heard «{v["heard"]}»')
 
     with ThreadPoolExecutor(int(os.environ.get('THREADS', 2))) as ex:   # a few clips at a time (more hits the rate limit)

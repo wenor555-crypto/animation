@@ -7,7 +7,7 @@ const steps = [
   { act: 'eye', d: 2, cam: 'eye' },
   { act: 'climb', d: 2.2, cam: 'tower' },
   { act: 'run', d: 1.4, cam: 'run' },
-  { who: 'sita', cam: 'tower', mark: 'last', el: 'ΤΕΛΕΥΤΑΙΑ ΠΡΟΣΦΟΡΑ, PANIK!', en: 'FINAL OFFER, PANIK!' },
+  { who: 'sita', cam: 'tower', mark: 'last', el: 'ΤΕΛΕΥΤΑΙΑ ΠΡΟΣΦΟΡΑ, PANIK!', en: 'FINAL OFFER, PANIK!', say: 'Τελευτέα προσφορά, Πάνικ!' },
   { act: 'freeze', d: 1.2, cam: 'tower' },
   { act: 'card', d: 2.6, cam: 'card' },
 ];

@@ -1,6 +1,6 @@
 /* Ep.2 remake, Scene 14 – «Οπλοστάσιο»: montage in the yard. Μίμης and Χρήστος cut branches off the fig tree and make bows,
    strung with washing line, arrows from cane. Γιάννος builds gadgets: a Bluetooth jammer out of the microwave, a «magnet cannon»
-   from the old σίτα's nine magnet pairs, and a racket anti-aircraft gun tied to a broomstick. His agent: «Μόνο για αμυντική χρήση.»
+   from the spare set of nine magnet pairs that came in the first σίτα's box (he kept it before they sent her back), and a racket anti-aircraft gun tied to a broomstick. His agent: «Μόνο για αμυντική χρήση.»
    Μίμης drills the hens as cavalry. Γιώργος («η στρατηγική») gets Βαγγελιώ's ταψί. */
 defineScene((() => {
 const X = { mimis: 300, christos: 470, giannos: 640, giorgos: 1040 };
@@ -15,7 +15,7 @@ const steps = [
   { act: 'agent', d: 2.2, cam: 'lap' },
   { who: 'giannos', cam: 'gia', mark: 'jam', el: 'Αμυντική είναι. Μας επιτίθενται air fryers.', en: "It is defensive. We're being attacked by air fryers." },
   { act: 'magnet', d: 1.8, cam: 'bench' },
-  { who: 'giannos', cam: 'gia', mark: 'mag', el: 'Κι αυτό είναι οι μαγνήτες της παλιάς σίτας. Τραβάει ό,τι έχει μέταλλο.', en: "And this is the old σίτα's magnets. It pulls anything made of metal." },
+  { who: 'giannos', cam: 'gia', mark: 'mag', el: 'Κι αυτό είναι οι ανταλλακτικοί μαγνήτες από τη συσκευασία της πρώτης σίτας. Τους κράτησα πριν τη στείλουμε πίσω. Τραβάνε ό,τι έχει μέταλλο.', en: "And these are the spare magnets from the first σίτα's box. I kept them before we sent her back. They pull anything metal." },
   { who: 'christos', cam: 'chr', el: 'Εννιά ζευγάρια ισχυροί μαγνήτες.', en: 'Nine pairs of powerful magnets.' },
   { who: 'giannos', cam: 'gia', mark: 'dont', el: 'Μην το λες έτσι.', en: "Don't say it like that." },
   { act: 'racket', d: 2.2, cam: 'wide' },
@@ -49,6 +49,11 @@ function render(t, _M, sc) {
   const jamOn = t > M.jam.a; jammer(780, GROUND - 110, t, jamOn ? 1 : 0);
   if (t < M.magnet.a) for (let i = 0; i < 9; i++) rect(840 + (i % 3) * 14, GROUND - 124 + Math.floor(i / 3) * 12, 10, 10, '#c9ccd2', { lw: 1.5 });
   else magnetCannon(850, GROUND - 110, -.2);
+  // the spare-parts bag from the first σίτα's box (Γιάννος kept it before sending her back): where the magnets came from
+  ctx.save(); ctx.translate(884, GROUND - 100); ctx.rotate(.08); ctx.scale(.75, .75);
+  poly([[-22, 14], [-20, -22], [20, -22], [22, 14]], 'rgba(235,240,245,.85)', { lw: 2 }); rect(-20, -22, 40, 5, '#d8453a', { lw: 1.2 });
+  rect(-16, -12, 32, 12, '#fffaf0', { lw: 1 }); txt('ΑΝΤΑΛΛΑΚΤΙΚΑ', 0, -6, 4.6, INK, { font: TVFONT, weight: 900 }); txt('ΕΞΥΠΝΗ ΣΙΤΑ', 0, 5, 3.6, '#d8453a', { font: TVFONT, weight: 900 });
+  ctx.restore();
   // falling fig branch, sawn off
   if (inM(t, M.saw, 1.2, 99) && t < M.string.b) { const f = ease(prog(t, M.saw.a + 1.2, M.saw.a + 2.2)); ctx.save(); ctx.translate(280, 430 + f * 240); ctx.rotate(f * 1.3); limb([[-60, 0], [60, 0]], 12, '#9a948a'); for (let i = 0; i < 4; i++) blob(-40 + i * 26, -16, 20, 14, '#4f7a37', { lw: 2.5 }); ctx.restore(); }
   const la = (who, rest) => lookAtSpeaker(t, who, X, rest);

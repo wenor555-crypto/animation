@@ -14,7 +14,7 @@ const steps = [
   { who: 'sita', label: VO, cam: 'sheet', mark: 'army', el: 'Η καρέκλα μένει. Και στο ίδιο δέμα… ένας στρατός. Με τα ίδια μεταφορικά.', en: 'The chair stays. And in the same parcel… I add an army. Same shipping.' },
   { act: 'ship', d: 2.6, cam: 'map' },
   { act: 'dock', d: 2.4, cam: 'dock' },
-  { who: 'ypallilos', cam: 'clerk', mark: 'sign', el: 'Ένα κοντέινερ από τον προμηθευτή; Υπογράφω. Ό,τι να \'ναι.', en: 'A container from the supplier? I sign. Whatever.' },
+  { who: 'ypallilos', cam: 'clerk', mark: 'sign', el: 'Τι μαλακίες μας έστειλαν πάλι οι Κινέζοι;', en: 'What crap have the Chinese sent us this time?' },
   { act: 'signed', d: 1.6, cam: 'dock' },
   { act: 'bin', d: 2.4, cam: 'bin' },
   { act: 'binLed', d: 2.2, cam: 'binC' },
