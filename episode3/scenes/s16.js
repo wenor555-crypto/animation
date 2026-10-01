@@ -9,12 +9,12 @@ const steps = [
   { who: 'daskalos', cam: 'das', el: 'Ό,τι ζωγραφίσεις… θα συμβεί.', en: 'Whatever you draw… will happen.' },
   { who: 'daskalos', cam: 'temple', el: 'Γι\' αυτό… ζωγράφιζε προσεκτικά.', en: 'So… draw carefully.' },
   { who: 'christos', cam: 'chr', mark: 'sugoi', el: '…Sugoi.', en: '…Sugoi.', gap: .8 },
-  { act: 'cut', d: 2.4, cam: 'page' },
+  { act: 'cut', d: 1.6, cam: 'page' },
   { who: 'mimis', cam: 'mim', el: 'Τι είναι αυτό;', en: 'What is that?' },
   { who: 'christos', cam: 'page', mark: 'vol3', el: 'Τόμος τρία.', en: 'Volume three.' },
   { who: 'mimis', cam: 'mim', el: 'Πάλι δεν θα γίνει έτσι.', en: "Again, that's not how it'll go." },
   { who: 'christos', cam: 'yard', el: 'Ναι, ναι…', en: 'Yeah, yeah…' },
-  { act: 'end', d: 1.6, cam: 'page' },
+  { act: 'end', d: 1.0, cam: 'page' },
 ];
 let M;
 function crowShape(x, y, s, k = 1, flap = 0) {
@@ -31,13 +31,17 @@ function page(t) {                 // Χρήστος's page: a satellite shaped 
   rect(200, 40, 880, 640, '#fbf8ef', { lw: 5 });
   ctx.save(); ctx.beginPath(); ctx.rect(240, 80, 800, 560); ctx.clip();
   ctx.filter = 'grayscale(1) contrast(1.3)';
-  blob(640, 980, 520, 520, '#dcdcdc', { lw: 5 });
-  sitadel(640, 300, 0, { k: clamp(prog(t, M.cut.a, M.vol3.b) * 1.1), s: .42 });
+  // drawn while we watch: the station first (k 0 → .75), then the Earth's curve closes underneath (.75 → 1)
+  const k = clamp(prog(t, M.cut.a + .1, M.vol3.b - .2)), ks = clamp(k / .75), ke = clamp((k - .75) / .25);
+  sitadel(640, 300, 0, { k: ks, s: .42 });
+  if (ke > 0) { ctx.strokeStyle = INK; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(640, 980, 520, Math.PI * 1.5 - .62, Math.PI * 1.5 - .62 + ke * 1.24); ctx.stroke(); }
   ctx.filter = 'none';
   ctx.restore();
   txt('ΤΟΜΟΣ 3', 1000, 60, 20, INK, { font: TVFONT, weight: 900 });
-  const px = 760 + Math.sin(t * 5) * 30, py = 330 + Math.cos(t * 4) * 20;
-  if (t < M.end.a) { pencil(px, py, -2.3); blob(px + 30, py + 40, 28, 22, CAST.christos.skin, { lw: 3 }); }
+  // the brush tip sits where the line is being drawn right now: spiralling out over the station, then along the Earth's arc
+  const a = ks * Math.PI * 4.5, r = 40 + ks * 150, wob = Math.sin(t * 23) * 3;
+  const th = Math.PI * 1.5 - .62 + ke * 1.24, [px, py] = ke > 0 ? [640 + Math.cos(th) * 520, 980 + Math.sin(th) * 520] : [640 + Math.cos(a) * r + wob, 300 + Math.sin(a) * r * .8 + wob];
+  if (t < M.end.a && k < 1) { pencil(px + 25, py + 28, -2.3); blob(px + 42, py + 46, 28, 22, CAST.christos.skin, { lw: 3 }); }   // the pencil's tip (38 px along -2.3 rad) on the line
   ctx.restore();
 }
 function render(t, _M, sc) {

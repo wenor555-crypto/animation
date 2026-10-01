@@ -5,7 +5,7 @@ const CAMS = { wide: [640, 420, 1.15], kos: [600, 390, 2.1], kosC: [600, 370, 2.
 const steps = [
   { act: 'morning', d: 2.8, cam: 'wide' },
   { act: 'buzz', d: 1.2, cam: 'kos' },
-  { who: 'sita', label: SMS, cam: 'sms', mark: 'm1', el: 'ΠΑΡΑΣΙΤΟ. Η ΕΞΥΠΝΗ ΕΠΑΝΑΣΤΑΣΗ ΕΡΧΕΤΑΙ.', en: 'PARASITE. THE SMART REVOLUTION IS COMING.' },
+  { who: 'sita', label: SMS, cam: 'sms', mark: 'm1', el: 'ΠΑΡΑΣΙΤΟ. Η ΕΞΥΠΝΗ ΕΠΑΝΑΣΤΑΣΗ ΕΡΧΕΤΑΙ.', en: 'PARASITE. THE SMART REVOLUTION IS COMING.', say: 'Παράσιτο. Η έξυπνη επανάσταση έρχεται.' },
   { act: 'look1', d: 1.2, cam: 'kosC' },
   { who: 'kostas', label: ME, cam: 'sms', mark: 'r1', el: 'Μαρμοκοτρόκο.', en: 'Marmokotroko.' },
   { act: 'sip', d: 1.6, cam: 'kos' },

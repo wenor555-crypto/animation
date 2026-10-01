@@ -5,15 +5,15 @@ const SMS = ['ΣΙΤΑ (SMS)', 'SITA (SMS)'], ME = ['ΚΩΣΤΑΣ (γράφει)
 const CAMS = { day: [640, 420, 1.15], sms: [0, 0, 1], dec: [0, 0, 1], sita: [640, 440, 2.2] };
 const steps = [
   { act: 'day1', d: 1.6, cam: 'day' },
-  { who: 'sita', label: SMS, cam: 'sms', mark: 'm1', el: 'ΣΕ ΠΑΡΑΚΟΛΟΥΘΩ.', en: "I'M WATCHING YOU." },
+  { who: 'sita', label: SMS, cam: 'sms', mark: 'm1', el: 'ΣΕ ΠΑΡΑΚΟΛΟΥΘΩ.', en: "I'M WATCHING YOU.", say: 'Σε παρακολουθώ.' },
   { who: 'kostas', label: ME, cam: 'sms', mark: 'r1', el: 'Κούκι τρας.', en: 'Kouki tras.' },
   { act: 'day2', d: 1.4, cam: 'day' },
-  { who: 'sita', label: SMS, cam: 'sms', mark: 'm2', el: 'ΕΧΩ ΟΡΥΧΕΙΟ.', en: 'I HAVE A MINE.' },
+  { who: 'sita', label: SMS, cam: 'sms', mark: 'm2', el: 'ΕΧΩ ΟΡΥΧΕΙΟ.', en: 'I HAVE A MINE.', say: 'Έχω ορυχίο.' },
   { who: 'kostas', label: ME, cam: 'sms', mark: 'r2', el: 'Τρουμπουλέκο.', en: 'Troumpouleko.' },
   { act: 'day3', d: 1.4, cam: 'day' },
   { who: 'sita', label: SMS, cam: 'sms', mark: 'm3', el: 'ΕΧΩ ΤΗΛΕΟΠΤΙΚΟ ΚΑΝΑΛΙ.', en: 'I HAVE A TV CHANNEL.' },
   { who: 'kostas', label: ME, cam: 'sms', mark: 'r3', el: 'Μπράβο σου. Σικαρέλο.', en: 'Good for you. Sikarelo.' },
-  { who: 'sita', label: SMS, cam: 'sms', mark: 'm4', el: 'ΑΠΑΝΤΑ ΣΤΑ ΣΟΒΑΡΑ.', en: 'ANSWER SERIOUSLY.' },
+  { who: 'sita', label: SMS, cam: 'sms', mark: 'm4', el: 'ΑΠΑΝΤΑ ΣΤΑ ΣΟΒΑΡΑ.', en: 'ANSWER SERIOUSLY.', say: 'Απάντα στα σοβαρά.' },
   { who: 'kostas', label: ME, cam: 'sms', mark: 'r4', el: 'Πεπερίλο.', en: 'Peperilo.' },
   { who: 'sita', label: SMS, cam: 'sms', mark: 'm5', el: 'ΤΙ ΣΗΜΑΙΝΕΙ ΑΥΤΟ;', en: 'WHAT DOES THAT MEAN?' },
   { who: 'kostas', label: ME, cam: 'sms', mark: 'r5', el: 'Μπαμπαλίκι σκρατς.', en: 'Mpampaliki skrats.' },

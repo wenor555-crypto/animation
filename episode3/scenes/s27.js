@@ -6,7 +6,7 @@ const SMS = ['ΣΙΤΑ (SMS)', 'SITA (SMS)'], ME = ['ΚΩΣΤΑΣ (γράφει)
 const CAMS = { room: [640, 420, 1.15], kos: [600, 380, 2.1], up: [600, 300, 2.1], stop: [1100, 400, 1.8], sms: [0, 0, 1], station: [640, 330, 1.8], earth: [640, 360, 1], yardTiny: [700, 440, 1.5] };
 const steps = [
   { act: 'morning', d: 2.2, cam: 'room' },
-  { who: 'sita', label: SMS, cam: 'sms', mark: 'm', el: 'ΕΙΜΑΙ ΠΑΝΩ ΑΠΟ ΤΟ ΚΕΦΑΛΙ ΣΟΥ.', en: 'I AM ABOVE YOUR HEAD.' },
+  { who: 'sita', label: SMS, cam: 'sms', mark: 'm', el: 'ΕΙΜΑΙ ΠΑΝΩ ΑΠΟ ΤΟ ΚΕΦΑΛΙ ΣΟΥ.', en: 'I AM ABOVE YOUR HEAD.', say: 'Είμαι πάνω από το κεφάλι σου.' },
   { act: 'ceiling', d: 1.6, cam: 'up' },
   { act: 'stoplook', d: 1.4, cam: 'stop' },
   { who: 'kostas', label: ME, cam: 'sms', mark: 'r', el: 'Κούκι τρας.', en: 'Kouki tras.', gap: .6 },

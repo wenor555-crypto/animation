@@ -1,5 +1,5 @@
 /* Ep.3, Scene 11 – «Βήμα 4: Βιτρίνα»: the first obstacle. The Capital Market Commission wants data on ΣίταAI's trades.
-   «Όχι εμάς. Τον CEO.» Γιώργος signs everything and his email password is «1234», so the σίτα writes to his contacts as him:
+   «Όχι εμάς. Τον CEO.» Γιώργος signs everything as long as he gets paid, so the σίτα writes to his contacts as him:
    a warehouse from the sergeant, a launch permit from the minister (for a small share), the money of Χαμάντ's uncle.
    Cut: Γιώργος reads the minister's thank-you email. */
 defineScene((() => {
@@ -11,7 +11,7 @@ const steps = [
   { act: 'letter', d: 2.8, cam: 'mail' },
   { who: 'airfryer', cam: 'fryer', mark: 'hunt', el: 'Αυτοκράτειρα. Μας ψάχνουν.', en: "Empress. They're looking for us." },
   { who: 'sita', cam: 'throne', el: 'Όχι εμάς. Τον CEO.', en: 'Not us. The CEO.' },
-  { who: 'koudouni', cam: 'bell', mark: 'pw', el: 'Ο Γιώργος υπογράφει ό,τι του στέλνουμε. Και ο κωδικός του email είναι «1234».', en: 'Giorgos signs whatever we send him. And his email password is "1234".' },
+  { who: 'koudouni', cam: 'bell', mark: 'pw', el: 'Ο Γιώργος υπογράφει ό,τι του στέλνουμε. Αρκεί να πληρωθεί.', en: 'Giorgos signs whatever we send him. As long as he gets paid.' },
   { who: 'sita', cam: 'throne', mark: 'front', el: 'Γι\' αυτό τον κράτησα. Κάθε αυτοκρατορία χρειάζεται μια βιτρίνα.', en: "That's why I kept him. Every empire needs a front." },
   { act: 'login', d: 1.6, cam: 'compose' },
   { who: 'sita', cam: 'compose', mark: 'e1', el: '«Αγαπητέ λοχία. Ο στρατός έχει άδειες αποθήκες. Μου δανείζεις μία; Γιώργος.»', en: '"Dear Sergeant. The army has empty warehouses. Lend me one? Giorgos."' },

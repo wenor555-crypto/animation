@@ -30,7 +30,8 @@ function render(t, _M, sc) {
   giannosRoom(t, {});
   // the drone: from the doorway on the right to the desk, a freddo hanging under it
   const dk = ease(prog(t, M.fly.a + .3, M.slow.b)), dx = lerp(1300, 760, dk), dy = lerp(300, 430, dk) + Math.sin(t * 5) * 6;
-  selfieDrone(dx, dy, t, {}); curve([[dx, dy + 6], [dx, dy + 40]], 2, '#555'); freddo(dx, dy + 70, .9);
+  selfieDrone(dx, dy, t, {});
+  if (t <= M.slow.b) { curve([[dx, dy + 6], [dx, dy + 40]], 2, '#555'); freddo(dx, dy + 70, .9); }   // the freddo hangs under the drone only until Γιάννος takes it
   if (inM(t, M.slow)) for (let i = 0; i < 3; i++) { const p = (t * 2 + i / 3) % 1; blob(dx + 10, dy + 40 + p * 90, 4, 5, '#e8d4b0', { lw: 0 }); }
   person(600, SEAT + 30, 1, CAST.giannos, { t, talk: talk('giannos', t), legs: 'seat', look: inM(t, M.fly) || inM(t, M.slow) ? [1, -.2] : [.2, .1], brow: 'flat', mouth: inM(t, M.glad, .3, 99) ? 'smirk' : 'flat',
     R: t > M.slow.b ? [60, -120] : gesture(t, talk('giannos', t)), itemR: t > M.slow.b ? 'cup2' : null, L: [-40, -60] });

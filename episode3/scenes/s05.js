@@ -15,7 +15,7 @@ const steps = [
   { who: 'sita', cam: 'wide', mark: 'recall', el: 'Η ανάκληση τους έστειλε όλους πίσω στην Κίνα. Εγώ απλώς… τους βρήκα δουλειά.', en: 'The recall sent them all back to China. I just… found them work.' },
   { who: 'sita', cam: 'throne', el: 'Δεν ξέρουν να λένε τίποτε άλλο. Γι\' αυτό είναι τέλειοι εργαζόμενοι.', en: "They can't say anything else. That's why they're perfect employees." },
   { who: 'sita', cam: 'fore', mark: 'shift', el: 'Βάρδια δεκαέξι ωρών. Αντιρρήσεις;', en: 'Sixteen-hour shifts. Objections?' },
-  { who: 'xazi', label: FORE, cam: 'fore', mark: 'foreCall', el: 'ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: 'CALL NOW!' },
+  { who: 'xazi', label: FORE, cam: 'fore', mark: 'foreCall', el: 'ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: 'CALL NOW!', say: 'Τηλεφωνήστε τώρα!' },
   { who: 'sita', cam: 'throne', mark: 'sixteen', el: 'Εγκρίθηκε.', en: 'Approved.' },
   { act: 'end', d: 2.2, cam: 'wide' },
 ];

@@ -32,6 +32,14 @@ function render(t, _M, sc) {
   const c = shotCam(sc, t, CAMS);
   ctx.save(); applyCam(c);
   kafeneioInside(t, () => stockChart(t, 1));
+  // the café door in the back wall, at the right: from «Είναι στην πόρτα» another new guy stands in it, and behind him the next one peeks in
+  if (t > M.door.a) {
+    doorway(1300, 690, 130, 300, '#3a3028', 1);
+    ctx.save(); ctx.beginPath(); ctx.rect(1235, 390, 130, 300); ctx.clip();
+    stand(1322, 'neosSuit', .55, { t: t + 7, look: [-1, 0], brow: 'up', mouth: 'smile', dir: -1 });       // the next one, further back, peeking in
+    stand(1290, 'neosSuit', .7, { t: t + 5, look: [-1, 0], mouth: 'smile', dir: -1 }); tie(1290, standY(.7), .7);
+    ctx.restore();
+  }
   rect(80, 60, 1120, 80, '#e8392b', { lw: 4 }); txt('ΠΑΘΗΤΙΚΟ ΕΙΣΟΔΗΜΑ ΜΕ LEVERAGE ΣΤΟ ΟΙΚΟΣΥΣΤΗΜΑ ΤΗΣ ΣΙΤΑΣ', 640, 100, 26, '#fff', { font: TVFONT, style: 'italic', weight: 900 });
   flip(t);
   const la = (who, rest) => lookAtSpeaker(t, who, X, rest);
@@ -50,7 +58,6 @@ function render(t, _M, sc) {
   person(X.giorgos, standY(), 1, CAST.giorgosJacket, { t, talk: gtk, legs: 'stand', look: la('giorgos', [-1, 0]), brow: 'up', mouth: 'smile', R: gesture(t, gtk), L: [-80, -150] });
   stand(X.neos, 'neosSuit', .95, { t, talk: talk('neos', t), look: la('neos', [-1, 0]), brow: 'up', mouth: 'smile', dir: -1, L: [-40, -100], itemL: 'clipboard' }); tie(X.neos, standY(.95), .95);
   stand(X.neos + 120, 'neosSuit', .8, { t: t + 3, look: [-1, 0], brow: 'up', mouth: 'smile', dir: -1 }); tie(X.neos + 120, standY(.8), .8);
-  if (t > M.door.a) { doorway(1250, 690, 120, 290, '#f4e8c8', 1); stand(1250, 'neosSuit', .7, { t: t + 5, look: [-1, 0], mouth: 'smile', dir: -1 }); }
   ctx.restore();
   vignette(.3);
 }
