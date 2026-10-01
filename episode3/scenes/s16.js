@@ -33,14 +33,15 @@ function page(t) {                 // Χρήστος's page: a satellite shaped 
   ctx.filter = 'grayscale(1) contrast(1.3)';
   // drawn while we watch: the station first (k 0 → .75), then the Earth's curve closes underneath (.75 → 1)
   const k = clamp(prog(t, M.cut.a + .1, M.vol3.b - .2)), ks = clamp(k / .75), ke = clamp((k - .75) / .25);
-  sitadel(640, 300, 0, { k: ks, s: .42 });
+  const rr = 18 + ks * 250, a = ks * Math.PI * 7;      // the inked area grows out from the centre as the pencil circles
+  ctx.save(); ctx.beginPath(); ctx.arc(640, 300, rr, 0, TAU); ctx.clip(); sitadel(640, 300, 0, { k: 1, s: .42 }); ctx.restore();
   if (ke > 0) { ctx.strokeStyle = INK; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(640, 980, 520, Math.PI * 1.5 - .62, Math.PI * 1.5 - .62 + ke * 1.24); ctx.stroke(); }
   ctx.filter = 'none';
   ctx.restore();
   txt('ΤΟΜΟΣ 3', 1000, 60, 20, INK, { font: TVFONT, weight: 900 });
   // the brush tip sits where the line is being drawn right now: spiralling out over the station, then along the Earth's arc
-  const a = ks * Math.PI * 4.5, r = 40 + ks * 150, wob = Math.sin(t * 23) * 3;
-  const th = Math.PI * 1.5 - .62 + ke * 1.24, [px, py] = ke > 0 ? [640 + Math.cos(th) * 520, 980 + Math.sin(th) * 520] : [640 + Math.cos(a) * r + wob, 300 + Math.sin(a) * r * .8 + wob];
+  const wob = Math.sin(t * 23) * 3;
+  const th = Math.PI * 1.5 - .62 + ke * 1.24, [px, py] = ke > 0 ? [640 + Math.cos(th) * 520, 980 + Math.sin(th) * 520] : [640 + Math.cos(a) * rr + wob, 300 + Math.sin(a) * rr + wob];
   if (t < M.end.a && k < 1) { pencil(px + 25, py + 28, -2.3); blob(px + 42, py + 46, 28, 22, CAST.christos.skin, { lw: 3 }); }   // the pencil's tip (38 px along -2.3 rad) on the line
   ctx.restore();
 }
