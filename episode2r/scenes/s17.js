@@ -13,7 +13,7 @@ const steps = [
   { who: 'mimis', cam: 'mim', el: 'Και η σίτα θέλει τον Panik. Άρα της δίνουμε τον Panik.', en: 'And the screen door wants Panik. So we give her Panik.' },
   { who: 'giorgos', cam: 'gio', el: '…Αρκεί το δόλωμα να μην είμαι εγώ.', en: "…As long as I'm not the bait." },
   { who: 'giannos', cam: 'board', mark: 'plan', el: 'Δόλωμα. Και μετά… μια ψεύτικη διαφήμιση. Ανάκληση προϊόντος.', en: 'Bait. And then… a fake ad. A product recall.' },
-  { who: 'mimis', cam: 'mim', mark: 'where', el: 'Και πού θα τη δείξουμε; Είναι παντού.', en: "And where do we show it? They're everywhere." },
+  { who: 'mimis', cam: 'mim', mark: 'where', el: 'Και πού θα τη δει τη διαφήμιση;', en: 'And where would she even see the ad?' },
   { act: 'burst', d: 1.2, cam: 'neo' },
   { who: 'neos', cam: 'neo', mark: 'rm', el: 'Κύριε Γιώργο! Με έκανε Regional Manager!', en: 'Mr Giorgos! She made me Regional Manager!' },
   { who: 'giorgos', cam: 'gio', el: 'Ποιος;', en: 'Who?' },

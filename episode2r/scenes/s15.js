@@ -26,7 +26,7 @@ const steps = [
   { act: 'rumble', d: 1.8, cam: 'gate' },
   { act: 'boom', d: 2.4, cam: 'gate' },
   { who: 'krokodeilos', cam: 'gate', mark: 'deliv', el: 'ΝΤΕΛΙΒΕΡΙ!', en: 'DELIVERY!' },
-  { who: 'mimis', cam: 'mim', mark: 'cry', el: 'ΓΙΑ ΤΟ ΛΕΧΑΙΟ!', en: 'FOR LECHAIO!', say: 'Για το Λεχαιόοοο!' },
+  { who: 'mimis', cam: 'mim', mark: 'cry', el: 'ΓΙΑ ΤΟ ΛΕΧΑΙΟ!', en: 'FOR LECHAIO!', say: 'Για το Λέχαιοοο!' },
   { act: 'charge', d: 2.8, cam: 'low' },
   { act: 'draw', d: 3, cam: 'bow' },
   { act: 'hit', d: 1.9, cam: 'fryer' },

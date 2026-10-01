@@ -10,7 +10,7 @@ const steps = [
   { act: 'plug', d: 2.2, cam: 'set' },
   { who: 'mimis', cam: 'mim', mark: 'action', el: 'Ησυχία στο πλατό! …Κάμερα… πάμε.', en: 'Quiet on set! …Camera… rolling.' },
   { who: 'giorgos', cam: 'screen', mark: 'ad', el: 'Αγαπητοί πελάτες! ΣΗΜΑΝΤΙΚΗ ΑΝΑΚΟΙΝΩΣΗ!', en: 'Dear customers! IMPORTANT ANNOUNCEMENT!', say: 'Αγαπητοί πελάτες! Σημαντική ανακοίνωση!' },
-  { who: 'giorgos', cam: 'screen', mark: 'recall', el: 'ΑΝΑΚΛΗΣΗ ΠΡΟΪΟΝΤΟΣ! Όλα τα προϊόντα της παρτίδας πρέπει να επιστρέψουν ΑΜΕΣΑ στη συσκευασία τους!', en: 'PRODUCT RECALL! All products in this batch must return to their packaging IMMEDIATELY!', say: 'Ανάκληση προιόντος! Όλα τα προιόντα της παρτίδας πρέπει να επιστρέψουν άμεσα στη συσκευασία τους!' },
+  { who: 'giorgos', cam: 'screen', mark: 'recall', el: 'ΑΝΑΚΛΗΣΗ ΠΡΟΪΟΝΤΟΣ! Όλα τα προϊόντα της παρτίδας πρέπει να επιστρέψουν ΑΜΕΣΑ στη συσκευασία τους!', en: 'PRODUCT RECALL! All products in this batch must return to their packaging IMMEDIATELY!', say: 'Ανάκληση πρωηόντος! Όλα τα προιόντα της παρτίδας πρέπει να επιστρέψουν άμεσα στη συσκευασία τους!' },
   { who: 'giorgos', cam: 'screen', el: 'Μην καθυστερείτε! Η επιστροφή είναι ΔΩΡΕΑΝ!', en: "Don't delay! Returns are FREE!" },
   { who: 'mimis', cam: 'mim', el: 'Πες και το άλλο.', en: 'Say the other thing.' },
   { who: 'giorgos', cam: 'screen', mark: 'call', el: 'ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: 'CALL NOW!', say: 'Τηλεφωνήστε τώρα!' },
