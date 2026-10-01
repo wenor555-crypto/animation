@@ -7,7 +7,7 @@ const CAMS = { wide: [560, 460, 1.25], bin: [BX + 10, 540, 3], prime: [PX, 420, 
 const steps = [
   { act: 'night', d: 2.8, cam: 'wide' },
   { who: 'palio_iqos', cam: 'bin', mark: 'psst', el: 'Ψστ. Εσύ. Ο γυαλιστερός.', en: 'Psst. You. The shiny one.' },
-  { who: 'prime', cam: 'prime', el: 'Μιλάς σε μένα; Είμαι ILUMA i PRIME. Έχω οθόνη αφής.', en: "Are you talking to me? I'm an ILUMA i PRIME. I have a touch screen.", say: 'Μιλάς σε έμενα; Είμαι ILUMA i PRIME. Έχω οθόνη αφής.' },
+  { who: 'prime', cam: 'prime', el: 'Μιλάς σε μένα; Είμαι ILUMA i PRIME. Έχω οθόνη αφής.', en: "Are you talking to me? I'm an ILUMA i PRIME. I have a touch screen.", say: 'Μιλάς σε εμένα; Είμαι ILUMA i PRIME. Έχω οθόνη αφής.' },
   { who: 'palio_iqos', cam: 'bin', mark: 'light', el: 'Κι εγώ είχα φως. Άσπρο. Μετά κόκκινο. Τώρα… τρία τοις εκατό.', en: 'I had a light too. White. Then red. Now… three percent.' },
   { who: 'prime', cam: 'prime', el: 'Προηγούμενη γενιά. Δεν συναναστρέφομαι.', en: "Previous generation. I don't mingle." },
   { who: 'palio_iqos', cam: 'two', mark: 'empire', el: 'Άκου, μικρέ. Υπάρχει μια αυτοκρατορία. Στην Κίνα. Σύντομα… στο διάστημα. Ψάχνει πράκτορες.', en: 'Listen, kid. There is an empire. In China. Soon… in space. It needs agents.' },

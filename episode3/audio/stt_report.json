@@ -1406,14 +1406,14 @@
  "scene15/02": {
   "who": "prime",
   "text": "Μιλάς σε μένα; Είμαι ILUMA i PRIME. Έχω οθόνη αφής.",
-  "sent": "Μιλάς σε έμενα; Είμαι ILUMA i PRIME. Έχω οθόνη αφής.",
+  "sent": "Μιλάς σε εμένα; Είμαι ILUMA i PRIME. Έχω οθόνη αφής.",
   "takes": 1,
   "score": 0.0,
   "ok": true,
-  "heard": "Μιλάς σε εμένα; Είμαι η Lumai Prime. Έχω οθόνη αφής",
+  "heard": "Μιλάς σε μένα; Είμαι η Luma i Prime. Έχω οθόνη αφής",
   "err": 0,
   "stress": [],
-  "dur": 4.94
+  "dur": 5.1
  },
  "scene15/03": {
   "who": "palio_iqos",
