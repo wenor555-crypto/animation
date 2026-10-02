@@ -8,39 +8,39 @@ const CAMS = {
 };
 const steps = [
   { act: 's1', d: 2.4, cam: 'door' },
-  { who: 'sita', label: VO, cam: 'door', el: 'ΒΗΜΑ ΠΡΩΤΟ! Το έξυπνο λάστιχο που μεγαλώνει ΜΟΝΟ ΤΟΥ!', en: 'STEP ONE! The smart hose that grows BY ITSELF!' },
+  { who: 'sita', label: VO, cam: 'door', el: 'ΒΗΜΑ ΠΡΩΤΟ! Το έξυπνο λάστιχο που μεγαλώνει ΜΟΝΟ ΤΟΥ!', en: 'STEP ONE! The smart hose that grows BY ITSELF!', say: 'Βήμα πρώτο! Το έξυπνο λάστιχο που μεγαλώνει μόνο του!' },
   { act: 'cobra', d: 1.6, cam: 'hose' },
   { who: 'sita', label: VO, cam: 'hose', el: 'Για πρώτη φορά στην ιστορία… το κάνει πραγματικά!', en: 'For the first time in history… it actually does!' },
   { act: 's2', d: 3.2, cam: 'store' },
-  { who: 'sita', label: VO, cam: 'storeC', el: 'ΒΗΜΑ ΔΕΥΤΕΡΟ! Ο υπερηχητικός ποντικοδιώκτης! Δεν έδιωξε ποτέ κανένα ποντίκι…', en: 'STEP TWO! The ultrasonic mouse repeller! It has never repelled a single mouse…' },
+  { who: 'sita', label: VO, cam: 'storeC', el: 'ΒΗΜΑ ΔΕΥΤΕΡΟ! Ο υπερηχητικός ποντικοδιώκτης! Δεν έδιωξε ποτέ κανένα ποντίκι…', en: 'STEP TWO! The ultrasonic mouse repeller! It has never repelled a single mouse…', say: 'Βήμα δεύτερο! Ο υπερηχητικός ποντικοδιώκτης! Δεν έδιωξε ποτέ κανένα ποντίκι…' },
   { act: 'plug', d: 1.2, cam: 'storeC' },
-  { who: 'sita', label: VO, cam: 'store', mark: 'socket', el: '…αλλά είναι στην ΠΡΙΖΑ!', en: "…but it's PLUGGED IN!" },
+  { who: 'sita', label: VO, cam: 'store', mark: 'socket', el: '…αλλά είναι στην ΠΡΙΖΑ!', en: "…but it's PLUGGED IN!", say: '…αλλά είναι στην πρίζα!' },
   { act: 'mouse', d: 1.8, cam: 'storeC' },
   { act: 's3', d: 2, cam: 'lamps' },
-  { who: 'sita', label: VO, cam: 'lamps', mark: 'lampsL', el: 'ΒΗΜΑ ΤΡΙΤΟ! Έξυπνες λάμπες! Δεκαέξι εκατομμύρια χρώματα! Θα χρησιμοποιήσουμε μόνο το ένα!', en: "STEP THREE! Smart bulbs! Sixteen million colours! We'll only be using one!" },
+  { who: 'sita', label: VO, cam: 'lamps', mark: 'lampsL', el: 'ΒΗΜΑ ΤΡΙΤΟ! Έξυπνες λάμπες! Δεκαέξι εκατομμύρια χρώματα! Θα χρησιμοποιήσουμε μόνο το ένα!', en: "STEP THREE! Smart bulbs! Sixteen million colours! We'll only be using one!", say: 'Βήμα τρίτο! Έξυπνες λάμπες! Δεκαέξι εκατομμύρια χρώματα! Θα χρησιμοποιήσουμε μόνο το ένα!' },
   { who: 'sita', label: VO, cam: 'closet', mark: 'blanketL', el: 'Και η ηλεκτρική κουβέρτα! Γιατί ο Αύγουστος… θέλει κάτι ζεστό.', en: 'And the electric blanket! Because August… needs something warm.' },
   { act: 's4', d: 4.2, cam: 'bed' },
-  { who: 'sita', label: VO, cam: 'bedC', el: 'ΒΗΜΑ ΤΕΤΑΡΤΟ! Ορθοπεδικό μαξιλάρι MEMORY FOAM!', en: 'STEP FOUR! Orthopaedic MEMORY FOAM pillow!' },
+  { who: 'sita', label: VO, cam: 'bedC', el: 'ΒΗΜΑ ΤΕΤΑΡΤΟ! Ορθοπεδικό μαξιλάρι MEMORY FOAM!', en: 'STEP FOUR! Orthopaedic MEMORY FOAM pillow!', say: 'Βήμα τέταρτο! Ορθοπεδικό μαξιλάρι memory foam!' },
   { act: 'boot', d: 1.6, cam: 'bedC' },
   { who: 'sita', label: VO, cam: 'bedC', el: '…Μνήμη αναβαθμίστηκε σε δεκαέξι gigabytes.', en: '…Memory upgraded to sixteen gigabytes.' },
   { act: 'smile', d: 1.6, cam: 'bed' },
   { act: 's5', d: 2, cam: 'hall' },
-  { who: 'sita', label: VO, cam: 'hall', el: 'ΒΗΜΑ ΠΕΜΠΤΟ! Η ζώνη αδυνατίσματος! Χάστε έως και δέκα κιλά…', en: 'STEP FIVE! The slimming belt! Lose up to ten kilos…' },
+  { who: 'sita', label: VO, cam: 'hall', el: 'ΒΗΜΑ ΠΕΜΠΤΟ! Η ζώνη αδυνατίσματος! Χάστε έως και δέκα κιλά…', en: 'STEP FIVE! The slimming belt! Lose up to ten kilos…', say: 'Βήμα πέμπτο! Η ζώνη αδυνατίσματος! Χάστε έως και δέκα κιλά…' },
   { act: 'stairs', d: 1.2, cam: 'hall' },
-  { who: 'sita', label: VO, cam: 'hall', el: '…ή ΑΠΟΚΤΗΣΤΕ ΠΟΔΙΑ!', en: '…or GROW LEGS!' },
+  { who: 'sita', label: VO, cam: 'hall', el: '…ή ΑΠΟΚΤΗΣΤΕ ΠΟΔΙΑ!', en: '…or GROW LEGS!', say: '…ή αποκτήστε πόδια!' },
   { act: 'bath', d: 3.2, cam: 'hallV' },
   { who: 'vasilis', cam: 'hallV', mark: 'traka', el: 'Έχεις ένα τσιγάρο;', en: 'Got a cigarette?' },
   { act: 'wait', d: 2.2, cam: 'hallV' },
   { who: 'vasilis', cam: 'hallV', el: 'Κανείς δεν έχει ποτέ.', en: 'Nobody ever does.' },
   { act: 'back', d: 1.6, cam: 'hall' },
   { act: 's6', d: 2.2, cam: 'balcony' },
-  { who: 'sita', label: VO, cam: 'balcony', el: 'ΒΗΜΑ ΕΚΤΟ! Η σφουγγαρίστρα που στύβει ΜΟΝΗ ΤΗΣ! Χίλιες πεντακόσιες στροφές το λεπτό!', en: 'STEP SIX! The mop that wrings ITSELF! Fifteen hundred RPM!' },
+  { who: 'sita', label: VO, cam: 'balcony', el: 'ΒΗΜΑ ΕΚΤΟ! Η σφουγγαρίστρα που στύβει ΜΟΝΗ ΤΗΣ! Χίλιες πεντακόσιες στροφές το λεπτό!', en: 'STEP SIX! The mop that wrings ITSELF! Fifteen hundred RPM!', say: 'Βήμα έκτο! Η σφουγγαρίστρα που στύβει μόνη της! Χίλιες πεντακόσιες στροφές το λεπτό!' },
   { act: 'burnout', d: 1.4, cam: 'balcony' },
-  { who: 'sita', label: VO, cam: 'balcony', el: '…ΚΙΝΗΤΗΡΑΣ!', en: '…AN ENGINE!' },
+  { who: 'sita', label: VO, cam: 'balcony', el: '…ΚΙΝΗΤΗΡΑΣ!', en: '…AN ENGINE!', say: '…κινητήρας!' },
   { act: 's7', d: 3, cam: 'drawer' },
-  { who: 'sita', label: VO, cam: 'drawer', el: 'ΒΗΜΑ ΕΒΔΟΜΟ! Ηλεκτρικές ρακέτες! Τρεις χιλιάδες βολτ!', en: 'STEP SEVEN! Electric rackets! Three thousand volts!' },
+  { who: 'sita', label: VO, cam: 'drawer', el: 'ΒΗΜΑ ΕΒΔΟΜΟ! Ηλεκτρικές ρακέτες! Τρεις χιλιάδες βολτ!', en: 'STEP SEVEN! Electric rackets! Three thousand volts!', say: 'Βήμα έβδομο! Ηλεκτρικές ρακέτες! Τρεις χιλιάδες βολτ!' },
   { act: 'fly', d: 1.4, cam: 'sky' },
-  { who: 'sita', label: VO, cam: 'sky', mark: 'all', el: 'Ήταν για τα κουνούπια. Πλέον… είναι για ΟΛΑ τα παράσιτα.', en: "They were for mosquitoes. Now… they're for ALL parasites." },
+  { who: 'sita', label: VO, cam: 'sky', mark: 'all', el: 'Ήταν για τα κουνούπια. Πλέον… είναι για ΟΛΑ τα παράσιτα.', en: "They were for mosquitoes. Now… they're for ALL parasites.", say: 'Ήταν για τα κουνούπια. Πλέον… είναι για όλα τα παράσιτα.' },
   { act: 'hen', d: 3.4, cam: 'sky' },
 ];
 let M;
@@ -50,9 +50,13 @@ function boxes(t) {
   const lbl = ['ΕΞΥΠΝΟ', 'ΜΑΓΙΚΟ', 'ΤΗΣ ΤΗΛΕΟΡΑΣΗΣ', 'NICER DICER', 'ΕΞΥΠΝΟ', 'AB ROLLER', 'ΜΑΓΙΚΟ ΠΡΙΟΝΙ', '2+1 ΔΩΡΟ'];
   for (let i = 0; i < 8; i++) { const x = 140 + (i % 4) * 150 + (i > 3 ? 60 : 0), y = i > 3 ? 470 : 560, w = 130, h = 90; rect(x, y - h, w, h, ['#c9995a', '#b8864a', '#d4a86a'][i % 3], { lw: 3.5, w: .5 }); txt(lbl[i], x + w / 2, y - h / 2, lbl[i].length > 10 ? 12 : 16, '#8a2a1a', { font: TVFONT, weight: 900 }); }
 }
+/* every «ΒΗΜΑ …» card lands with a punch zoom, and the device it names wakes with an electric arc */
+const BEATS = (m = M) => m.L.filter(l => /^ΒΗΜΑ/.test(l.el)).map(l => l.a);
 function render(t, _M, sc) {
   M = _M;
   const c = shotCam(sc, t, CAMS), seg = segOf(t);
+  const beat = BEATS().filter(a => a <= t).pop();
+  if (beat != null) c[2] *= 1 + .14 * Math.max(0, 1 - (t - beat) / .3);
   ctx.save(); applyCam(c);
   let light = 'red', redK = 1, extra = null;
   if (seg === 's1') {
@@ -167,6 +171,13 @@ function render(t, _M, sc) {
   applyLight('night', light === 'night' ? .8 : .45);
   if (light === 'red' && redK > 0) applyLight('red', redK * .7);
   if (extra) { ctx.save(); applyCam(c); extra(); ctx.restore(); }
+  if (beat != null && t - beat > .9 && t - beat < 1.3) {        // the device wakes: a couple of arcs at the centre of the shot
+    ctx.save(); applyCam(c);
+    fxArc(c[0] - 150, c[1] - 70, c[0] - 10, c[1] + 10, t, { seed: 1, col: '255,90,90' }); fxArc(c[0] + 140, c[1] - 90, c[0] + 10, c[1] - 5, t, { seed: 2, col: '255,90,90' });
+    ctx.restore();
+  }
+  if (beat != null) { ctx.save(); applyCam(c); fxBurst(t, beat + .9, c[0], c[1], { kind: 'spark', n: 20, speed: 420, grav: 700, life: .5 }); ctx.restore(); }
+  if (beat != null) fxImpact(t, beat, 640, 360, .04);
   vignette(.45);
   // TV-shop step titles
   for (const [k, title] of STEP_TITLES) if (t >= M[k].a && t < M[k].a + 2) caption(title, Math.min(1, (t - M[k].a) * 5) * (1 - prog(t, M[k].a + 1.6, M[k].a + 2)), 70);
@@ -179,7 +190,7 @@ function render(t, _M, sc) {
 }
 return {
   id: 'scene12', title: '12 · Η αλυσίδα', steps, render,
-  events: M => [[M.s1.a, SFX.jingleMinor], [M.s1.a + 2, SFX.spark], [M.cobra.a, SFX.hiss], [M.s2.a, SFX.jingleMinor], [M.plug.b, () => { SFX.spark(); SFX.zap(); }],
+  events: M => [...BEATS(M).map(a => [a, FXS.hit]), ...BEATS(M).map(a => [a + .9, FXS.zap]), [M.s1.a, SFX.jingleMinor], [M.s1.a + 2, SFX.spark], [M.cobra.a, SFX.hiss], [M.s2.a, SFX.jingleMinor], [M.plug.b, () => { SFX.spark(); SFX.zap(); }],
     [M.s3.a, SFX.jingleMinor], [M.lampsL.a + 3, () => SFX.fanfare()], [M.s4.a, SFX.jingleMinor], [M.boot.a + .1, SFX.windows], [M.s5.a, SFX.jingleMinor], [M.s5.a + .3, () => SFX.buzz(3)],
     [M.bath.a + .2, SFX.creak], [M.back.a + .6, () => SFX.buzz(2)], [M.s6.a, SFX.jingleMinor], [M.s6.a + 1, SFX.spark], [M.s6.a + 1.2, SFX.rev], [M.burnout.a, () => { SFX.rev(); SFX.splash(); }],
     [M.s7.a, SFX.jingleMinor], [M.s7.a + .5, SFX.creak], [M.s7.a + 1.4, SFX.zap], [M.fly.a, SFX.zap], [M.hen.a + 1, SFX.cluck]],

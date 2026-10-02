@@ -14,7 +14,8 @@ const steps = [
 let M;
 function render(t, _M, sc) {
   M = _M;
-  const c = shotCam(sc, t, CAMS, .006);
+  let c = shotCam(sc, t, CAMS, .006);
+  if (inM(t, M.purpose, -.2, .6)) { const k = ease(prog(t, M.purpose.a - .2, M.purpose.b + .6)); c = [1060, lerp(560, 535, k), lerp(3, 4.3, k)]; }   // a slow push-in on the LED: the question
   const lightsOff = i => t > M.leave.a + 2.5 + i * 1.2;
   ctx.save(); applyCam(c);
   yard(t, { light: 'night', doorLit: !lightsOff(2), winTop: lightsOff(0) ? null : 'lit', winLit: lightsOff(1) ? null : 'lit', noChickens: true });
@@ -39,7 +40,11 @@ function render(t, _M, sc) {
   if (!lightsOff(0)) glow(890, 235, 140, 'rgba(255,210,140,1)', .35);
   if (!lightsOff(1)) glow(1435, 530, 140, 'rgba(255,210,140,1)', .35);
   sitaGlow({ t, led: 'green', eyeY: inM(t, M.sky, 0, 3) ? -8 : 0 }, .75);
+  glow(1060, 470, 220, 'rgba(150,180,255,1)', .14);                  // moonlight rim on the mesh
   ctx.restore();
+  nightGrade(t);
+  const [, sh] = shotAt(sc, t);
+  if (sh === 'sky') { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); glow(1040, 110, 90, 'rgba(235,240,255,1)', .9); ctx.fillStyle = '#f4f2ea'; ctx.beginPath(); ctx.arc(1040, 110, 34, 0, TAU); ctx.fill(); ctx.restore(); fxRays(1040, 110, t, .07, '200,215,255'); }
   vignette(.55);
   if (t > M.song.a) { ctx.fillStyle = `rgba(0,0,0,${prog(t, M.song.b - 1.4, M.song.b)})`; ctx.fillRect(0, 0, W, H); }
 }

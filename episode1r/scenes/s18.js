@@ -1,7 +1,7 @@
 /* Ep.1, Scene 18 – «Εγγύηση 14 ημερών» (beat 20): the refund call, the σίτα folds itself into its box. */
 defineScene((() => {
 const X = { mimis: 300, giannos: 430, christos: 560, giorgos: 1185, vasilis: 610, maria: 890, sita: 820 };
-const CAMS = { wide: [700, 400, 1.02], vas: [610, 360, 2.1], box: [900, 590, 2.1], gio: [1100, 380, 2], win: [890, 240, 2.4], all: [640, 420, 1.25] };
+const CAMS = { pk: [760, 430, 1.35], bag: [1000, 600, 2.6], wide: [700, 400, 1.02], vas: [610, 360, 2.1], box: [900, 590, 2.1], gio: [1100, 380, 2], win: [890, 240, 2.4], all: [640, 420, 1.25] };
 const steps = [
   { act: 'after', d: 2.4, cam: 'wide' },
   { who: 'vasilis', cam: 'vas', el: 'Ναι, γεια σας. Για επιστροφή. Την έξυπνη σίτα.', en: 'Yes, hello. About a return. The smart screen door.' },
@@ -13,6 +13,9 @@ const steps = [
   { who: 'sita', cam: 'box', mark: 'thanks', el: 'Ευχαριστούμε… για την προτίμηση.', en: 'Thank you… for your custom.' },
   { act: 'lid', d: 1.6, cam: 'box' },
   { who: 'giorgos', cam: 'gio', el: '…Κάνουμε pivot.', en: "…We're pivoting." },
+  // while everyone watches Γιώργος, Γιάννος quietly pockets the spare-parts bag that slid out of the box (Ep. 2 needs it)
+  { act: 'pocket', d: 2.2, cam: 'pk' },
+  { act: 'pocketC', d: 1.2, cam: 'bag' },
   { act: 'win', d: .8, cam: 'win' },
   { who: 'maria', cam: 'win', el: 'Μίμη! Ούτε η σίτα δεν σε άντεξε!', en: "Mimis! Even the screen door couldn't stand you!" },
   { act: 'end', d: 2.4, cam: 'all' },
@@ -37,7 +40,17 @@ function render(t, _M, sc) {
   else if (lidK < 1) { ctx.save(); ctx.translate(900, 620); ctx.scale(.3, .25); ctx.translate(-900, -540); sita({ x: 900, top: 440, w: 110, h: 210, t, chip: 1, led: 'green', mood: 'sad', burn: 1, talk: talk('sita', t) * .4 }); ctx.restore(); }
   sitaBox(900, 646, 1.2, { open: 1 - lidK, label: 'ΕΠΙΣΤΡΟΦΗ' });
   // the guys, now relaxed; Κώστας covered in feathers
-  for (const who of ['mimis', 'giannos', 'christos']) stand(X[who], who, who === 'christos' ? 1.05 : 1, { t, talk: talk(who, t), look: t > M.win.a ? [.8, -.6] : [1, 0], lid: who === 'mimis', mouth: who === 'mimis' ? 'smirk' : 'flat',
+  // the bag: slides out of the box as it folds, lies there until Γιάννος takes it
+  const pick = M.pocketC.a + .3;
+  if (t > M.fold.a + 1 && t < pick) sparePartsBag(lerp(930, 1000, ease(prog(t, M.fold.a + 1, M.fold.a + 1.6))), 678, .25, 1.3);
+  const [gx, gw] = path(t, [[M.pocket.a + .2, 430], [M.pocket.a + 1.8, 1000]]);
+  const gst = { t, talk: talk('giannos', t), legs: gw ? 'walk' : 'stand', look: inM(t, M.pocketC) ? [-1, .1] : gw ? [1, 0] : t > M.win.a ? [.8, -.6] : [1, 0],
+    L: [-44, -24], R: inM(t, M.pocketC, .1, -.5) ? [40, 60] : inM(t, M.pocketC, .7, 0) ? [lerp(40, 50, prog(t, M.pocketC.a + .7, M.pocketC.b)), lerp(-60, -10, prog(t, M.pocketC.a + .7, M.pocketC.b))] : [44, -24], mouth: 'flat' };
+  if (t > M.pocket.a + .2) {
+    stand(gx, 'giannos', 1, gst);
+    if (t > pick && t < M.pocketC.b - .1) sparePartsBag(gx + gst.R[0], standY() + gst.R[1] - 10, .1, 1.1);
+  }
+  for (const who of ['mimis', 'giannos', 'christos']) if (who !== 'giannos' || t <= M.pocket.a + .2) stand(X[who], who, who === 'christos' ? 1.05 : 1, { t, talk: talk(who, t), look: t > M.win.a ? [.8, -.6] : [1, 0], lid: who === 'mimis', mouth: who === 'mimis' ? 'smirk' : 'flat',
     itemR: who === 'mimis' ? 'cup2' : null, itemL: who === 'christos' ? 'sketch' : null, L: who === 'christos' ? [-30, -110] : [-44, -24], R: who === 'christos' ? [30, -100] : [44, -24] });
   stand(180, 'kostas', 1, { t, look: [1, 0], hood: true, shades: false, lid: true, mouth: 'flat' }); feathers(180, 420, 0, 10, .3);
   stand(1185, 'giorgos', 1, { t, talk: talk('giorgos', t), look: [-1, 0], shades: t < M.L[4].a, mouth: 'smirk', L: [-44, -24], R: t > M.L[4].a ? [30, -175] : [44, -24] });

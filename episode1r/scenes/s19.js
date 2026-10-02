@@ -1,8 +1,8 @@
 /* Ep.1, Scene 19 – TAG «Αυτό δεν πουλάει» (beat 21): Χρήστος at his desk; what "really" happened. */
 defineScene((() => {
-const CAMS = { desk: [640, 360, 1.25], page: [640, 360, 1], chr: [520, 330, 2.1], two: [600, 360, 1.5], real: [0, 0, 1] };
+const CAMS = { inkC: [0, 0, 1], desk: [640, 360, 1.25], page: [640, 360, 1], chr: [520, 330, 2.1], two: [600, 360, 1.5], real: [0, 0, 1] };
 const steps = [
-  { act: 'ink', d: 4.2, cam: 'desk' },
+  { act: 'ink', d: 4.2, cam: 'inkC' },       // insert: the page inked while we watch
   { act: 'wall', d: 3.4, cam: 'page' },
   { who: 'mimis', cam: 'two', el: 'Τι φτιάχνεις;', en: 'What are you making?' },
   { who: 'christos', cam: 'chr', el: 'Τι έγινε χθες.', en: 'What happened yesterday.' },
@@ -39,9 +39,38 @@ function desk(t) {
   rect(520, 430, 240, 30, '#f7f4ec', { lw: 3, w: .3 });            // the last page, on the desk
   rect(460, 440, 16, 20, '#111', { lw: 2 });                       // ink pot
 }
+/* the page on the desk, from above: the ink spreads behind the nib, row by row (the same reveal as Χρήστος's page in Ep. 3) */
+function inkInsert(t) {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = '#5a3a26'; ctx.fillRect(0, 0, W, H);                        // the desk
+  ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(372, 52, 560, 640);
+  rect(360, 40, 560, 640, '#f7f4ec', { lw: 0 });                               // blank paper
+  const k = prog(t, M.ink.a + .3, M.ink.b - .5), N = 60, pts = [];
+  for (let i = 0; i <= N; i++) { const f = i / N, row = Math.floor(f * 6), u = f * 6 - row; pts.push([420 + (row % 2 ? 1 - u : u) * 440, 90 + row * 100 + Math.sin(u * 9) * 14]); }
+  const upto = Math.floor(k * N);
+  ctx.save(); ctx.beginPath();
+  for (let i = 0; i <= upto; i++) { ctx.moveTo(pts[i][0] + 95, pts[i][1]); ctx.arc(pts[i][0], pts[i][1], 95, 0, TAU); }
+  if (k >= 1) ctx.rect(360, 40, 560, 640);
+  ctx.clip(); ctx.filter = 'grayscale(1) contrast(1.25)'; mangaPage(360, 40, 560, 640, 0, t);
+  // the two lower panels: Panik under the street lamp, and the slipper in flight with speed lines
+  ctx.save(); ctx.beginPath(); ctx.rect(368, 350, 260, 322); ctx.clip(); ctx.translate(498, 690); ctx.scale(.62, .62);
+  person(0, -150, 1, CAST.kostas, { legs: 'stand', hood: true, shades: true, brow: 'frown', mouth: 'frown', L: [-50, -40], R: [50, -60], itemL: 'beer' }); ctx.restore();
+  ctx.save(); ctx.beginPath(); ctx.rect(652, 350, 262, 322); ctx.clip(); ctx.strokeStyle = '#111';
+  for (let i = 0; i < 14; i++) { ctx.lineWidth = 1 + hash(i) * 3; ctx.beginPath(); ctx.moveTo(660 + hash(i + 2) * 120, 380 + i * 20); ctx.lineTo(900, 380 + i * 20 + 10); ctx.stroke(); }
+  slipper(760, 500, -.4, 3.2); ctx.restore();
+  ctx.filter = 'none'; ctx.restore();
+  if (k > 0 && k < 1) {                                                        // the nib and the hand's shadow
+    const [px, py] = pts[upto];
+    ctx.save(); ctx.translate(px, py); ctx.rotate(-.7);
+    ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.beginPath(); ctx.ellipse(120, 60, 150, 60, .3, 0, TAU); ctx.fill();
+    rect(-4, -150, 12, 150, '#2a2a30', { lw: 2 }); poly([[-4, 0], [8, 0], [2, 14]], '#c9c9c9', { lw: 1.5 }); ctx.restore();
+  }
+  ctx.restore();
+}
 function render(t, _M, sc) {
   M = _M;
   const [, shot] = shotAt(sc, t);
+  if (shot === 'inkC') { inkInsert(t); vignette(.4); return; }
   if (shot === 'real') {           // what REALLY happened: three plain sketches, no manga
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#f4f0e4'; ctx.fillRect(0, 0, W, H);
     const k = ph(t, M.real), n = Math.min(2, Math.floor(k * 3));

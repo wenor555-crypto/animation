@@ -7,7 +7,7 @@ const steps = [
   { who: 'kostas', cam: 'street', mark: 'sing', el: "«…κι αν μ' αγαπάς, κι αν σ' αγαπώωω…»", en: '"…and if you love me, and if I love youuu…"' },
   { who: 'kostas', cam: 'kos', mark: 'iqos', el: 'Πάλι άδειασες, ρε φίλε; Ένα τσιγάρο βγάζεις. Ένα.', en: "Empty again, man? One cigarette, that's all you've got. One." },
   { act: 'car', d: 2.4, cam: 'street' },
-  { who: 'kostas', cam: 'kos', mark: 'shout', el: 'ΝΑΙ ΡΕ! ΚΡΑΤΗΣΑ ΤΙΣ ΠΙΝΑΚΙΔΕΣ! ΘΑ ΤΟ ΣΠΑΣΩ!', en: 'YEAH, MAN! I KEPT THE PLATES! I\'LL SMASH IT!' },
+  { who: 'kostas', cam: 'kos', mark: 'shout', el: 'ΝΑΙ ΡΕ! ΚΡΑΤΗΣΑ ΤΙΣ ΠΙΝΑΚΙΔΕΣ! ΘΑ ΤΟ ΣΠΑΣΩ!', en: 'YEAH, MAN! I KEPT THE PLATES! I\'LL SMASH IT!', say: 'Ναι ρε! Κράτησα τις πινακίδες! Θα το σπάσω!' },
   { act: 'ritual', d: 4.6, cam: 'pole' },
   { act: 'flash', d: .45, cam: 'poleC' },
   { who: 'panik', cam: 'poleC', el: 'Η πόλη κοιμάται.', en: 'The city sleeps.' },
@@ -66,8 +66,8 @@ function render(t, _M, sc) {
   const flick = !(Math.sin(t * 23) > .7 && Math.sin(t * 3.1) > 0) || inM(t, M.ritual, 1.2, 99);
   // Κώστας zig-zags in from the left and stops under the lamp
   const [kx, walking] = path(t, [[M.walkin.a, -150], [M.car.a, 380], [M.ritual.a + .2, 380], [M.ritual.a + 1.4, 600], [M.stare.a + .4, 600], [M.stare.b, 760], [M.kick.b, 760], [M.turn.a + .4, 780], [M.turn.b, 1180]]);
-  const cam = shotCam(sc, t, { ...CAMS, kos: [kx, 330, 2.2] }, .01);
-  ctx.save(); applyCam(cam);
+  const cam = fxCam(shotCam(sc, t, { ...CAMS, kos: [kx, 330, 2.2] }, .01), t, [[M.kick.a + .55, 14, .45], [M.flash.a, 8, .3]]);
+  ctx.save(); applyCamFx(cam);
   street(t, flick);
   kickedBin(t);
   const pk = t > M.ritual.a + 3.4, hoodK = prog(t, M.ritual.a + 2.4, M.ritual.a + 3.4), shadesK = prog(t, M.ritual.a + .8, M.ritual.a + 2.2);
@@ -82,12 +82,19 @@ function render(t, _M, sc) {
   if (inM(t, M.car)) car(cx, 720, t, { moving: 1, lights: 1, dir: -1, col: '#c0392b' });
   ctx.restore();
   applyLight('night', .9);
-  ctx.save(); applyCam(cam);
+  ctx.save(); applyCamFx(cam);
   if (flick) glow(722, 190, 380, 'rgba(255,230,160,1)', .45);
+  if (flick) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .1; ctx.fillStyle = '#ffe6a0'; ctx.beginPath(); ctx.moveTo(706, 182); ctx.lineTo(738, 182); ctx.lineTo(880, 700); ctx.lineTo(560, 700); ctx.closePath(); ctx.fill(); ctx.restore(); }   // the lamp's cone
+  // the IQOS looks for a device… and the σίτα's LED, far down the road, answers: the first «Bluetooth» blink
+  if (inM(t, M.iqos, .3, .6)) { const bk = Math.max(0, Math.sin((t - M.iqos.a) * 6)); btMark(kx + 50 + 16, standY() - 140 - 30, .9, bk); glow(1330, 440, 90, 'rgba(74,168,255,1)', .5 * bk); }
+  fxBurst(t, M.kick.a + .55, 950, 640, { kind: 'debris', n: 10, speed: 380, grav: 1400, life: 1, cols: ['#e8e0cc', '#c9a46a', '#3a7a4a'] });
+  fxBurst(t, M.kick.a + .55, 950, 680, { kind: 'dust', n: 6, speed: 140, grav: 0, life: .8 });
   glow(1330, 440, 60, 'rgba(70,255,120,1)', .5 + .3 * Math.sin(t * 3));
   if (inM(t, M.car)) glow(cx - 180, 677, 200, 'rgba(255,250,210,1)', .5);
   ctx.restore();
+  nightGrade(t);
   vignette(.5);
+  fxImpact(t, M.kick.a + .55, 800, 420, .05);
   if (inM(t, M.flash)) {                 // one-frame manga freeze: PANIK
     mangaize(1); speedLines(640, 330, 70, 180);
     sfxText('PANIK', 640, 600, 120, -.08, '#c8f04a', '#111');

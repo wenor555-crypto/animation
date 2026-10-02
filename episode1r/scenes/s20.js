@@ -31,13 +31,19 @@ function render(t, _M, sc) {
   applyLight('dusk', .25);
   ctx.save(); applyCam(c);
   if (openK > .2) glow(bx - 60, 450, 140, 'rgba(70,255,120,1)', .8 * openK);
-  if (t > M.klak.a + .6) for (let r = 0; r < 3; r++) for (let i = -8; i < 16; i++) glow(i * 120 + (r % 2) * 60, 100 + r * 160 + 21, 30, 'rgba(70,255,120,1)', .5);
+  // the LEDs come on as a wave, left to right, rack by rack
+  for (let r = 0; r < 3; r++) for (let i = -8; i < 16; i++) { const x = i * 120 + (r % 2) * 60, on = prog(t, M.klak.a + .6 + (x + 960) / 2900 * 1.4 + r * .12, M.klak.a + .9 + (x + 960) / 2900 * 1.4 + r * .12);
+    if (on > 0) glow(x, 100 + r * 160 + 21, 30 + 30 * (1 - on), 'rgba(70,255,120,1)', .5 + .5 * (1 - on)); }
+  fxRing(t, M.open.b - .4, bx - 60, 450, 220, .5, '70,255,120');
   ctx.restore();
+  fxRays(380, -40, t, .12, '220,230,255'); fxRays(900, -40, t + 3, .1, '220,230,255');   // light through the skylights
+  if (t > M.klak.a + .6) fxGrade('#60ff90', '#103020', .12 * prog(t, M.klak.a + .6, M.klak.a + 2.2), 'soft-light');
   if (klak) sfxText('ΚΛΑΚ!', 640, 360, 200, -.1, '#ffd23f');
   if (t > M.title.a) {
     const k = prog(t, M.title.a, M.title.a + .6);
     ctx.save(); ctx.fillStyle = `rgba(22,17,29,${k * .92})`; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = k;
     ctx.translate(640, 300); ctx.scale(back(k), back(k)); ctx.rotate(-.05);
+    fxRing(t, M.title.a + .3, 0, 0, 520, .5, '255,210,63');
     txt('Η ΕΞΥΠΝΗ ΣΙΤΑ', 0, -40, 90, '#e8392b', { font: TVFONT, style: 'italic', weight: 900, stroke: 12, sc: '#fff' });
     txt(lang === 'el' ? 'ΤΕΛΟΣ ΕΠΕΙΣΟΔΙΟΥ 1' : 'END OF EPISODE 1', 0, 60, 36, '#ffd23f', { font: TVFONT, style: 'italic', weight: 900 });
     txt(lang === 'el' ? 'Φωνές: ElevenLabs (προσωρινές) · Ζωγραφισμένο με κώδικα' : 'Voices: ElevenLabs (placeholder) · Drawn in code', 0, 140, 20, '#fffaf0', { font: TVFONT, weight: 700 });

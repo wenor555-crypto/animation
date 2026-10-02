@@ -61,7 +61,9 @@ function render(t, _M, sc) {
   }
   // fire at the blanket corner, doused with freddo
   const fireK = inM(t, M.fire, 1, 0) || inM(t, M.L[1], 0, 0) ? prog(t, M.fire.a + 1, M.fire.a + 2) : inM(t, M.douse, 0, .6) ? 1 - prog(t, M.douse.a + .8, M.douse.a + 1.2) : 0;
-  if (fireK > 0 && !up) flame(740, 480, .7 * fireK, t);
+  if (fireK > 0 && !up) { flame(740, 480, .7 * fireK, t); fxFire(740, 486, .55 * fireK, t, fireK); }
+  if (inM(t, M.douse, .9, .6)) fxEmit(t, M.douse.a + .9, M.douse.a + 1.6, .1, 745, 470, { kind: 'smoke', n: 2, speed: 50, grav: 400, life: 1.6, size: .5, alpha: .5, spread: .7 });
+  if (openK && inM(t, M.open1, 1, 2)) { const rx = lerp(900, 1100, prog(t, M.open1.a + 1, M.open1.a + 1.8)); fxArc(rx - 20, 380, rx + 30, 330, t, { seed: 4 }); }
   if (inM(t, M.douse, 0, 0)) { const k = prog(t, M.douse.a, M.douse.a + 1); ctx.save(); ctx.translate(lerp(850, 760, k), lerp(520, 440, k)); ctx.rotate(k * 2.2); freddo(0, 0, 1); ctx.restore(); if (k > .6) for (let i = 0; i < 8; i++) blob(740 + hash(i) * 30, 450 + hash(i + 3) * 40, 5, 7, '#6b3e1f', { lw: 0 }); }
   ctx.restore();
   applyLight('night', .55); applyLight('red', openK ? .45 : .15);
@@ -70,7 +72,9 @@ function render(t, _M, sc) {
   glow(850, 470, 50, 'rgba(255,60,40,1)', up ? 0 : .4);
   if (t > M.dial.a) glow(500, standY() - 180, 70, 'rgba(160,200,255,1)', .5);
   ctx.restore();
+  nightGrade(t, .7);
   vignette(.5);
+  fxImpact(t, M.staff.a + .5, 400, 300, .05);
   if (inM(t, M.douse, .9, .5)) sfxText('ΤΣΣΣ!', 700, 200, 70, .1, '#fff');
   if (shot === 'call') {         // split screen: Γιάννος in bed on the other side
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -81,6 +85,7 @@ function render(t, _M, sc) {
     person(0, 230, 1, CAST.giannos, { t, part: 'body', talk: talk('giannos', t), lid: !inM(t, M.staff, 0, 1.6), brow: inM(t, M.staff, .4, 1.6) ? 'up' : 'worry', look: [-.4, 0] });
     person(0, 230, 1, CAST.giannos, { t, part: 'arms', L: [-44, -24], R: [-30, -175], itemR: 'phone' });
     rect(-210, 80, 420, 120, '#8a9aba', { lw: 4, w: .5 });
+    glow(-20, 40, 90, 'rgba(160,200,255,1)', .45);                     // the phone lights his face
     ctx.restore();
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.lineWidth = 14; ctx.strokeStyle = '#111'; ctx.beginPath(); ctx.moveTo(760, 0); ctx.lineTo(680, 720); ctx.stroke(); ctx.restore();
   }
@@ -88,7 +93,7 @@ function render(t, _M, sc) {
 return {
   id: 'scene13', title: '13 · Προσωπικό', steps, render,
   events: M => [[M.fire.a + 1, SFX.fire], [M.douse.a + .9, SFX.hiss], [M.open1.a + .2, SFX.creak], [M.open1.a + 1, SFX.zap], [M.shut1.a, SFX.door], [M.open2.a + .1, SFX.creak], [M.shut2.a, SFX.door],
-    [M.dial.a + .3, SFX.phone], [M.dial.a + 1.2, SFX.phone]],
+    [M.dial.a + .3, SFX.phone], [M.dial.a + 1.2, SFX.phone], [M.staff.a + .5, () => tone(70, 1, 'sawtooth', .05, .7)]],
   ambience: () => ({ hum: .03 }),
 };
 })());

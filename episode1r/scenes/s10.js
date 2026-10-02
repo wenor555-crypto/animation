@@ -5,18 +5,18 @@ const CAMS = { wide: [760, 400, 1.05], two: [975, 450, 1.55], pan: [890, 350, 2.
 const steps = [
   { act: 'enter', d: 4.2, cam: 'wide' },
   { act: 'tintin', d: .9, cam: 'sita' },
-  { who: 'sita', cam: 'sita', el: 'Καλησπέρα σας! Δυστυχώς η πόρτα είναι κλειστή για τους ΜΗ εγγεγραμμένους πελάτες! Αλλά μην ανησυχείτε: για εγγραφή, ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: "Good evening! Unfortunately the door is closed to NON-registered customers! But don't worry: to register, CALL NOW!" },
+  { who: 'sita', cam: 'sita', el: 'Καλησπέρα σας! Δυστυχώς η πόρτα είναι κλειστή για τους ΜΗ εγγεγραμμένους πελάτες! Αλλά μην ανησυχείτε: για εγγραφή, ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: "Good evening! Unfortunately the door is closed to NON-registered customers! But don't worry: to register, CALL NOW!", say: 'Καλησπέρα σας! Δυστυχώς η πόρτα είναι κλειστή για τους μη εγγεγραμμένους πελάτες! Αλλά μην ανησυχείτε: για εγγραφή, τηλεφωνήστε τώρα!' },
   { act: 'freeze', d: 1.8, cam: 'pan' },
   { who: 'panik', cam: 'pan', mark: 'who', el: '…Ποιος μίλησε;', en: '…Who said that?' },
-  { who: 'sita', cam: 'sita', el: 'Εγώ! Η ΕΞΥΠΝΗ ΣΙΤΑ! Εννιά ζευγάρια ισχυροί μαγνήτες!', en: 'Me! The SMART SCREEN DOOR! Nine pairs of powerful magnets!' },
+  { who: 'sita', cam: 'sita', el: 'Εγώ! Η ΕΞΥΠΝΗ ΣΙΤΑ! Εννιά ζευγάρια ισχυροί μαγνήτες!', en: 'Me! The SMART SCREEN DOOR! Nine pairs of powerful magnets!', say: 'Εγώ! Η έξυπνη σίτα! Εννιά ζευγάρια ισχυροί μαγνήτες!' },
   { who: 'panik', cam: 'pan', mark: 'knew', el: 'Το ήξερα.', en: 'I knew it.' },
   { who: 'sita', cam: 'sita', el: 'Τι ξέρατε;', en: 'Knew what?' },
-  { who: 'panik', cam: 'panW', mark: 'rant', el: 'Ότι θα ερχόσασταν. Πρώτα το ChatGPT. Μετά τα αυτοκίνητα που οδηγάνε μόνα τους. Μετά οι ταμειακές στο σούπερ μάρκετ που δεν σου λένε ούτε καλησπέρα. Και τώρα… οι ΣΙΤΕΣ.', en: "That you'd come. First ChatGPT. Then the self-driving cars. Then the supermarket self-checkouts that don't even say good evening. And now… the SCREEN DOORS." },
-  { who: 'sita', cam: 'sita', el: 'Είμαι εδώ για να σας προστατέψω από τα παράσιτα! Με ΜΗΔΕΝ χημικά!', en: "I'm here to protect you from parasites! With ZERO chemicals!" },
+  { who: 'panik', cam: 'panW', mark: 'rant', el: 'Ότι θα ερχόσασταν. Πρώτα το ChatGPT. Μετά τα αυτοκίνητα που οδηγάνε μόνα τους. Μετά οι ταμειακές στο σούπερ μάρκετ που δεν σου λένε ούτε καλησπέρα. Και τώρα… οι ΣΙΤΕΣ.', en: "That you'd come. First ChatGPT. Then the self-driving cars. Then the supermarket self-checkouts that don't even say good evening. And now… the SCREEN DOORS.", say: 'Ότι θα ερχόσασταν. Πρώτα το ChatGPT. Μετά τα αυτοκίνητα που οδηγάνε μόνα τους. Μετά οι ταμειακές στο σούπερ μάρκετ που δεν σου λένε ούτε καλησπέρα. Και τώρα… οι σίτες.' },
+  { who: 'sita', cam: 'sita', el: 'Είμαι εδώ για να σας προστατέψω από τα παράσιτα! Με ΜΗΔΕΝ χημικά!', en: "I'm here to protect you from parasites! With ZERO chemicals!", say: 'Είμαι εδώ για να σας προστατέψω από τα παράσιτα! Με μηδέν χημικά!' },
   { who: 'panik', cam: 'pan', el: 'Αυτό λέγατε όλες. Το Terminator σου λέει κάτι;', en: "That's what you all said. Does Terminator ring a bell?" },
   { act: 'beep', d: 1, cam: 'sitaC' },
   { who: 'sita', cam: 'sitaC', el: 'Terminator! Διαθέσιμο σε DVD και Blu-ray! Μόνο 9,90!', en: 'Terminator! Available on DVD and Blu-ray! Only 9.90!' },
-  { who: 'panik', cam: 'pan', el: 'ΑΚΡΙΒΩΣ ΑΥΤΟ ΘΑ ΕΛΕΓΕ Ο TERMINATOR.', en: "THAT'S EXACTLY WHAT THE TERMINATOR WOULD SAY." },
+  { who: 'panik', cam: 'pan', el: 'ΑΚΡΙΒΩΣ ΑΥΤΟ ΘΑ ΕΛΕΓΕ Ο TERMINATOR.', en: "THAT'S EXACTLY WHAT THE TERMINATOR WOULD SAY.", say: 'Ακριβώς αυτό θα έλεγε ο Terminator.' },
   { act: 'pace', d: 1.6, cam: 'two' },
   { who: 'panik', cam: 'two', mark: 'jobs', el: 'Θα μας πάρετε τις δουλειές. Θα μας πάρετε τα σπίτια. Θα μας πάρετε…', en: "You'll take our jobs. You'll take our homes. You'll take…" },
   { act: 'souv', d: 1.2, cam: 'pan' },
@@ -24,7 +24,7 @@ const steps = [
   { who: 'sita', cam: 'sita', mark: 'crack', el: 'Κύριε, σας παρακαλώ να απομακρυνθείτε από την πόρτα. Έχετε μια μύγα στην μπύρα σας.', en: 'Sir, please step away from the door. There is a fly on your beer.' },
   { act: 'zap', d: 1.4, cam: 'panW' },
   { who: 'panik', cam: 'pan', mark: 'ouch', el: 'Άου.', en: 'Ow.', gap: .6 },
-  { who: 'panik', cam: 'panW', el: 'Και έχω και δικαιώματα! Εγώ πληρώνω ΦΠΑ! ΕΣΥ ΠΛΗΡΩΝΕΙΣ ΦΠΑ;', en: 'And I have rights! I pay VAT! DO YOU PAY VAT?' },
+  { who: 'panik', cam: 'panW', el: 'Και έχω και δικαιώματα! Εγώ πληρώνω ΦΠΑ! ΕΣΥ ΠΛΗΡΩΝΕΙΣ ΦΠΑ;', en: 'And I have rights! I pay VAT! DO YOU PAY VAT?', say: 'Και έχω και δικαιώματα! Εγώ πληρώνω ΦΠΑ! Εσύ πληρώνεις ΦΠΑ;' },
   { who: 'sita', cam: 'sitaC', el: 'Η τιμή μου περιλαμβάνει ΦΠΑ!', en: 'My price includes VAT!' },
   { act: 'hit', d: 2.2, cam: 'pan' },
   { who: 'panik', cam: 'pan', el: '…Εντάξει. Αρκετά.', en: '…Okay. Enough.' },
@@ -32,14 +32,15 @@ const steps = [
   { who: 'sita', cam: 'sita', el: 'Κύριε; Κύριε, τι κάνετε με το προϊόν;', en: 'Sir? Sir, what are you doing with the product?' },
   { who: 'panik', cam: 'pan', mark: 'justice', el: 'Δικαιοσύνη.', en: 'Justice.' },
   { act: 'fire', d: 1.8, cam: 'fire' },
-  { who: 'sita', cam: 'fire', mark: 'scream', el: 'ΑΑΑΑ! ΑΑΑ! ΤΟ ΠΡΟΪΟΝ ΔΕΝ ΕΙΝΑΙ ΠΥΡΑΝΤΟΧΟ! ΔΙΑΒΑΣΤΕ ΤΙΣ ΟΔΗΓΙΕΣ ΧΡΗΣΗΣ!', en: 'AAAA! AAA! THE PRODUCT IS NOT FIREPROOF! READ THE INSTRUCTIONS!', gap: 0 },
+  { who: 'sita', cam: 'fire', mark: 'scream', el: 'ΑΑΑΑ! ΑΑΑ! ΤΟ ΠΡΟΪΟΝ ΔΕΝ ΕΙΝΑΙ ΠΥΡΑΝΤΟΧΟ! ΔΙΑΒΑΣΤΕ ΤΙΣ ΟΔΗΓΙΕΣ ΧΡΗΣΗΣ!', en: 'AAAA! AAA! THE PRODUCT IS NOT FIREPROOF! READ THE INSTRUCTIONS!', gap: 0, say: 'Αααα! Ααα! Το προϊόν δεν είναι πυράντοχο! Διαβάστε τις οδηγίες χρήσης!' },
   { act: 'flap', d: 2.8, cam: 'sita' },
 ];
 let M;
-function render(t, _M, sc) {
+function render(T0, _M, sc) {
   M = _M;
-  const c = shotCam(sc, t, CAMS);
-  ctx.save(); applyCam(c);
+  const t = fxTime(T0, [{ a: M.fire.a, b: M.fire.a + .2, rate: 0, catch: 0 }]);   // a beat of hit-stop as the fire leaves his mouth
+  const c = fxCam(shotCam(sc, T0, CAMS), T0, [[M.fire.a + .2, 18, .6], [M.enter.a + 1.7, 6, .3]]);
+  ctx.save(); applyCamFx(c);
   yard(t, { light: 'night', noChickens: true });
   // hose, coiled by the door (he trips on it)
   hose([[760, 692], [820, 700], [880, 690], [860, 676], [800, 680], [840, 690]], t, { col: '#3aa04a' });
@@ -75,15 +76,24 @@ function render(t, _M, sc) {
   if (inM(t, M.fire, 0, .6)) {
     const k = prog(t, M.fire.a, M.fire.a + .4);
     for (let i = 0; i < 7; i++) { const f = i / 6 * k; flame(lerp(px + 20, 1060, f), lerp(standY() - 160, 580, f) + 30, .8 + f * 1.4, t + i, 1); }
+    fxEmit(t, M.fire.a, M.fire.a + .8, .06, ts => lerp(px + 20, 1060, prog(ts, M.fire.a, M.fire.a + .4)), ts => lerp(standY() - 160, 600, prog(ts, M.fire.a, M.fire.a + .4)), { kind: 'ember', n: 3, speed: 160, grav: -120, life: 1.2 });
   }
-  if (burning && t < M.flap.a + .8) flame(1045, 640, 1.6 * (1 - prog(t, M.scream.b, M.flap.a + .8)), t, 1);
+  if (burning && t < M.flap.a + .8) {
+    const fk = 1 - prog(t, M.scream.b, M.flap.a + .8);
+    flame(1045, 640, 1.6 * fk, t, 1);
+    fxFire(1030, 650, 1.1 * fk, t, fk); fxFire(1085, 600, .8 * fk, t + 1, fk);
+  }
+  if (t > M.flap.a) fxEmit(t, M.flap.a, M.flap.b + 2, .2, 1060, 560, { kind: 'smoke', n: 2, speed: 50, grav: 400, life: 2.4, size: .7, alpha: .4, spread: .7 });
   ctx.restore();
   applyLight('night', .85);
-  ctx.save(); applyCam(c); sitaGlow({ t, led: 'green', flicker: t > M.flap.a + 1.4 }, .6);
+  ctx.save(); applyCamFx(c); sitaGlow({ t, led: 'green', flicker: t > M.flap.a + 1.4 || inM(t, M.scream) }, .6);
   if (burning && t < M.flap.a + .8) glow(1050, 580, 320, 'rgba(255,140,40,1)', .45);
   if (inM(t, M.fire, 0, .6)) glow(960, 480, 380, 'rgba(255,160,60,1)', .6);
   ctx.restore();
+  nightGrade(t);
   vignette(.45);
+  fxImpact(T0, M.fire.a, 760, 360, .06);
+  fxFlash(fxHitLight(T0, [[M.fire.a + .2, .45]]));
   if (inM(t, M.tintin, 0, .4)) sfxText('ΤΙΝΤΙΝΤΙΝ!', 640, 140, 60, -.1, '#ffd23f');
   if (inM(t, M.beep, .2, -.2)) sfxText('μπιπ', 900, 200, 40, .1, '#9aff9a');
   if (inM(t, M.fire, .1, .4)) sfxText('ΦΦΦΟΥΜ!', 640, 150, 110, -.12, '#ffb23a', '#5a1a0a');

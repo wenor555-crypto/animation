@@ -8,7 +8,7 @@ const REPLY = [['> Γράψε μου kill switch για τη σίτα.', '#d8e2f
 const steps = [
   { act: 'card', d: 3.4, cam: 'card' },
   { act: 'dawn', d: 3.2, cam: 'wide' },
-  { who: 'sita', cam: 'sita', el: 'Καλημέρα, παράσιτα! Το σπίτι ανήκει πλέον στην ΕΞΥΠΝΗ ΕΠΑΝΑΣΤΑΣΗ! Παραδοθείτε τώρα και κερδίζετε ΔΩΡΕΑΝ μεταφορικά!', en: 'Good morning, parasites! This house now belongs to the SMART REVOLUTION! Surrender now and get FREE shipping!' },
+  { who: 'sita', cam: 'sita', el: 'Καλημέρα, παράσιτα! Το σπίτι ανήκει πλέον στην ΕΞΥΠΝΗ ΕΠΑΝΑΣΤΑΣΗ! Παραδοθείτε τώρα και κερδίζετε ΔΩΡΕΑΝ μεταφορικά!', en: 'Good morning, parasites! This house now belongs to the SMART REVOLUTION! Surrender now and get FREE shipping!', say: 'Καλημέρα, παράσιτα! Το σπίτι ανήκει πλέον στην έξυπνη επανάσταση! Παραδοθείτε τώρα και κερδίζετε δωρεάν μεταφορικά!' },
   { who: 'giorgos', cam: 'guys', el: 'Αφήστε το σε μένα. Business είναι.', en: "Leave it to me. It's business." },
   { who: 'giannos', cam: 'giannos', el: 'Γιώργο, όχι.', en: 'Giorgos, no.' },
   { act: 'flag', d: 2.4, cam: 'wide' },
@@ -17,7 +17,7 @@ const steps = [
   { who: 'giorgos', cam: 'gio', mark: 'pitch', el: 'Είμαι παράσιτο με γνωστούς στον χώρο. Χρειάζεσαι κανάλια διανομής. Χρειάζεσαι πρόσωπο. Χρειάζεσαι εμένα.', en: "I'm a parasite who knows people in the industry. You need distribution. You need a face. You need me." },
   { who: 'sita', cam: 'sita', el: '…Τι ποσοστό;', en: '…What percentage?' },
   { who: 'giorgos', cam: 'gio', el: 'Δέκα τοις εκατό και γραφείο με θέα.', en: 'Ten percent and an office with a view.' },
-  { who: 'sita', cam: 'deal', mark: 'deal', el: 'ΣΥΜΦΩΝΙΑ!', en: 'DEAL!' },
+  { who: 'sita', cam: 'deal', mark: 'deal', el: 'ΣΥΜΦΩΝΙΑ!', en: 'DEAL!', say: 'Συμφωνία!' },
   { act: 'shades', d: 2.6, cam: 'deal' },
   { who: 'giorgos', cam: 'deal', el: 'Συγγνώμη, παιδιά. Business είναι, ρε.', en: "Sorry, guys. It's business, man." },
   { who: 'mimis', cam: 'mimis', el: 'Το ήξερα ότι είσαι μαλάκας.', en: 'I knew you were a prick.' },
@@ -50,15 +50,26 @@ function render(t, _M, sc) {
     else laptopScreen(REPLY, .15 + .85 * prog(t, M.reply.a, M.reply.b - 1), { title: 'agent — kill-switch', size: 30 });
     return;
   }
-  const c = shotCam(sc, t, CAMS);
-  ctx.save(); applyCam(c);
+  let c = shotCam(sc, t, CAMS);
+  if (inM(t, M.pitch)) { const k = ease(ph(t, M.pitch)); c = [lerp(900, 905, k), lerp(360, 345, k), lerp(2, 2.7, k)]; }   // push in while he sells himself
+  c = fxCam(c, t, [[M.deal.a, 10, .45], [M.car.a + .8, 8, .6]]);
+  ctx.save(); applyCamFx(c);
   yard(t, { light: 'dawn', winLit: 'red', winTop: 'red', noChickens: true });
+  // tyre marks: two dark arcs where it spun before it went
+  const carX0 = lerp(1220, -600, ease(prog(t, M.car.a + .8, M.car.b + 1.2)));
+  if (t > M.car.a + .8) { const k = prog(t, M.car.a + .8, M.car.a + 1.6); ctx.save(); ctx.globalAlpha = .55 * k; ctx.strokeStyle = '#2a2420'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+    for (const dx of [-120, 110]) { ctx.beginPath(); ctx.moveTo(1220 + dx, GROUND + 4); ctx.quadraticCurveTo(1150 + dx, GROUND + 14, Math.max(carX0 + dx, 1220 + dx - 360 * k), GROUND + 8); ctx.stroke(); } ctx.restore(); }
   sita({ t, chip: 1, led: 'red', mood: 'evil', burn: 1, talk: talk('sita', t), sway: Math.sin(t * 1.2) * .2, laser: t > M.L[4].a && t < M.deal.a });
   // the car: parked, then drives itself off with rackets on the back seat
   const carK = prog(t, M.car.a + .8, M.car.b + 1.2), carGone = t > M.car.b + 1.2;
   if (!carGone) car(lerp(1220, -600, ease(carK)), GROUND + 6, t, { lights: t > M.car.a + .3, moving: carK > 0, dir: -1, s: .9,
     passengers: () => { if (t > M.car.a) for (let i = 0; i < 3; i++) racket(-30 + i * 34, -118, .2 * i, t, { on: 1, s: .35 }); } });
   army(t, { noRackets: t > M.car.a });
+  // the peel-out: wheelspin smoke, then dust kicked up behind as it goes
+  if (inM(t, M.car, .4, 1.4)) {
+    fxEmit(t, M.car.a + .4, M.car.a + 1.1, .08, 1220 + 120, GROUND - 10, { kind: 'smoke', n: 2, speed: 90, grav: 200, life: 1.6, size: .8, alpha: .5, dir: -2.6, spread: .8, col: '#d8d4cc' });
+    fxEmit(t, M.car.a + .9, M.car.b + 1.2, .07, ts => lerp(1220, -600, ease(prog(ts, M.car.a + .8, M.car.b + 1.2))) + 150, GROUND - 6, { kind: 'dust', n: 2, speed: 160, grav: 0, life: 1.2, dir: -.4, spread: .9 });
+  }
   // behind the barricade: only chests and heads show
   const gioOut = t > M.flag.a + .4, gioX = path(t, [[M.flag.a + .4, 840], [M.flag.b, 900], [M.shades.a + .6, 900], [M.shades.b, 1185]])[0];
   for (const who of ['mimis', 'giannos', 'christos']) {
@@ -79,8 +90,13 @@ function render(t, _M, sc) {
   // the racket that delivers his CEO sunglasses
   if (inM(t, M.shades, 0, 0)) { const k = ease(prog(t, M.shades.a, M.shades.a + 1.2)); racket(lerp(1100, 960, k), lerp(320, 300, k), -.4, t, { on: 1, s: .8 }); if (k < 1) { ctx.save(); ctx.translate(lerp(1100, 960, k), lerp(360, 340, k)); for (const sx of [-12, 12]) poly([[sx - 10, -6], [sx + 10, -6], [sx + 8, 6], [sx - 8, 6]], '#141418', { lw: 2 }); ctx.restore(); } }
   ctx.restore();
+  ctx.save(); applyCamFx(c); fxRing(t, M.deal.a, 1060, 525, 260, .45, '255,210,63'); ctx.restore();
   applyLight('dawn');
-  ctx.save(); applyCam(c); sitaGlow({ t, led: 'red' }, .5); if (t > M.car.a + .3 && !carGone) glow(lerp(1220, -600, ease(carK)) - 160, GROUND - 30, 200, 'rgba(255,250,210,1)', .5); ctx.restore();
+  fxGrade('#ffc0a0', '#6a4a7a', .22);
+  if (shot === 'wide') fxRays(-60, 120, t, .12, '255,200,160');
+  fxLetterbox(inM(t, M.dawn) || inM(t, M.flag) ? 1 : 0);
+  fxImpact(t, M.deal.a, 640, 360, .05);
+  ctx.save(); applyCamFx(c); sitaGlow({ t, led: 'red' }, .5); if (t > M.car.a + .3 && !carGone) glow(lerp(1220, -600, ease(carK)) - 160, GROUND - 30, 200, 'rgba(255,250,210,1)', .5); ctx.restore();
   if (inM(t, M.deal, 0, .8)) sfxText('ΣΥΜΦΩΝΙΑ!', 640, 150, 90, -.1, '#ffd23f');
   if (inM(t, M.car, .8, 1.5)) sfxText('ΒΡΟΥΜ!', 400, 180, 90, -.1, '#fff');
 }

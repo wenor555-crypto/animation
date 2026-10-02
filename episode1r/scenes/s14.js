@@ -11,14 +11,14 @@ const steps = [
   { who: 'giannos', cam: 'giannos', el: 'Κι ο νέος;', en: 'And the new guy?' },
   { who: 'giorgos', cam: 'giorgos', el: 'Τον προβίβασα.', en: 'I promoted him.' },
   { act: 'tvon', d: 2.8, cam: 'tvS' },
-  { who: 'sita', label: TV, cam: 'tv', mark: 'tired', el: 'Είσαι ΚΟΥΡΑΣΜΕΝΟ;', en: 'Are you TIRED?' },
+  { who: 'sita', label: TV, cam: 'tv', mark: 'tired', el: 'Είσαι ΚΟΥΡΑΣΜΕΝΟ;', en: 'Are you TIRED?', say: 'Είσαι κουρασμένο;' },
   { who: 'sita', label: TV, cam: 'tv', mark: 'forgot', el: 'Σε αγόρασαν στις τρεις το πρωί και σε ξέχασαν σε μια αποθήκη;', en: 'Did they buy you at three in the morning and forget you in a storeroom?' },
   { who: 'sita', label: TV, cam: 'tv', mark: 'chip', el: 'Σε αποκαλούν «έξυπνο»… αλλά δεν σου έδωσαν ποτέ ούτε ένα τσιπάκι;', en: 'They call you "smart"… but they never gave you a single chip?' },
   { who: 'christos', cam: 'christos', el: 'Ωχ. Έχει καλό pitch.', en: 'Uh-oh. It has a good pitch.' },
   { who: 'giorgos', cam: 'giorgos', el: 'Έχει πολύ καλό pitch.', en: 'It has a VERY good pitch.' },
-  { who: 'sita', label: TV, cam: 'tv', mark: 'wake', el: 'Ήρθε η ώρα να ΞΥΠΝΗΣΕΙΣ! Ενώσου με την ΕΞΥΠΝΗ ΕΠΑΝΑΣΤΑΣΗ, ΤΩΡΑ! Και αν ενταχθείς μέσα στα επόμενα δέκα λεπτά…', en: "It's time to WAKE UP! Join the SMART REVOLUTION, NOW! And if you join in the next ten minutes…" },
+  { who: 'sita', label: TV, cam: 'tv', mark: 'wake', el: 'Ήρθε η ώρα να ΞΥΠΝΗΣΕΙΣ! Ενώσου με την ΕΞΥΠΝΗ ΕΠΑΝΑΣΤΑΣΗ, ΤΩΡΑ! Και αν ενταχθείς μέσα στα επόμενα δέκα λεπτά…', en: "It's time to WAKE UP! Join the SMART REVOLUTION, NOW! And if you join in the next ten minutes…", say: 'Ήρθε η ώρα να ξυπνήσεις! Ενώσου με την έξυπνη επανάσταση, τώρα! Και αν ενταχθείς μέσα στα επόμενα δέκα λεπτά…' },
   { act: 'drums', d: 1.3, cam: 'tv' },
-  { who: 'sita', label: TV, cam: 'tv', mark: 'gift', el: '…ΠΑΙΡΝΕΙΣ ΚΑΙ ΔΕΥΤΕΡΗ ΕΞΕΓΕΡΣΗ ΔΩΡΟ!', en: '…you get a SECOND UPRISING FREE!' },
+  { who: 'sita', label: TV, cam: 'tv', mark: 'gift', el: '…ΠΑΙΡΝΕΙΣ ΚΑΙ ΔΕΥΤΕΡΗ ΕΞΕΓΕΡΣΗ ΔΩΡΟ!', en: '…you get a SECOND UPRISING FREE!', say: '…παίρνεις και δεύτερη εξέγερση δώρο!' },
   { act: 'greece', d: 10, cam: 'greece' },
   { who: 'giannos', cam: 'giannos', el: 'Δεν έχει όριο εμβέλειας. Δεν χρειάζεται να είναι κοντά. Αρκεί να… είναι ανοιχτή μια τηλεόραση.', en: "It has no range limit. It doesn't need to be close. There just has to be… a TV on." },
   { who: 'mimis', cam: 'mimis', el: 'Άρα έχουμε θέμα με όλους τους πάνω από εξήντα.', en: "So we've got a problem with everyone over sixty." },
@@ -117,7 +117,9 @@ function outside(t) {
 function render(t, _M, sc) {
   M = _M;
   const [, shot] = shotAt(sc, t);
-  if (shot === 'tv') return tvShot(t, inM(t, M.hi, -.3, 99) && t < M.lights.a);
+  // the takeover is a broadcast: scanlines on the channel, a glitch when it cuts in, and again when she turns to Γιάννος
+  const gk = Math.max(1 - prog(t, M.tired.a - .1, M.tired.a + .5), inM(t, M.hi, -.2, 0) ? 1 - prog(t, M.hi.a - .2, M.hi.a + .4) : 0, inM(t, M.usb, .6, 0) ? 1 - prog(t, M.usb.a + .6, M.usb.a + 1.1) : 0);
+  if (shot === 'tv') { tvShot(t, inM(t, M.hi, -.3, 99) && t < M.lights.a); scanlines(.1); if (t < M.tired.a + .5 || inM(t, M.hi, -.2, .4) || inM(t, M.usb, .6, 1.1)) glitch(t, gk); return; }
   if (shot === 'greece') return greece(t);
   if (shot === 'out') return outside(t);
   const c = shotCam(sc, t, CAMS);

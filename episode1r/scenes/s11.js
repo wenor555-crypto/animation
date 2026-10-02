@@ -67,7 +67,18 @@ function render(t, _M, sc) {
   if (t < M.dead.a && flick) sitaGlow({ t, led: 'green' }, .5);
   if (red) { sitaGlow({ t, led: 'red', glowR: 120 + 500 * prog(t, M.glowUp.a, M.glowUp.b) }, .7 + .3 * redK); }
   if (iq && t > M.bt.a + 1) glow(iq[0], iq[1] - 26, 50, 'rgba(255,40,40,1)', .6);
+  // the turn: the eye charges up red and goes off in a ring; on «παράσιτα» a second, bigger one
+  if (inM(t, M.red)) fxCharge(t, 1060, 525, ph(t, M.red), '255,50,50');
+  fxRing(t, M.red.b, 1060, 525, 300, .5, '255,60,60');
+  fxRing(t, M.glowUp.a + .2, 1060, 525, 700, .8, '255,60,60');
+  // pairing: packets of «data» run along her beam into the IQOS, which shows the Bluetooth mark
+  if (iq && (inM(t, M.bt, .3, 0) || inM(t, M.iqos, 0, -2.8))) {
+    const [ex, ey] = sitaEye(), k = Math.min(1, prog(t, M.bt.a + .3, M.bt.a + .8));
+    for (let i = 0; i < 8; i++) { const f = ((t * 1.4 + i / 8) % 1); const x = lerp(ex, iq[0], f), y = lerp(ey, iq[1] - 26, f); ctx.fillStyle = `rgba(120,200,255,${.9 * k})`; ctx.fillRect(x - 3, y - 3, 6, 6); }
+    btMark(iq[0], iq[1] - 60, 1, k * (.6 + .4 * Math.sin(t * 8)));
+  }
   ctx.restore();
+  nightGrade(t, red ? .6 : 1);
   vignette(.55);
   if (inM(t, M.manga)) {           // 2 seconds of manga: the σίτα, giant, cape-like
     const k = ph(t, M.manga);

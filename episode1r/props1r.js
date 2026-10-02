@@ -61,3 +61,23 @@ function otsShoulder(who, side, t, o = {}) {
 }
 /* the summer-day look of the yard: a warm wash and a little sun from the top right */
 function dayGrade(t, a = 1) { fxGrade('#ffe2a0', '#f0b070', .2 * a); }
+/* night: a cool moonlit wash (faces stay readable: the practical lights do the rest) */
+function nightGrade(t, a = 1) { fxGrade('#5070b0', '#20103a', .22 * a); }
+/* the Bluetooth mark, small, over a device that is pairing */
+function btMark(x, y, s = 1, a = 1, col = '#4aa8ff') {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.globalAlpha *= a; ctx.strokeStyle = col; ctx.lineWidth = 2.6; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(-6, -5); ctx.lineTo(6, 5); ctx.lineTo(0, 11); ctx.lineTo(0, -11); ctx.lineTo(6, -5); ctx.lineTo(-6, 5); ctx.stroke();
+  ctx.restore(); glow(x, y, 26 * s, 'rgba(74,168,255,1)', .5 * a);
+}
+/* a broadcast glitch over the whole frame (screen space): torn lines shifted sideways, an RGB split. k 0..1 */
+function glitch(t, k = 1) {
+  if (k <= 0) return;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const n = Math.round(9 * k), f = Math.floor(t * 30);
+  for (let i = 0; i < n; i++) { const y = (hash(i + f) * H) | 0, h = 6 + hash(i + 3) * 30, dx = (hash(i + 7 + f) - .5) * 90 * k;
+    ctx.drawImage(ctx.canvas, 0, y * RES, W * RES, h * RES, dx, y, W, h); }
+  ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = `rgba(255,0,60,${.12 * k})`; ctx.fillRect(4, 0, W, H); ctx.fillStyle = `rgba(0,200,255,${.12 * k})`; ctx.fillRect(-4, 0, W, H);
+  ctx.restore();
+}
+/* TV scanlines (screen space) */
+function scanlines(a = .12) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = `rgba(0,0,0,${a})`; for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, W, 1.5); ctx.restore(); }
