@@ -4,6 +4,7 @@
   python3 reviewctl.py pull EP [--all]            compact table of the open notes (--all: every note)
   python3 reviewctl.py done EP ID [ID…] [--rev rNN] [--note TEXT] [--wontfix] [--reopen]
   python3 reviewctl.py list                        drafts and their open-note counts
+  python3 reviewctl.py community EP [--all]        the collaborators' notes grouped by person (read only; --all: also adopted)
   python3 reviewctl.py snapshot                    keep every new draft in dist/ as its next revision (run.sh does this every 5 minutes)
   python3 reviewctl.py passwd USER                 set a review account (password read from stdin, stored as a salted hash;
                                                    once an account exists the shared passphrase is dropped)
@@ -24,6 +25,20 @@ def main(a):
         for ep in review_eps():
             ds, ns = drafts(ep), notes(ep)
             print(f'{ep}: v{ds[-1]["n"] if ds else "-"} · {sum(n["status"] == "open" for n in ns)} open / {len(ns)}')
+        return
+    if cmd == 'community':
+        allof = '--all' in a
+        ep = [x for x in a if not x.startswith('--')][0]
+        ns = [n for n in notes(ep, True) if allof or not n.get('adopted')]
+        print(f'# {ep}: {len(ns)} collaborator notes' + ('' if allof else ' not adopted') + ' (read only: not a work list)')
+        for who in sorted({n['by'] for n in ns}):
+            mine = [n for n in ns if n['by'] == who]
+            print(f'\n## {who} ({len(mine)})')
+            for n in mine:
+                ln = n.get('line') or {}
+                said = f' | {ln.get("who")}: «{ln.get("el")[:70]}»' if ln.get('el') else ''
+                print(f'{n["id"]} v{n.get("ver") or "?"} {fmt(n["t"])} {n["scene"]}+{n["lt"]:.1f}s {CATS.get(n["cat"], n["cat"])}{" shot" if n.get("shot") else ""}'
+                      f' | {n.get("text") or "-"}{said} | {n["ts"][5:16]}{" [adopted " + n["adopted"] + "]" if n.get("adopted") else ""}')
         return
     if cmd == 'snapshot':
         for ep in review_eps():

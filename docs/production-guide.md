@@ -86,7 +86,20 @@ A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8
   - `tools/review.py pull <ep>` prints only the open notes as text.
   - `review.py shot <ep> <id>` fetches one snapshot when the text isn't enough.
   - `review.py done <ep> <id…> --rev rNN` closes notes; the creator sees ✓.
+- **The review player:** under the frame, buttons for −5 s, −1 s, one frame back/forward (1/30 s, the MP4's rate), +1 s, +5 s and a timecode `m:ss:ff`. Keys: ← → = 1 s (Shift = 5 s), `,` `.` = one frame, + − = zoom. The plain slider is replaced by a precision timeline (Premiere-style):
+  - a ruler, the scene bands with their titles, the note lanes and the playhead
+  - zoom with the wheel, + −, or the slider, from the whole episode down to 4 s
+  - drag at the zoom's scale; Shift+drag is 10× finer; every position snaps to a frame
+- **Collaborators ("Γίνε μέρος της παραγωγής!"):** the public pages show that button (or «Studio» when signed in). Anyone can sign up with Google (`google_client_id` in `site.json`; the token is checked with Google's `tokeninfo`, no client secret is used or stored) or with email + password (pbkdf2; a honeypot and per-IP limits; no email confirmation).
+  - Accounts live in `~/sita-site/users.json`. The owner sees them at `/review/users` and can block or unblock anyone.
+  - Collaborators see every draft and revision, with the same player and quick menu. A 5-step tour opens on their first visit; «?» opens it again.
+  - Their notes go to `review/<ep>.community.jsonl`, with their name. They see the notes of all collaborators, never the owner's. They can delete only their own notes and cannot set a status. The owner's log pages and exports are owner-only.
+  - The owner sees them as a second, hollow-dot lane on the timeline (toggle «Σχόλια κοινότητας»), and in the list with the author's name.
+  - **Claude never acts on a collaborator's note.** `review.py pull` (the work list) reads only the owner's log. `review.py community <ep>` prints the collaborators' notes by person, for a briefing only. A note becomes work when the creator says so, or presses «Υιοθέτηση»: that copies it into the owner's log, credited («από: <name>»).
 - **Deploy:** `bash site/deploy.sh` copies the files, installs `render_ep.sh`, adds the crontab lines (`@reboot` and a check every 5 minutes through `run.sh`), and restarts the server. The passphrase lives only in `~/sita-site/secret.json` (mode 600) on the node.
+
+## Pending
+- **Μαρία's voice (Ep. 1–3):** the creator finds it odd in places, with nothing specific to fix. Rework it across all three episodes later: audition voices, regenerate her lines, check every line again by ear. Until then only single lines are fixed (Ep. 2 s06: «…της οικογένειας», with a pause, so it doesn't run into «τησικογένειας»).
 
 ## Subtitles (Greek and English)
 

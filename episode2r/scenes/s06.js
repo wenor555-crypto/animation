@@ -16,7 +16,7 @@ const steps = [
   { who: 'myrsini', cam: 'note', mark: 'read', el: '«Πήγα Τήνο. Κέρδισα. Το φαγητό στο ψυγείο. ΜΗΝ ΑΦΗΝΕΤΕ ΤΗΝ ΠΟΡΤΑ ΑΝΟΙΧΤΗ.»', en: '"Gone to Tinos. I won. Food\'s in the fridge. DON\'T LEAVE THE DOOR OPEN."' },
   { act: 'look', d: 1.6, cam: 'door' },
   { who: 'mimis', cam: 'mim', el: 'Η μάνα μου κέρδισε κάτι. Από το τηλέφωνο.', en: 'My mum won something. Over the phone.' },
-  { who: 'maria', cam: 'mar', el: 'Πρώτη φορά στην ιστορία της οικογένειας.', en: "A first in this family's history." },
+  { who: 'maria', cam: 'mar', el: 'Πρώτη φορά στην ιστορία της οικογένειας.', en: "A first in this family's history.", say: 'Πρώτη φορά στην ιστορία… της οικογένειας.' },
   { who: 'maria', cam: 'mar', el: 'Υπάρχει ελπίδα για όλους. Ακόμα και να νοικοκυρευτείς εσύ.', en: "There's hope for everyone. Maybe even you'll settle down." },
   { who: 'giannos', cam: 'door', mark: 'noslip', el: 'Για πρώτη φορά… το σπίτι δεν έχει παντόφλα.', en: 'For the first time ever… this house is slipper-free.', gap: .6 },
   { act: 'tray', d: 2.6, cam: 'tray' },

@@ -107,14 +107,99 @@
   panel.innerHTML = `${R.ver !== R.latest ? `<div class="rv-oldver">Βλέπεις το παλιό revision <b>v${R.ver}</b> · <a href="${vurl(R.latest)}">πήγαινε στο τελευταίο (v${R.latest})</a></div>` : ''}
     <div class="rv-head"><b>REVIEW</b> <span>${esc(R.ep)}</span> <select class="rv-ver" title="Revision">${vopts}</select> <span class="rv-q"></span>
     <span class="rv-sp"></span><button class="rv-pin" title="Οπτικός έλεγχος εδώ (V)">📍 Σημάδι</button><button class="rv-com" title="Σχόλιο (C)">✍️ Σχόλιο</button>
-    <a href="/review/${R.ep}/log" target="_blank">log</a></div>
+    ${R.role === 'owner' ? `<a href="/review/${R.ep}/log" target="_blank">log</a> <a href="/review/users" target="_blank">χρήστες</a>` : `<span class="rv-me">${esc(R.user)} · συνεργάτης</span>`}</div>
     <label class="rv-allv"><input type="checkbox" class="rv-all"> Σχόλια από όλα τα revision</label>
-    <div class="rv-track" title="Σχόλια στον χρόνο"></div><div class="rv-help">Πάτα πάνω στο καρέ για γρήγορο μενού · V = σημάδι χωρίς παύση · C = σχόλιο</div><ol class="rv-list"></ol>`;
+    ${R.role === 'owner' ? '<label class="rv-allv"><input type="checkbox" class="rv-com-on"> Σχόλια κοινότητας <span class="rv-com-n"></span></label>' : ''}
+    <div class="rv-help"><button class="rv-tour-btn" title="Ξενάγηση">?</button> Πάτα πάνω στο καρέ για γρήγορο μενού · V = σημάδι χωρίς παύση · C = σχόλιο</div><ol class="rv-list"></ol>`;
   document.querySelector('.bar').after(panel);
-  const track = panel.querySelector('.rv-track'), list = panel.querySelector('.rv-list'), allv = panel.querySelector('.rv-all');
+
+  /* ---------- transport + precision timeline (Premiere-style) ----------
+     Buttons and keys step by 5 s / 1 s / one frame (1/30 s, the MP4's rate). The timeline zooms (wheel, +/−, slider) from the whole
+     episode down to a few seconds; dragging moves the playhead at the zoom's scale, Shift+drag 10× finer. Positions snap to frames. */
+  function initTL() {
+  const FPS = 30, snap = t => Math.round(t * FPS) / FPS, clampT = t => Math.min(Math.max(t, 0), EPISODE.dur);
+  const tc = s => { const f = Math.round(s * FPS), ss = Math.floor(f / FPS); return `${Math.floor(ss / 60)}:${String(ss % 60).padStart(2, '0')}:${String(f % FPS).padStart(2, '0')}`; };
+  scrub.step = 'any';
+  const seek = t => { pause(); jump(snap(clampT(t))); };
+  const tp = el('div', 'rv-tp');
+  tp.innerHTML = `<div class="rv-tbtns"><button data-d="-5" title="−5 s (Shift+←)">−5s</button><button data-d="-1" title="−1 s (←)">−1s</button><button data-d="-f" title="−1 καρέ (,)">◀︎ καρέ</button>
+    <span class="rv-tc" title="λεπτά:δευτερόλεπτα:καρέ">0:00:00</span><button data-d="+f" title="+1 καρέ (.)">καρέ ▶︎</button><button data-d="1" title="+1 s (→)">+1s</button><button data-d="5" title="+5 s (Shift+→)">+5s</button></div>
+    <div class="rv-tl-wrap"><canvas class="rv-tl"></canvas></div>
+    <div class="rv-zoom"><button data-z="out" title="Zoom out (−)">−</button><input type="range" min="0" max="1000" value="0" aria-label="Zoom"><button data-z="in" title="Zoom in (+)">+</button><button data-z="fit">Όλο</button>
+    <span class="rv-zhint">ροδέλα = zoom · σύρε = μετακίνηση · Shift+σύρε = λεπτομέρεια · , . = καρέ</span></div>`;
+  document.querySelector('.bar').after(tp);
+  const tlc = tp.querySelector('.rv-tl'), tg = tlc.getContext('2d'), zs = tp.querySelector('.rv-zoom input'), tcEl = tp.querySelector('.rv-tc');
+  const MINSPAN = 4;
+  let span = EPISODE.dur, v0 = 0;                     // the visible window [v0, v0 + span]
+  const setSpan = (s, at) => { const k = at == null ? .5 : (at - v0) / span; span = Math.min(EPISODE.dur, Math.max(MINSPAN, s)); v0 = Math.min(Math.max((at ?? v0 + span / 2) - k * span, 0), EPISODE.dur - span);
+    zs.value = Math.round(Math.log(EPISODE.dur / span) / Math.log(EPISODE.dur / MINSPAN) * 1000); };
+  zs.oninput = () => { const s = EPISODE.dur / Math.pow(EPISODE.dur / MINSPAN, zs.value / 1000); setSpan(s, +scrub.value); };
+  tp.querySelector('.rv-zoom').onclick = e => { const z = e.target.dataset?.z; if (!z) return; if (z === 'fit') setSpan(EPISODE.dur, 0); else setSpan(span * (z === 'in' ? .5 : 2), +scrub.value); };
+  tp.querySelector('.rv-tbtns').onclick = e => { const d = e.target.closest('button')?.dataset.d; if (!d) return; const t = +scrub.value; seek(d === '-f' ? snap(t) - 1 / FPS : d === '+f' ? snap(t) + 1 / FPS : t + +d); };
+  window.addEventListener('keydown', e => {          // capture phase: replaces the player's own ±5 s arrows inside the review
+    if (e.target.closest?.('input, textarea, select') || e.ctrlKey || e.metaKey || e.altKey) return;
+    const t = +scrub.value; let to = null;
+    if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') to = t + (e.code === 'ArrowRight' ? 1 : -1) * (e.shiftKey ? 5 : 1);
+    else if (e.code === 'Period') to = snap(t) + 1 / FPS; else if (e.code === 'Comma') to = snap(t) - 1 / FPS;
+    else if (e.key === '+' || e.key === '=') { setSpan(span * .5, t); e.preventDefault(); return; } else if (e.key === '-') { setSpan(span * 2, t); e.preventDefault(); return; }
+    if (to == null) return;
+    e.preventDefault(); e.stopImmediatePropagation(); seek(to);
+  }, true);
+  const xOf = t => (t - v0) / span * tlc.clientWidth, tOf = x => v0 + x / tlc.clientWidth * span;
+  let drag = null;
+  tlc.addEventListener('pointerdown', e => {
+    const r = tlc.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    const hit = y > 30 && shownAll().find(n => Math.abs(xOf(n.t) - x) < 7 && (n.community ? y > 52 : y <= 52));
+    if (hit) { focusNote(hit); return; }
+    tlc.setPointerCapture(e.pointerId); drag = { x0: x, t0: tOf(x) }; seek(tOf(x));
+  });
+  tlc.addEventListener('pointermove', e => {
+    if (!drag) return; const x = e.clientX - tlc.getBoundingClientRect().left;
+    seek(e.shiftKey ? drag.t0 + (x - drag.x0) / tlc.clientWidth * span * .1 : tOf(x));
+  });
+  const end = () => { drag = null; }; tlc.addEventListener('pointerup', end); tlc.addEventListener('pointercancel', end);
+  tlc.addEventListener('wheel', e => { e.preventDefault(); const x = e.clientX - tlc.getBoundingClientRect().left;
+    if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) { v0 = Math.min(Math.max(v0 + (e.deltaX || e.deltaY) / tlc.clientWidth * span, 0), EPISODE.dur - span); return; }
+    setSpan(span * Math.pow(1.0015, e.deltaY), tOf(x)); }, { passive: false });
+  const STEPS = [1 / FPS, 5 / FPS, 10 / FPS, .5, 1, 2, 5, 10, 15, 30, 60, 120, 300];
+  function drawTL() {
+    const w = tlc.clientWidth, h = 74, dpr = devicePixelRatio || 1;
+    if (tlc.width !== Math.round(w * dpr)) { tlc.width = Math.round(w * dpr); tlc.height = h * dpr; }
+    tg.setTransform(dpr, 0, 0, dpr, 0, 0); tg.clearRect(0, 0, w, h);
+    const css = getComputedStyle(tp), ink = css.getPropertyValue('--ink').trim() || '#231a2e', mut = css.getPropertyValue('--muted').trim() || '#888';
+    const t = +scrub.value;
+    if (playing() && (t < v0 || t > v0 + span)) v0 = Math.min(Math.max(t - span * .1, 0), EPISODE.dur - span);   // follow the playhead
+    // scenes: alternating bands with their titles
+    EPISODE.scenes.forEach((sc, i) => { const a = xOf(sc.off), b = xOf(sc.off + sc.dur); if (b < 0 || a > w) return;
+      tg.fillStyle = i % 2 ? 'rgba(128,128,128,.10)' : 'rgba(128,128,128,.20)'; tg.fillRect(a, 0, b - a, 16);
+      tg.fillStyle = mut; tg.font = '600 10px "Noto Sans", sans-serif'; tg.save(); tg.beginPath(); tg.rect(a, 0, b - a, 16); tg.clip(); tg.fillText(sc.title || sc.id, Math.max(a, 0) + 4, 12); tg.restore(); });
+    // ruler: the finest step that keeps ~70 px between labels
+    const step = STEPS.find(s => s / span * w >= 70) || 600, minor = step >= 1 ? step / 5 : step / (step < .5 ? 1 : 5);
+    tg.strokeStyle = mut; tg.fillStyle = mut; tg.font = '10px "Noto Sans", sans-serif'; tg.lineWidth = 1;
+    for (let s = Math.floor(v0 / minor) * minor; s <= v0 + span; s += minor) { const x = Math.round(xOf(s)) + .5, major = Math.abs(s / step - Math.round(s / step)) < 1e-6;
+      tg.beginPath(); tg.moveTo(x, 16); tg.lineTo(x, major ? 28 : 22); tg.stroke(); if (major) tg.fillText(step < 1 ? tc(s) : fmt(s), x + 3, 27); }
+    // note lanes: the director's on top, the community's below (hollow)
+    tg.fillStyle = 'rgba(128,128,128,.12)'; tg.fillRect(0, 32, w, 18); if (HAS_COMMUNITY) tg.fillRect(0, 54, w, 18);
+    for (const n of shownAll()) { const x = xOf(n.t); if (x < -8 || x > w + 8) continue; const c = CATS[n.cat]?.col || '#888', y = n.community ? 63 : 41;
+      tg.globalAlpha = n.status === 'open' ? 1 : .35; tg.beginPath(); tg.arc(x, y, 6, 0, Math.PI * 2);
+      if (n.community) { tg.lineWidth = 2.5; tg.strokeStyle = c; tg.stroke(); } else { tg.fillStyle = c; tg.fill(); } tg.globalAlpha = 1; }
+    // playhead
+    const px = xOf(t); if (px >= 0 && px <= w) { tg.fillStyle = '#e8392b'; tg.fillRect(px - 1, 0, 2, h); tg.beginPath(); tg.moveTo(px - 6, 0); tg.lineTo(px + 6, 0); tg.lineTo(px, 8); tg.fill(); }
+    tcEl.textContent = tc(t);
+    requestAnimationFrame(drawTL);
+  }
+  setSpan(EPISODE.dur, 0); requestAnimationFrame(drawTL);
+  }
+  const list = panel.querySelector('.rv-list'), allv = panel.querySelector('.rv-all');
   panel.querySelector('.rv-ver').onchange = e => { location.href = vurl(+e.target.value); };
   allv.checked = !!store.get('rv-allv'); allv.onchange = () => { store.set('rv-allv', allv.checked); draw(); };
   const shown = () => allv.checked ? NOTES : NOTES.filter(n => n.ver === R.ver);
+  const comOn = panel.querySelector('.rv-com-on');
+  if (comOn) { comOn.checked = store.get('rv-com') !== false; comOn.onchange = () => { store.set('rv-com', comOn.checked); draw(); }; }
+  const hideCom = () => comOn ? !comOn.checked : false;
+  let HAS_COMMUNITY = R.role !== 'owner';
+  const shownAll = () => shown().filter(n => !n.community || !hideCom());
+  function focusNote(n) { jump(n.t); const li = $('rv-' + n.id); li?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); li?.classList.add('rv-hl'); setTimeout(() => li?.classList.remove('rv-hl'), 1500); }
   const pin = () => { const h = here(); note('visual', null, 'σημάδι για οπτικό έλεγχο', snapshot(null, null)); return h; };
   const comment = () => { const was = playing(); pause(); closeMenu(); ask('comment', null, snapshot(null, null), was); };
   panel.querySelector('.rv-pin').onclick = pin;
@@ -127,26 +212,55 @@
   });
   function status() { const q = (store.get(QKEY) || []).length; panel.querySelector('.rv-q').textContent = q ? `· ${q} σε αναμονή` : ''; }
   function draw() {
-    const dur = EPISODE.dur, S = shown();
+    const S = shownAll();
     allv.parentElement.lastChild.textContent = ` Σχόλια από όλα τα revision (${NOTES.length})`;
-    track.innerHTML = S.map(n => `<button class="rv-mk ${n.status}" data-id="${n.id}" style="left:${(n.t / dur * 100).toFixed(3)}%;--c:${CATS[n.cat]?.col || '#888'}" title="${fmt(n.t)} ${esc(CATS[n.cat]?.el)} ${esc(n.text)}"></button>`).join('');
+    if (R.role === 'owner') { const nc = NOTES.filter(n => n.community).length; HAS_COMMUNITY = nc > 0; panel.querySelector('.rv-com-n').textContent = `(${nc})`; }
     list.innerHTML = S.map(n => {
       const c = CATS[n.cat] || CATS.comment, old = n.ver !== R.ver;
-      return `<li id="rv-${n.id}" class="${n.status}"><button class="rv-t" data-t="${n.t}" data-v="${n.ver || ''}">${fmt(n.t)}</button><span class="rv-ic" style="--c:${c.col}">${c.icon}</span>
-        <div class="rv-body"><div>${n.text ? esc(n.text) : `<i>${esc(c.el)}</i>`}</div><div class="rv-meta">${esc(n.sceneTitle || n.scene)}${n.line?.el ? ` · ${esc(n.line.who)}: «${esc(n.line.el.slice(0, 80))}»` : ''} · ${esc(n.by)} · <span class="${old ? 'rv-old' : 'rv-cur'}">v${n.ver || '?'}</span></div>
-        ${n.status !== 'open' ? `<div class="rv-fix">${n.status === 'fixed' ? '✓ Διορθώθηκε' : '– Μένει ως έχει'}${n.rev ? ' · ' + esc(n.rev) : ''}${n.fixnote ? ' · ' + esc(n.fixnote) : ''}</div>` : ''}</div>
+      const mine = n.community ? n.uid === R.uid : R.role === 'owner';
+      const actions = (R.role === 'owner' && n.community ? `<button class="rv-adopt" data-id="${n.id}" title="Το παίρνω στα δικά μου σχόλια (για διόρθωση)">${n.adopted ? '✓ υιοθετήθηκε' : 'Υιοθέτηση'}</button>` : '')
+        + (mine || R.role === 'owner' ? `<button class="rv-del" data-id="${n.id}" title="Διαγραφή">🗑</button>` : '');
+      return `<li id="rv-${n.id}" class="${n.status}${n.community ? ' rv-cn' : ''}"><button class="rv-t" data-t="${n.t}" data-v="${n.ver || ''}">${fmt(n.t)}</button><span class="rv-ic" style="--c:${c.col}">${c.icon}</span>
+        <div class="rv-body"><div>${n.text ? esc(n.text) : `<i>${esc(c.el)}</i>`}</div><div class="rv-meta">${esc(n.sceneTitle || n.scene)}${n.line?.el ? ` · ${esc(n.line.who)}: «${esc(n.line.el.slice(0, 80))}»` : ''} · ${n.community ? `<b class="rv-who">${esc(n.by)}</b>` : esc(n.by)} · <span class="${old ? 'rv-old' : 'rv-cur'}">v${n.ver || '?'}</span></div>
+        ${n.from ? `<div class="rv-meta">από: ${esc(n.from)}</div>` : ''}${n.status !== 'open' && !n.community ? `<div class="rv-fix">${n.status === 'fixed' ? '✓ Διορθώθηκε' : '– Μένει ως έχει'}${n.rev ? ' · ' + esc(n.rev) : ''}${n.fixnote ? ' · ' + esc(n.fixnote) : ''}</div>` : ''}</div>
         ${n.shot ? `<a class="rv-shot" href="/review/shot/${R.ep}/${n.id}.jpg" target="_blank"><img src="/review/shot/${R.ep}/${n.id}.jpg" alt="" loading="lazy"></a>` : ''}
-        <button class="rv-del" data-id="${n.id}" title="Διαγραφή">🗑</button></li>`;
+        ${actions}</li>`;
     }).join('') || `<li class="rv-empty">${NOTES.length ? 'Κανένα σχόλιο σε αυτό το revision.' : 'Κανένα σχόλιο ακόμα.'} Πάτα πάνω στο καρέ όπου δεις κάτι.</li>`;
     status();
   }
-  track.onclick = e => { const b = e.target.closest('.rv-mk'); if (!b) return; const n = NOTES.find(n => n.id === b.dataset.id); jump(n.t); const li = $('rv-' + n.id); li?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); li?.classList.add('rv-hl'); setTimeout(() => li?.classList.remove('rv-hl'), 1500); };
   list.onclick = async e => {
     const t = e.target.closest('.rv-t');
     if (t && t.dataset.v && +t.dataset.v !== R.ver) { location.href = vurl(+t.dataset.v) + '#t=' + t.dataset.t; return; }   // a note on another revision: open that one
     if (t) { jump(+t.dataset.t); stage.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
+    const ad = e.target.closest('.rv-adopt'); if (ad) { const n = NOTES.find(n => n.id === ad.dataset.id); if (n && !n.adopted && confirm(`Υιοθέτηση του σχολίου του/της ${n.by}; Θα μπει στα δικά σου σχόλια για διόρθωση.`)) { try { await post('adopt', { id: n.id }); } catch (err) { } load(); } return; }
     const d = e.target.closest('.rv-del'); if (d && confirm('Διαγραφή αυτού του σχολίου;')) { try { await post('delete', { id: d.dataset.id }); } catch (err) { } load(); }
   };
+
+  /* ---------- the tour (first visit of a collaborator; «?» opens it again) ---------- */
+  const TOUR = [
+    ['#stage', 'Καλώς ήρθες στην παραγωγή!', 'Εδώ παίζει το επεισόδιο, όπως είναι αυτή τη στιγμή στο εργαστήριο. Space = play/pause.'],
+    ['.rv-tbtns', 'Μπρος–πίσω με ακρίβεια', 'Πήγαινε 5 ή 1 δευτερόλεπτο, ή ένα καρέ τη φορά. Πλήκτρα: ← → (με Shift 5 s), και , . για καρέ.'],
+    ['.rv-tl-wrap', 'Το timeline', 'Σύρε για να πας σε άλλη στιγμή. Ροδέλα ή + − για zoom, μέχρι το καρέ. Με Shift το σύρσιμο γίνεται 10× πιο αργό. Οι κουκκίδες είναι σχόλια: πάτα μία για να πας εκεί.'],
+    ['#c', 'Είδες κάτι; Πάτα πάνω του', 'Κλικ στο σημείο του καρέ: το επεισόδιο σταματά και ανοίγει μενού. 🎨 οπτικό, 🔊 φωνή/ήχος, ⏱ timing, 💬 ατάκα, 👍 μ\'αρέσει, ✍️ σχόλιο. Κρατάμε τη στιγμή, το σημείο και μια φωτογραφία του καρέ.'],
+    ['.rv-head', 'Revision και γρήγορα σημάδια', 'Από τη λίστα διαλέγεις παλαιότερο revision. 📍 (ή V) = σημάδι χωρίς παύση, ✍️ (ή C) = σχόλιο. Τα σχόλιά σου τα βλέπουν ο δημιουργός και οι άλλοι συνεργάτες, με το όνομά σου.'],
+  ];
+  function tour(i = 0) {
+    document.querySelector('.rv-tour')?.remove();
+    if (i >= TOUR.length) { if (R.role === 'community' && !R.toured) { R.toured = true; fetch('/api/me/toured', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', credentials: 'same-origin' }).catch(() => { }); } return; }
+    const [sel, title, text] = TOUR[i], tgt = document.querySelector(sel); if (!tgt) return tour(i + 1);
+    tgt.scrollIntoView({ block: 'center', behavior: 'instant' });
+    const r = tgt.getBoundingClientRect(), o = el('div', 'rv-tour');
+    o.innerHTML = `<div class="rv-tour-hole" style="left:${r.left - 6}px;top:${r.top - 6}px;width:${r.width + 12}px;height:${r.height + 12}px"></div>
+      <div class="rv-tour-card" role="dialog" aria-label="${esc(title)}"><div class="rv-tour-n">${i + 1} / ${TOUR.length}</div><h3>${esc(title)}</h3><p>${esc(text)}</p>
+      <div class="rv-tour-b"><button class="rv-tour-skip">Παράλειψη</button>${i ? '<button class="rv-tour-prev">Πίσω</button>' : ''}<button class="rv-tour-next">${i === TOUR.length - 1 ? 'Ξεκινάμε!' : 'Επόμενο'}</button></div></div>`;
+    document.body.append(o);
+    const card = o.querySelector('.rv-tour-card'), ch = card.offsetHeight;
+    card.style.top = (r.bottom + 14 + ch < innerHeight ? r.bottom + 14 : Math.max(10, r.top - ch - 14)) + 'px';
+    o.querySelector('.rv-tour-next').onclick = () => tour(i + 1);
+    o.querySelector('.rv-tour-prev')?.addEventListener('click', () => tour(i - 1));
+    o.querySelector('.rv-tour-skip').onclick = () => tour(TOUR.length);
+  }
+  panel.querySelector('.rv-tour-btn').onclick = () => tour(0);
 
   /* ---------- toast ---------- */
   let toastEl = null, toastT = 0;
@@ -155,7 +269,8 @@
   /* ---------- start ---------- */
   const go = () => {
     if (!window.EPISODE) return setTimeout(go, 200);
-    load(); flush();
+    initTL(); load(); flush();
+    if (R.role === 'community' && !R.toured) setTimeout(() => tour(0), 600);
     if (new URLSearchParams(location.search).get('lang') === 'en' && $('lang').textContent.trim() === 'EN') $('lang').click();   // ?lang=en opens with English subtitles
     const m = location.hash.match(/t=([\d.]+)/); if (m) jump(+m[1]);                // links from the log page: /review/<ep>#t=123.4
     setInterval(flush, 15000); window.addEventListener('online', flush);

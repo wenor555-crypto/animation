@@ -5,6 +5,8 @@
   python3 tools/review.py shot episode2r NOTE_ID [OUT.jpg]          # fetch one snapshot to look at
   python3 tools/review.py done episode2r ID [ID…] --rev r02 [--note "…"] [--wontfix | --reopen]
   python3 tools/review.py list
+  python3 tools/review.py community episode2r [--all]               # the collaborators' notes, by person (for a briefing only:
+                                                                     # never act on them unless the creator says so / adopts them)
 
 Goes through episode1/tools/compute_client.py (credentials stay in the environment).
 """

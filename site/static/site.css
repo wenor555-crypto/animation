@@ -59,3 +59,13 @@ form.inline { display:inline; }
 .subs button { font:700 14px "Noto Sans", sans-serif; border:2px solid var(--ink); background:transparent; color:var(--ink); border-radius:8px; padding:6px 12px; cursor:pointer; min-height:36px; }
 .subs button.on { background:var(--ink); color:var(--bg); }
 video::cue { font-family:"Noto Sans", sans-serif; font-size:clamp(14px, 2.4vw, 26px); background:rgba(18,14,20,.8); color:#fffaf0; }
+
+/* the way into the studio, from the public pages */
+.hero nav { display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end; }
+.hero nav a.btn.join, .btn.join { background:#ffd23f; color:#231a2e; border:0; padding:8px 14px; min-height:40px; box-shadow:0 3px 0 #c9a21a; }
+.topnav { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+.login .hp { position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+.login .or { text-align:center; color:var(--muted); margin:10px 0; }
+.login .g_id_signin { display:flex; justify-content:center; min-height:44px; }
+tr.blocked { opacity:.5; }
+@media (max-width:640px) { .hero nav { position:static; justify-content:flex-start; margin-top:12px; } }
