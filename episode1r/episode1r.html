@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Η Έξυπνη Σίτα · Επεισόδιο 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Noto+Sans:ital,wght@0,700;1,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="player.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Η Έξυπνη Σίτα</h1>
+    <p>Επεισόδιο 1 · ολόκληρο · space = play/pause · ←/→ = 5 δευτερόλεπτα</p>
+  </header>
+  <div class="stage" id="stage">
+    <canvas id="c" width="1280" height="720"></canvas>
+    <button id="big" aria-label="Play">▶</button>
+  </div>
+  <div class="bar">
+    <button id="play">▶ Play</button>
+    <button id="restart" title="Restart">⟲</button>
+    <input type="range" id="scrub" min="0" max="1200" step="0.01" value="0" aria-label="Timeline">
+    <span id="time">0:00</span>
+    <select id="chap" aria-label="Scene"></select>
+    <button id="vo" title="Placeholder voices (browser text-to-speech)">🗣 Φωνές</button>
+    <button id="lang" title="Subtitle language">EN</button>
+    <button id="snd" title="Sound">🔊</button>
+    <button id="fs" title="Fullscreen">⛶</button>
+  </div>
+  <div id="note">Placeholder voices by ElevenLabs (AI), until we record real voice actors. Lines without a clip fall back to your browser's Greek text-to-speech; 🗣 switches that to babble.</div>
+</main>
+<script src="../episode1/engine.js"></script>
+<script src="../episode1/characters.js"></script>
+<script src="../episode1/sets.js"></script>
+<script src="../episode1/props.js"></script>
+<script src="../episode1/fx.js"></script>
+<script src="../episode2/props2.js"></script>
+<script src="../episode3/props3.js"></script>
+<script src="../episode2r/props2r.js"></script>
+<script src="props1r.js"></script>
+<script src="scenes/s01.js"></script>
+<script src="scenes/s02.js"></script>
+<script src="scenes/s03.js"></script>
+<script src="scenes/s04.js"></script>
+<script src="scenes/s05.js"></script>
+<script src="scenes/s06.js"></script>
+<script src="scenes/s07.js"></script>
+<script src="scenes/s08.js"></script>
+<script src="scenes/s09.js"></script>
+<script src="scenes/s10.js"></script>
+<script src="scenes/s11.js"></script>
+<script src="scenes/s12.js"></script>
+<script src="scenes/s13.js"></script>
+<script src="scenes/s14.js"></script>
+<script src="scenes/s15.js"></script>
+<script src="scenes/s16.js"></script>
+<script src="scenes/s17.js"></script>
+<script src="scenes/s18.js"></script>
+<script src="scenes/s19.js"></script>
+<script src="scenes/s20.js"></script>
+<script>runEpisode(SCENES);</script>
+</body>
+</html>
