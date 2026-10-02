@@ -9,7 +9,7 @@ const steps = [
   { who: 'giannos', cam: 'giannos', el: 'Αυτό είναι αυτοκτονία.', en: "That's suicide." },
   { who: 'mimis', cam: 'mimis', el: "Γι' αυτό δεν θα το περιμένουν.", en: "That's why they won't expect it." },
   { act: 'jump', d: 1, cam: 'wide' },
-  { who: 'mimis', cam: 'chase', mark: 'come', el: 'ΕΛΑΤΕ ΕΔΩ, ΠΟΥΤΑΝΑΚΙΑ! ΓΑΜΩ ΤΟ AI ΣΑΣ!', en: 'COME HERE, YOU LITTLE BITCHES! FUCK YOUR AI!', say: 'Ελάτε εδώ, πουτανάκια! Γαμώ το έι άι σας!', gap: 0 },
+  { who: 'mimis', cam: 'chase', mark: 'come', el: 'ΕΛΑΤΕ ΕΔΩ ΠΟΥΤΑΝΑΚΙΑ! ΓΑΜΩ ΤΟ AI ΣΑΣ!', en: 'COME HERE, YOU LITTLE BITCHES! FUCK YOUR AI!', say: 'Ελάτε εδώ πουτανάκια! Γαμώ το έιάι σας!', gap: 0 },
   { act: 'chase', d: 3.4, cam: 'chase' },
   { act: 'lock', d: 1.4, cam: 'coop' },
   { act: 'silence', d: 1.6, cam: 'coop' },
@@ -34,7 +34,7 @@ const steps = [
   { who: 'kostas', cam: 'kos', mark: 'pockets', el: 'Θυμάμαι μια μπύρα. …Πού είναι το IQOS μου;', en: 'I remember a beer. …Where is my IQOS?' },
   { act: 'red', d: 1.2, cam: 'sita' },
   { who: 'sita', cam: 'sita', mark: 'you', el: 'ΕΣΥ.', en: 'YOU.', say: 'Εσύ.' },
-  { who: 'kostas', cam: 'kos', mark: 'hi', el: 'Γεια σου. Ωραία σίτα.', en: 'Hi. Nice screen door.' },
+  { who: 'kostas', cam: 'kos', mark: 'hi', el: 'Γεια σου. Ωραία σίτα.', en: 'Hi. Nice screen door.', say: 'Γεια σου. Ωραία σίτα!' },
 ];
 let M, PREP = null;
 /* the hen air force: three racket-planes with hen pilots. Before the sortie they hover with the army (rest);

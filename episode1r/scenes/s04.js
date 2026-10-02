@@ -9,7 +9,7 @@ const CAMS = {
 const steps = [
   { act: 'look', d: 1.6, cam: 'two' },
   { who: 'giannos', cam: 'giannos', el: 'Είναι κουρτίνα με μαγνήτες. Κυριολεκτικά. Κουρτίνα. Με μαγνήτες.', en: "It's a curtain with magnets. Literally. A curtain. With magnets." },
-  { who: 'mimis', cam: 'mimis', el: 'Κι εσύ είσαι μηχανικός με φούτερ στους 38. Όλοι έχουμε θέματα.', en: "And you're an engineer in a hoodie at 38 degrees. We've all got issues." },
+  { who: 'mimis', cam: 'mimis', el: 'Κι εγώ φοράω φούτερ στους 38. Όλοι έχουμε θέματα.', en: "And I'm wearing a hoodie at 38 degrees. We've all got issues." },
   { act: 'up', d: 2, cam: 'gsita' },
   { who: 'giannos', cam: 'bp', mark: 'riff', el: 'Όχι, ρε, σοβαρά τώρα. Αν της βάλεις ένα φτηνό μικροελεγκτή εδώ, δίπλα στους μαγνήτες… έναν αισθητήρα, μια κάμερα… να ξέρει ποιος μπαίνει, να κλείνει όταν έρχεται κουνούπι, όχι όταν έρχεται άνθρωπος…', en: "No, seriously though. Put a cheap microcontroller here, next to the magnets… a sensor, a camera… so it knows who's coming in, closes for a mosquito, not for a person…" },
   { who: 'giannos', cam: 'bpl', mark: 'laser', el: 'Και ένα λέιζερ. Μικρό. Να καίει τα κουνούπια στον αέρα.', en: 'And a laser. A small one. To burn the mosquitoes mid-air.' },

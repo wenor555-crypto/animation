@@ -88,7 +88,7 @@ function render(t, _M, sc) {
   // Γιώργος: phone torch, red slipper mark on his forehead
   const gtk = talk('giorgos', t);
   stand(720, 'giorgos', 1, { t, talk: gtk, look: lookAtSpeaker(t, 'giorgos', X, [1, -.3]), mouth: 'smirk', R: [60, -180], itemR: 'phone', L: gtk ? [-80, -120] : [-44, -24] });
-  blob(720, standY() - 232, 8, 6, '#e0303a', { lw: 0 });
+  slipperMark(722, standY() - 233, .6, -.12);   // the slipper's print from scene 5, still on his forehead
   // Χρήστος walks in from the dark road
   if (t > M.arrive.a) {
     const [cx, walking] = path(t, [[M.arrive.a, -80], [M.arrive.b - .3, 520]]);

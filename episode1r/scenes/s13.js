@@ -52,7 +52,6 @@ function render(t, _M, sc) {
     ctx.save(); ctx.translate(360, 468); ctx.rotate(-1.52); person(0, 190, .8, CAST.mimis, { t, part: 'body', talk: talk('mimis', t), blink: t < M.fire.a + 1.4, look: [1, 0], lid: t > M.fire.a + 1.4 }); ctx.restore();
     blanket(300, 470, 460, 90, { t, heat: 1, ctrlX: 850, ctrlY: 470, wave: .3, col: '#c9443a' });
     for (let i = 0; i < 4; i++) { const p = (t * .8 + i / 4) % 1; blob(250 + i * 30, 430 + p * 30, 4, 6, '#9ad8ff', { lw: 1.5 }); }
-    freddo(850, 520, 1);
   } else {
     blanket(300, 520, 460, 70, { t, ctrl: false, col: '#6a2a2a' });
     const [mx, walking] = path(t, [[M.douse.b, 520], [M.open1.a, 900], [M.fourth.a, 900], [M.fourth.a + .01, 470]]);
@@ -64,7 +63,20 @@ function render(t, _M, sc) {
   if (fireK > 0 && !up) { flame(740, 480, .7 * fireK, t); fxFire(740, 486, .55 * fireK, t, fireK); }
   if (inM(t, M.douse, .9, .6)) fxEmit(t, M.douse.a + .9, M.douse.a + 1.6, .1, 745, 470, { kind: 'smoke', n: 2, speed: 50, grav: 400, life: 1.6, size: .5, alpha: .5, spread: .7 });
   if (openK && inM(t, M.open1, 1, 2)) { const rx = lerp(900, 1100, prog(t, M.open1.a + 1, M.open1.a + 1.8)); fxArc(rx - 20, 380, rx + 30, 330, t, { seed: 4 }); }
-  if (inM(t, M.douse, 0, 0)) { const k = prog(t, M.douse.a, M.douse.a + 1); ctx.save(); ctx.translate(lerp(850, 760, k), lerp(520, 440, k)); ctx.rotate(k * 2.2); freddo(0, 0, 1); ctx.restore(); if (k > .6) for (let i = 0; i < 8; i++) blob(740 + hash(i) * 30, 450 + hash(i + 3) * 40, 5, 7, '#6b3e1f', { lw: 0 }); }
+  // the douse: his arm comes out from under the blanket, takes the freddo off the bedside table and pours it on the fire
+  const grab = M.douse.a + .45, lift = M.douse.a + .9, pourE = M.douse.a + 1.5, drop = M.douse.a + 1.9;
+  if (inM(t, M.douse, 0, .2) && !up) {
+    const reach = ease(prog(t, M.douse.a, grab)), mv = ease(prog(t, grab, lift)), back = ease(prog(t, drop, M.douse.b));
+    const hx = t < grab ? lerp(700, 850, reach) : t < drop ? lerp(850, 770, mv) : lerp(770, 700, back), hy = t < grab ? lerp(478, 512, reach) : t < drop ? lerp(512, 440, mv) : lerp(440, 478, back);
+    limb([[690, 476], [(690 + hx) / 2, Math.min(476, hy) - 18], [hx, hy]], 13, CAST.mimis.skin, { w: .4 });
+    if (t >= grab && t < drop) {
+      const tilt = ease(prog(t, lift, lift + .3)) * 2.2;
+      ctx.save(); ctx.translate(hx, hy); ctx.rotate(-tilt); freddo(0, 0, 1); ctx.restore();
+      if (t > lift + .2 && t < pourE) fxEmit(t, lift + .2, pourE, .05, hx - 22, hy - 6, { kind: 'drop', n: 3, speed: 60, grav: 1400, life: .45, dir: Math.PI * .6, spread: .5, col: '#a6743e' });
+    }
+  }
+  if (!up && t < grab) freddo(850, 520, 1);                                       // still on the bedside table
+  if (t >= drop) { ctx.save(); ctx.translate(800, 596); ctx.rotate(1.45); poly([[-12, -36], [12, -36], [9, 10], [-9, 10]], 'rgba(226,238,242,.75)', { lw: 3, w: .4 }); curve([[4, -34], [10, -58], [16, -62]], 3.5, '#d8392b', { w: .3 }); blob(0, 4, 7, 3, 'rgba(166,116,62,.6)', { lw: 0 }); ctx.restore(); }   // empty, knocked over on the floor
   ctx.restore();
   applyLight('night', .55); applyLight('red', openK ? .45 : .15);
   ctx.save(); applyCam(c);

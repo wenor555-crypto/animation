@@ -60,7 +60,7 @@ function render(t, _M, sc) {
   if (fallK > 0) {           // Γιώργος goes over backwards with his chair
     ctx.save(); ctx.translate(820, GROUND); ctx.rotate(fallK * 1.3); ctx.translate(-820, -GROUND);
     person(820, SEAT, 1, CAST.giorgos, { ...S.giorgos, part: 'all', legs: 'seat', look: [0, -1], mouth: 'open', brow: 'worry' });
-    blob(820, SEAT - 232, 9, 6, '#e0303a', { lw: 0 });
+    slipperMark(822, SEAT - 233, .6, -.12);
     ctx.restore();
   }
   if (!myrIn && t > M.enter.a + .8) stand(mx[0], 'myrsini', .95, myrSt);

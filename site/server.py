@@ -500,11 +500,11 @@ class H(BaseHTTPRequestHandler):
             f = d / f'r{n:02d}.jpg'
             return self.file(f) if f.exists() else self.send(404, '', 'text/plain')
         en = lang == 'en'
-        if kind == 'play':                                        # the interactive HTML of the same release (EL/EN subtitles)
-            if not en:
-                return self.file(d / f'r{n:02d}.html', 'text/html; charset=utf-8', cache='no-cache')
+        if kind == 'play':                                        # the interactive HTML of the same release (EL/EN subtitles), with the full-screen controls
             raw = (d / f'r{n:02d}.html').read_bytes(); i = raw.rfind(b'</body>')
-            js = b"<script>addEventListener('load',()=>setTimeout(()=>{const b=document.getElementById('lang');if(b&&b.textContent.trim()==='EN')b.click()},300))</script>"
+            js = f'<script src="{asset("player-fs.js")}"></script>'.encode()
+            if en:
+                js += b"<script>addEventListener('load',()=>setTimeout(()=>{const b=document.getElementById('lang');if(b&&b.textContent.trim()==='EN')b.click()},300))</script>"
             return self.send(200, raw[:i] + js + raw[i:] if i >= 0 else raw + js, headers={'Cache-Control': 'no-cache'})
         e = next((e for e in site_cfg().get('episodes', []) if e['slug'] == slug), {'slug': slug})
         L = (lambda el_, en_: en_ if en else el_)
@@ -680,7 +680,7 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
             info = {'ep': ep, 'build': cur['build'], 'ver': cur['n'], 'latest': ds[-1]['n'], 'built': cur['ts'], 'user': who, 'role': me['role'], 'uid': me['uid'], 'toured': me['toured'],
                     'versions': [{'n': m['n'], 'ts': m['ts']} for m in ds]}
             inject = (f'<link rel="stylesheet" href="{asset("review.css")}"><script>window.REVIEW={json.dumps(info, ensure_ascii=False)}</script>'
-                      f'<script src="{asset("review.js")}"></script>').encode()
+                      f'<script src="{asset("review.js")}"></script><script src="{asset("player-fs.js")}"></script>').encode()
             i = raw.rfind(b'</body>')
             out = raw[:i] + inject + raw[i:] if i >= 0 else raw + inject
             return self.send(200, out, headers={'Cache-Control': 'no-store'})

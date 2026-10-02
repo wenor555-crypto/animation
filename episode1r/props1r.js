@@ -81,3 +81,12 @@ function glitch(t, k = 1) {
 }
 /* TV scanlines (screen space) */
 function scanlines(a = .12) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = `rgba(0,0,0,${a})`; for (let y = 0; y < H; y += 4) ctx.fillRect(0, y, W, 1.5); ctx.restore(); }
+/* the slipper's print on a forehead: a sole-shaped red welt with tread lines (Γιώργος, after scene 5) */
+function slipperMark(x, y, s = 1, rot = -.25) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s, s);
+  ctx.fillStyle = 'rgba(224,60,70,.75)'; ctx.beginPath(); ctx.ellipse(0, 0, 17, 8, 0, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(-12, 0, 6, 7, 0, 0, TAU); ctx.fill();                 // the heel
+  ctx.strokeStyle = 'rgba(150,20,35,.6)'; ctx.lineWidth = 1.3;
+  for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(i * 5 + 2, -5); ctx.lineTo(i * 5 - 1, 5); ctx.stroke(); }
+  ctx.restore();
+}
