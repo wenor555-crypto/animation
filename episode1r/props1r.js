@@ -46,3 +46,18 @@ function sparePartsBag(x, y, rot = 0, s = 1) {
   for (let i = 0; i < 3; i++) rect(-14 + i * 10, 2, 7, 7, '#c9ccd2', { lw: 1 });
   ctx.restore();
 }
+
+/* over-the-shoulder framing: the listener's out-of-focus head and shoulder at the edge of the frame (screen space).
+   side: 'left' | 'right'; who: a CAST key (colours come from the rig) */
+function otsShoulder(who, side, t, o = {}) {
+  const c = CAST[who]; if (!c) return;
+  const d = side === 'left' ? 1 : -1, x0 = side === 'left' ? 40 : W - 40, sway = Math.sin(t * 1.1) * 4;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.filter = `blur(${o.blur ?? 10}px)`;
+  ctx.fillStyle = c.topCol || '#333'; ctx.beginPath(); ctx.ellipse(x0 + d * 40 + sway, H + 60, 260, 230, 0, 0, TAU); ctx.fill();
+  const head = c.hair === 'bald' ? c.skin : (c.hairCol || c.skin);
+  ctx.fillStyle = c.skin; ctx.beginPath(); ctx.ellipse(x0 + d * 30 + sway, H - 250, 120, 150, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = head; ctx.beginPath(); ctx.ellipse(x0 + d * 10 + sway, H - 300, 125, 120, 0, 0, TAU); ctx.fill();
+  ctx.filter = 'none'; ctx.restore();
+}
+/* the summer-day look of the yard: a warm wash and a little sun from the top right */
+function dayGrade(t, a = 1) { fxGrade('#ffe2a0', '#f0b070', .2 * a); }

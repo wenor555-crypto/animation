@@ -46,7 +46,7 @@ const SHOTS = [[0, 'wide'], [3.6, 'giannos'], [7.8, 'mimis'], [9.2, 'giannos'], 
 function camera(t) {
   let i = 0; while (i < SHOTS.length - 1 && t >= SHOTS[i + 1][0]) i++;
   const [st, name] = SHOTS[i], [x, y, z] = CAMS[name];
-  return { x, y, z: z * (1 + (t - st) * .008) };
+  return { x, y, z: z * (1 + (t - st) * .008), name };
 }
 
 const shutters = t => ease(prog(t, 43.4, 43.62));
@@ -127,6 +127,11 @@ function render(t) {
   drawVasilis(t);
   for (let i = 0; i < 10; i++) mosquito(640 + Math.sin(t * (1.1 + i * .13) + i) * 380, 330 + Math.cos(t * (1.7 + i * .1) + i * 2) * 110, .9, t);
   ctx.restore();
+  // depth and light: the August sun, fig leaves in front (the boys sit side by side facing us, so no over-the-shoulder here)
+  dayGrade(t);
+  if (c.name === 'wide' || c.name === 'door') { fxRays(1200, -60, t, .12); fxForeground(t, 'left', { blur: 8 }); }
+  if (c.name === 'three' || c.name === 'two') fxForeground(t, 'right', { blur: 9 });
+  if (['giannos', 'mimis', 'giorgos'].includes(c.name)) fxForeground(t, c.name === 'giannos' ? 'left' : 'right', { blur: 12 });
   const fadeIn = 1 - prog(t, 0, 1), fadeOut = 0;
   if (fadeIn > 0 || fadeOut > 0) { ctx.fillStyle = `rgba(0,0,0,${Math.max(fadeIn, fadeOut)})`; ctx.fillRect(0, 0, W, H); }
 }

@@ -60,6 +60,11 @@ function render(t, _M, sc) {
   const chipOn = t > M.tape.a + 1.4, led = t > M.flash.a + 1 ? 'green' : 'off';
   sita({ t, chip: chipOn, led, sway: Math.sin(t * 1.1) * .15 });
   if (inM(t, M.tape, .2, 0)) { const k = prog(t, M.tape.a + .2, M.tape.a + 1.4); ctx.save(); ctx.translate(1060, 524); rect(-24, -5, 48 * k, 10, 'rgba(60,60,66,.9)', { lw: 1.5, w: .4 }); ctx.restore(); }
+  // golden hour: the sun is low on the right, so every shadow stretches long to the left
+  ctx.save(); ctx.globalAlpha = .22; ctx.fillStyle = '#3a2440';
+  for (const [x, w] of [[720, 60], [905, 70], [640, 260]]) { ctx.beginPath(); ctx.ellipse(x - 150, GROUND - 4, 170 + w, 12, 0, 0, TAU); ctx.fill(); }
+  if (t > M.arrive.a) { const cx = path(t, [[M.arrive.a, -80], [M.arrive.b - .3, 520]])[0]; ctx.beginPath(); ctx.ellipse(cx - 150, GROUND - 4, 220, 12, 0, 0, TAU); ctx.fill(); }
+  ctx.restore();
   tableScene(t, {}, { noCups: false });
   // the crate with the laptop
   rect(770, GROUND - 90, 90, 90, '#b58a5a', { lw: 3.5, w: .5 }); curve([[770, GROUND - 45], [860, GROUND - 45]], 2.5, '#8f5e3c');
@@ -78,6 +83,7 @@ function render(t, _M, sc) {
     const hx = gx + gst.R[0], hy = SEAT + gst.R[1];
     ctx.save(); ctx.translate(hx, hy); ctx.rotate(-.5); rect(-6, -8, 50, 14, '#3a3a40', { lw: 2.5, w: .2 }); curve([[44, -1], [70, -1]], 3, '#c9c9c9'); ctx.restore();
     if (Math.sin(t * 9) > 0) for (let i = 0; i < 3; i++) blob(hx + 60 + i * 4, hy - 38 - i * 10, 3 + i * 2, 3 + i * 2, 'rgba(230,230,230,.5)', { lw: 0 });
+    fxEmit(t, M.open.a + .4, M.tape.b, .35, hx + 66, hy - 34, { kind: 'ember', n: 3, speed: 90, grav: 300, life: .6, spread: 1.6 });
   }
   // Γιώργος: phone torch, red slipper mark on his forehead
   const gtk = talk('giorgos', t);
@@ -100,9 +106,14 @@ function render(t, _M, sc) {
   ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .18; ctx.fillStyle = '#fff6c8';
   ctx.beginPath(); ctx.moveTo(780, standY() - 190); ctx.lineTo(1120, 440); ctx.lineTo(1120, 640); ctx.closePath(); ctx.fill(); ctx.restore();
   glow(815, GROUND - 130, 90, 'rgba(120,170,255,1)', .35);
+  glow(905, SEAT - 200, 120, 'rgba(120,170,255,1)', .22);            // the screen's light on his face
+  if (inM(t, M.flash, 0, -1.4)) fxCharge(t, 1060, 520, prog(t, M.flash.a, M.flash.a + 1), '120,255,160');
+  fxRing(t, M.flash.a + 1, 1060, 520, 240, .5, '140,255,170');
   sitaGlow({ t, led });
   if (inM(t, M.flash, .2, 1)) glow(1060, 520, 260 * bump(t, M.flash.a + .2, M.flash.a + 1.6), 'rgba(140,255,170,1)', .8);
   ctx.restore();
+  fxGrade('#ffb070', '#5a3266', .32);
+  if (shot === 'wide' || shot === 'three') { fxRays(W + 60, 140, t, .1, '255,190,120'); fxForeground(t, 'left', { blur: 9 }); }
 }
 return {
   id: 'scene06', title: '6 · Η αναβάθμιση', steps, render,

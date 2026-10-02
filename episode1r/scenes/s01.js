@@ -214,13 +214,16 @@ function titleCard(t) {
   panel(lerp(-660, 0 - flap, k), 1); panel(lerp(1300, 640 + flap, k), -1);
   if (t > 25.35) {
     const p = back(prog(t, 25.6, 26.3));
-    ctx.save(); ctx.translate(640, 330); ctx.rotate(-.05); ctx.scale(p, p);
+    const punch = 1 + .06 * Math.max(0, 1 - (t - 25.62) / .25) * (t > 25.62 ? 1 : 0);
+    ctx.save(); ctx.translate(640, 330); ctx.rotate(-.05); ctx.scale(p * punch, p * punch);
     const pts = []; for (let i = 0; i < 32; i++) { const r = i % 2 ? 250 : 300, a = i / 32 * TAU; pts.push([Math.cos(a) * r * 1.5, Math.sin(a) * r * .75]); }
     poly(pts, '#ffd23f', { lw: 7, w: .8 });
     txt('Η ΕΞΥΠΝΗ', 0, -52, 92, '#e8392b', { font: TVFONT, style: 'italic', weight: 900, stroke: 14, sc: '#fff' });
     txt('ΣΙΤΑ', 0, 50, 132, '#e8392b', { font: TVFONT, style: 'italic', weight: 900, stroke: 16, sc: '#fff' });
     ctx.restore();
   }
+  fxRing(t, 25.62, 640, 330, 560, .5, '255,210,63');
+  fxImpact(t, 25.62, 640, 330, .07);
   if (t > 26.6) {
     ctx.save(); ctx.globalAlpha = prog(t, 26.6, 27.2); ctx.translate(640, 560);
     poly([[-150, -26], [150, -26], [140, 26], [-160, 26]], '#231a2e', { lw: 0 });
@@ -248,6 +251,13 @@ function render(t) {
     drawWorld(t);
     const fade = 1 - prog(t, 4.3, 6.2);
     if (fade > 0) { ctx.fillStyle = `rgba(0,0,0,${fade})`; ctx.fillRect(0, 0, W, H); }
+    const c = cam(t), sx = W / 2 + (1060 - c.x) * c.z, sy = H / 2 + (90 - c.y) * c.z;   // the sun on screen
+    fxGrade('#ffd890', '#e8a050', .28);
+    fxRays(sx, sy, t, .14 * (1 - prog(t, 15.4, 16.4)));
+    if (sx > -100 && sx < W + 100 && sy > -100) fxFlare(sx, sy, .55);
+    if (c.z < 1.3) fxForeground(t, 'bottom', { kind: 'grass', blur: 9 });
+    // the mosquito's POV: it crosses close to the lens, out of focus, as the world fades in
+    if (t > 5.2 && t < 8.6) { const k = prog(t, 5.2, 8.6); ctx.save(); ctx.filter = 'blur(7px)'; ctx.globalAlpha = .7; mosquito(lerp(-300, 1600, ease(k)), 200 + Math.sin(k * 9) * 60, 10, t, 1); ctx.restore(); }
     if (t > 22.8) { const p = prog(t, 22.8, 23.9), s = lerp(1, 9, p * p); mosquito(lerp(1100, 640, p), lerp(200, 360, p), s, t, -1); }
   } else if (t < 24.25) mangaFlash(t);
   else titleCard(t);
@@ -259,7 +269,7 @@ function render(t) {
 
 return {
   id: 'scene01', title: '1 · Cold open', dur: 34, poster: 25.8, lines: LINES, render,
-  events: [[16.9, SFX.rev], [23.9, () => { SFX.slap(); SFX.boom(); }], [25.45, SFX.clack], [25.9, SFX.jingle]],
+  events: [[5.2, () => noise(1.2, .12, 900, 3, 'bandpass')], [16.9, SFX.rev], [23.9, () => { SFX.slap(); SFX.boom(); }], [25.45, SFX.clack], [25.62, () => { FXS.hit(); FXS.boom(.4); }], [25.9, SFX.jingle]],
   ambience: t => ({ mosq: t < 4.3 ? .06 : t > 22.6 && t < 23.9 ? .09 : t < 22.6 ? .006 : 0, cicada: t > 4.3 && t < 23.9 ? .035 : 0 }),
 };
 })());

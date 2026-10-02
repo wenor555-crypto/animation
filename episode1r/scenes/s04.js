@@ -4,14 +4,15 @@ const X = { giannos: 460, mimis: 640, giorgos: 820 };
 const CAMS = {
   wide: [640, 360, 1], three: [640, 430, 1.35], giannos: [460, 370, 2.1], mimis: [640, 370, 2.1], giorgos: [820, 370, 2.1],
   gsita: [985, 420, 1.75], sita: [1040, 520, 2], ted: [720, 360, 1.6], gstand: [740, 330, 2.2], two: [880, 420, 1.35],
+  bp: [1075, 560, 2.7], bpl: [1040, 545, 2.2],     // inserts: the blueprint on the seam, and the laser shot
 };
 const steps = [
   { act: 'look', d: 1.6, cam: 'two' },
   { who: 'giannos', cam: 'giannos', el: 'Είναι κουρτίνα με μαγνήτες. Κυριολεκτικά. Κουρτίνα. Με μαγνήτες.', en: "It's a curtain with magnets. Literally. A curtain. With magnets." },
   { who: 'mimis', cam: 'mimis', el: 'Κι εσύ είσαι μηχανικός με φούτερ στους 38. Όλοι έχουμε θέματα.', en: "And you're an engineer in a hoodie at 38 degrees. We've all got issues." },
   { act: 'up', d: 2, cam: 'gsita' },
-  { who: 'giannos', cam: 'gsita', mark: 'riff', el: 'Όχι, ρε, σοβαρά τώρα. Αν της βάλεις ένα φτηνό μικροελεγκτή εδώ, δίπλα στους μαγνήτες… έναν αισθητήρα, μια κάμερα… να ξέρει ποιος μπαίνει, να κλείνει όταν έρχεται κουνούπι, όχι όταν έρχεται άνθρωπος…', en: "No, seriously though. Put a cheap microcontroller here, next to the magnets… a sensor, a camera… so it knows who's coming in, closes for a mosquito, not for a person…" },
-  { who: 'giannos', cam: 'gsita', mark: 'laser', el: 'Και ένα λέιζερ. Μικρό. Να καίει τα κουνούπια στον αέρα.', en: 'And a laser. A small one. To burn the mosquitoes mid-air.' },
+  { who: 'giannos', cam: 'bp', mark: 'riff', el: 'Όχι, ρε, σοβαρά τώρα. Αν της βάλεις ένα φτηνό μικροελεγκτή εδώ, δίπλα στους μαγνήτες… έναν αισθητήρα, μια κάμερα… να ξέρει ποιος μπαίνει, να κλείνει όταν έρχεται κουνούπι, όχι όταν έρχεται άνθρωπος…', en: "No, seriously though. Put a cheap microcontroller here, next to the magnets… a sensor, a camera… so it knows who's coming in, closes for a mosquito, not for a person…" },
+  { who: 'giannos', cam: 'bpl', mark: 'laser', el: 'Και ένα λέιζερ. Μικρό. Να καίει τα κουνούπια στον αέρα.', en: 'And a laser. A small one. To burn the mosquitoes mid-air.' },
   { who: 'mimis', cam: 'mimis', el: 'Και αν περάσει άνθρωπος;', en: 'And if a person walks through?' },
   { who: 'giannos', cam: 'gsita', mark: 'mw', el: 'Πέντε milliwatt. Σε άνθρωπο απλώς τσούζει.', en: 'Five milliwatts. On a person it just stings.' },
   { who: 'mimis', cam: 'mimis', mark: 'stings', el: 'Απλώς τσούζει.', en: 'It just stings.', gap: .6 },
@@ -35,7 +36,9 @@ const steps = [
 let M;
 function render(t, _M, sc) {
   M = _M;
-  const c = shotCam(sc, t, CAMS);
+  let c = shotCam(sc, t, CAMS);
+  if (inM(t, M.pitch)) { const k = ease(ph(t, M.pitch)); c = [lerp(720, 740, k), lerp(360, 330, k), lerp(1.6, 2.4, k)]; }   // a slow push-in on «scalable»
+  const [, sh] = shotAt(sc, t);
   ctx.save(); applyCam(c);
   yard(t, {});
   sita({ t, sway: Math.sin(t * 1.3) * .25 });
@@ -76,6 +79,7 @@ function render(t, _M, sc) {
       if (t < zap) mosquito(lerp(930, 985, lk), 470 + Math.sin(t * 8) * 8, 1.4, t);
       if (t > zap - .15) laserBeam(1090, 524, 985, 470, 1 - prog(t, zap + .25, zap + .6), 2.5);
       zapPuff(985, 470, prog(t, zap, zap + .9));
+      fxBurst(t, zap, 985, 470, { kind: 'spark', n: 18, speed: 360, grav: 600, life: .5 });
       if (t > M.mw.a) txt('5 mW', 1150, 470, 22, '#ff6a6a', { font: TVFONT, weight: 900 });
       if (t > M.stings.a) { blob(1160, 610, 12, 12, null, { lw: 2.5, sc: '#7ac8ff', w: 0 }); curve([[1160, 622], [1160, 660]], 2.5, '#7ac8ff', { w: 0 });
         laserDot(1156, 606, .9, 4); txt('!', 1182, 592, 22, '#ff6a6a', { font: TVFONT, weight: 900 }); }
@@ -85,6 +89,10 @@ function render(t, _M, sc) {
   }
   for (let i = 0; i < 8; i++) mosquito(640 + Math.sin(t * (1.1 + i * .13) + i) * 380, 330 + Math.cos(t * (1.7 + i * .1) + i * 2) * 110, .9, t);
   ctx.restore();
+  dayGrade(t);
+  if (sh === 'two' || sh === 'ted') fxForeground(t, 'left', { blur: 9 });
+  if (sh === 'giannos' || sh === 'mimis' || sh === 'giorgos') fxForeground(t, sh === 'giannos' ? 'left' : 'right', { blur: 12 });
+  if (sh === 'bp' || sh === 'bpl') { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); const g = ctx.createRadialGradient(640, 360, 200, 640, 360, 760); g.addColorStop(0, 'rgba(10,20,40,0)'); g.addColorStop(1, 'rgba(10,20,40,.45)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); ctx.restore(); }
   // "scalable": a growth chart shoots up behind the pitch (screen space)
   if (inM(t, M.pitch, 2)) {
     const k = ease(ph(t, M.pitch, 2, 0));

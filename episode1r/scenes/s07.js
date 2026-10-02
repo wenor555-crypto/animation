@@ -9,15 +9,15 @@ const steps = [
   { act: 'silence', d: 2.4, cam: 'wide' },
   { who: 'giorgos', cam: 'gio', el: '…Αυτό ήταν;', en: '…Is that it?' },
   { act: 'jingle', d: 1.6, cam: 'sita' },
-  { who: 'sita', cam: 'sitaC', mark: 'hello', el: 'ΓΕΙΑ ΣΑΣ! Είμαι η ΕΞΥΠΝΗ ΣΙΤΑ! Εύκολη τοποθέτηση! ΧΩΡΙΣ ΕΙΔΙΚΟ! ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: "HELLO! I'm the SMART SCREEN DOOR! Easy installation! NO TECHNICIAN! CALL NOW!" },
+  { who: 'sita', cam: 'sitaC', mark: 'hello', el: 'ΓΕΙΑ ΣΑΣ! Είμαι η ΕΞΥΠΝΗ ΣΙΤΑ! Εύκολη τοποθέτηση! ΧΩΡΙΣ ΕΙΔΙΚΟ! ΤΗΛΕΦΩΝΗΣΤΕ ΤΩΡΑ!', en: "HELLO! I'm the SMART SCREEN DOOR! Easy installation! NO TECHNICIAN! CALL NOW!", say: 'Γεια σας! Είμαι η έξυπνη σίτα! Εύκολη τοποθέτηση! Χωρίς ειδικό! Τηλεφωνήστε τώρα!' },
   { act: 'fall', d: 2, cam: 'wide' },
   { who: 'giannos', cam: 'work', el: 'Δεν… δεν χρειάζεται να σε πάρει κανείς τηλέφωνο. Είσαι ήδη εδώ.', en: "No… nobody needs to call you. You're already here." },
-  { who: 'sita', cam: 'sita', el: 'ΚΑΙ ΔΕΝ ΤΕΛΕΙΩΣΑΜΕ!', en: "AND THAT'S NOT ALL!" },
+  { who: 'sita', cam: 'sita', el: 'ΚΑΙ ΔΕΝ ΤΕΛΕΙΩΣΑΜΕ!', en: "AND THAT'S NOT ALL!", say: 'Και δεν τελειώσαμε!' },
   { who: 'giannos', cam: 'work', el: 'Δεν είπα τίποτα.', en: "I didn't say anything." },
   { act: 'mosq', d: 2.2, cam: 'mosq' },
-  { who: 'sita', cam: 'mosq', mark: 'denied', el: 'Κουνούπι. Αριθμός χίλια τετρακόσια σαράντα δύο. Είσοδος… ΑΠΟΡΡΙΠΤΕΤΑΙ! Αλλά μόνο για λίγες μέρες, η προσφορά ισχύει μέχρι εξαντλήσεως αποθεμάτων!', en: 'Mosquito. Number one thousand four hundred forty-two. Entry… DENIED! But only for a few days, offer valid while stocks last!' },
+  { who: 'sita', cam: 'mosq', mark: 'denied', el: 'Κουνούπι. Αριθμός χίλια τετρακόσια σαράντα δύο. Είσοδος… ΑΠΟΡΡΙΠΤΕΤΑΙ! Αλλά μόνο για λίγες μέρες, η προσφορά ισχύει μέχρι εξαντλήσεως αποθεμάτων!', en: 'Mosquito. Number one thousand four hundred forty-two. Entry… DENIED! But only for a few days, offer valid while stocks last!', say: 'Κουνούπι. Αριθμός χίλια τετρακόσια σαράντα δύο. Είσοδος… απορρίπτεται! Αλλά μόνο για λίγες μέρες, η προσφορά ισχύει μέχρι εξαντλήσεως αποθεμάτων!' },
   { act: 'mimisOut', d: 2.2, cam: 'door' },
-  { who: 'sita', cam: 'door', el: 'Καλώς ήρθατε, Μίμη! Μόνο με ΤΡΕΙΣ άτοκες δόσεις!', en: 'Welcome, Mimis! In only THREE interest-free instalments!' },
+  { who: 'sita', cam: 'door', el: 'Καλώς ήρθατε, Μίμη! Μόνο με ΤΡΕΙΣ άτοκες δόσεις!', en: 'Welcome, Mimis! In only THREE interest-free instalments!', say: 'Καλώς ήρθατε, Μίμη! Μόνο με τρεις άτοκες δόσεις!' },
   { who: 'mimis', cam: 'mimis', el: "Εντάξει. Αυτό είναι πιο αστείο απ' όσο περίμενα.", en: "Okay. That's funnier than I expected." },
   { act: 'film', d: 1.6, cam: 'pitch' },
   { who: 'giorgos', cam: 'pitch', mark: 'ceo', el: 'Γεια σας. Είμαι ο Γιώργος, CEO της ΣίταAI…', en: "Hi. I'm Giorgos, CEO of SitaAI…" },
@@ -25,7 +25,7 @@ const steps = [
   { who: 'giorgos', cam: 'two', el: 'Εσύ είσαι CTO. Είναι τιμή.', en: "You're CTO. It's an honour." },
   { who: 'giorgos', cam: 'pitch', el: '…και αναζητούμε pre-seed χρηματοδότηση.', en: "…and we're looking for pre-seed funding." },
   { act: 'vas', d: 1.8, cam: 'door' },
-  { who: 'sita', cam: 'door', el: 'ΒΑΣΙΛΗΣ! Ο πιο ΕΞΥΠΝΟΣ πελάτης μας!', en: 'VASILIS! Our SMARTEST customer!' },
+  { who: 'sita', cam: 'door', el: 'ΒΑΣΙΛΗΣ! Ο πιο ΕΞΥΠΝΟΣ πελάτης μας!', en: 'VASILIS! Our SMARTEST customer!', say: 'Βασίλης! Ο πιο έξυπνος πελάτης μας!' },
   { who: 'vasilis', cam: 'door', el: "Είδατε; Σας το 'λεγα ότι ήταν έξυπνη.", en: 'See? I told you it was smart.' },
   { who: 'vasilis', cam: 'door', mark: 'traka', el: 'Έχεις ένα τσιγάρο;', en: 'Got a cigarette?' },
   { act: 'win', d: .8, cam: 'win' },
@@ -95,8 +95,26 @@ function render(t, _M, sc) {
   if (filming) glow(720 + 70, standY() - 250 - 20, 140, 'rgba(255,255,230,1)', .35);
   glow(815, GROUND - 130, 90, 'rgba(120,170,255,1)', .3);
   ctx.restore();
+  // the awakening: the LED charges in the silence, then a boot glitch and a ring on the jingle
+  ctx.save(); applyCam(c);
+  if (inM(t, M.L[0], .3, 0) || inM(t, M.silence, 1.2, 0)) fxCharge(t, 1060, 525, Math.min(1, prog(t, M.silence.a + 1.2, M.L[0].b)), '120,255,160');
+  fxRing(t, M.jingle.a, 1060, 525, 380, .6, '140,255,170');
+  fxBurst(t, M.denied.a + 2.4, mqx, mqy, { kind: 'spark', n: 22, speed: 420, grav: 500, life: .5 });
+  fxBurst(t, M.denied.a + 2.45, mqx, mqy, { kind: 'smoke', n: 8, speed: 60, grav: 300, life: 1.4, size: .5, alpha: .5 });
+  ctx.restore();
+  fxFlash(fxHitLight(t, [[M.jingle.a, .5], [M.denied.a + 2.4, .25]]));
+  if (inM(t, M.jingle, 0, -.9)) {                   // boot glitch: torn scanlines and an RGB split for a moment
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    for (let i = 0; i < 9; i++) { const y = (hash(i + Math.floor(t * 30)) * H) | 0, h = 6 + hash(i + 3) * 30, dx = (hash(i + 7 + Math.floor(t * 30)) - .5) * 80;
+      ctx.drawImage(ctx.canvas, 0, y * RES, W * RES, h * RES, dx, y, W, h); }
+    ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = 'rgba(255,0,60,.12)'; ctx.fillRect(4, 0, W, H); ctx.fillStyle = 'rgba(0,200,255,.12)'; ctx.fillRect(-4, 0, W, H);
+    ctx.restore();
+  }
+  const [, shN] = shotAt(sc, t);
+  if (shN === 'wide') fxForeground(t, 'left', { blur: 9 });
   if (inM(t, M.jingle, 0, .3)) sfxText('ΤΙΝΤΙΝΤΙΝ!', 640, 140, 70, -.1, '#ffd23f');
-  if (inM(t, M.denied, 2.5, 0)) { ctx.save(); ctx.translate(900, 250); ctx.rotate(-.2); ctx.globalAlpha = .9; ctx.strokeStyle = '#e8392b'; ctx.lineWidth = 8; ctx.strokeRect(-230, -50, 460, 100); txt('ΑΠΟΡΡΙΠΤΕΤΑΙ', 0, 0, 56, '#e8392b', { font: TVFONT, weight: 900 }); ctx.restore(); }
+  fxImpact(t, M.denied.a + 2.5, 900, 250, .05);
+  if (inM(t, M.denied, 2.5, 0)) { const st = 1 + .6 * Math.max(0, 1 - (t - M.denied.a - 2.5) / .12); ctx.save(); ctx.translate(900, 250); ctx.rotate(-.2); ctx.scale(st, st); ctx.globalAlpha = .9; ctx.strokeStyle = '#e8392b'; ctx.lineWidth = 8; ctx.strokeRect(-230, -50, 460, 100); txt('ΑΠΟΡΡΙΠΤΕΤΑΙ', 0, 0, 56, '#e8392b', { font: TVFONT, weight: 900 }); ctx.restore(); }
   if (filming && t < M.L[14].b) {      // vertical phone frame overlay while he pitches
     const [, sh] = shotAt(sc, t);
     if (sh === 'pitch') { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fillRect(0, 0, 420, H); ctx.fillRect(860, 0, 420, H); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.strokeRect(420, 20, 440, 680); blob(446, 46, 8, 8, '#e8392b', { lw: 0 }); txt('REC', 486, 47, 18, '#fff', { font: TVFONT }); ctx.restore(); }

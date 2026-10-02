@@ -4,7 +4,18 @@ const X = { giannos: 460, mimis: 640, giorgos: 820, myrsini: 900 };
 const CAMS = {
   wide: [640, 360, 1], three: [640, 430, 1.35], giannos: [460, 370, 2.1], mimis: [640, 370, 2.1], giorgos: [820, 370, 2.1],
   myr: [860, 380, 1.7], door: [1000, 470, 1.5], gface: [820, 350, 3.2], long: [900, 440, 1.15], sita: [1060, 560, 2.6],
+  kitchen: [1060, 470, 2.4],
 };
+/* Βαγγελιώ, never seen in the light: a silhouette in the dark doorway, behind the σίτα */
+function vangelioShadow(t) {
+  if (!(inM(t, M.L[3], -.2, 0) || inM(t, M.L[4]) || inM(t, M.shadow) || inM(t, M.slipper, 0, -2.2))) return;
+  const raise = inM(t, M.shadow) ? ease(ph(t, M.shadow, .2, 0)) : inM(t, M.slipper) ? 1 - ease(prog(t, M.slipper.a + .1, M.slipper.a + .4)) : 0;
+  const thrown = t > M.slipper.a + .3;
+  ctx.save(); ctx.beginPath(); ctx.rect(1000, 330, 120, GROUND - 330); ctx.clip();
+  ctx.filter = 'brightness(0.12) saturate(0)';
+  stand(1062, 'vangelio', 1, { t, look: [-1, .1], L: [-44, -24], R: thrown ? [-100, -150] : [lerp(44, 70, raise), lerp(-24, -250, raise)], itemR: thrown ? null : raise > .2 ? 'slipper' : null });
+  ctx.filter = 'none'; ctx.restore();
+}
 const steps = [
   { act: 'enter', d: 3.2, cam: 'door' },
   { who: 'myrsini', cam: 'myr', el: 'Παιδιά, καρπουζάκι. Κρύο.', en: 'Guys, watermelon. Cold.' },
@@ -12,8 +23,9 @@ const steps = [
   { who: 'myrsini', cam: 'myr', mark: 'burn', el: 'Εσύ δεν υποτίθεται ότι είσαι σκοπιά τώρα;', en: "Aren't you supposed to be on guard duty right now?" },
   { act: 'leave', d: 2.8, cam: 'three' },
   { act: 'fly', d: 2.2, cam: 'gface' },
-  { who: 'vangelio', cam: 'gface', label: ['ΒΑΓΓΕΛΙΩ (Ε.Κ.)', 'VANGELIO (O.S.)'], el: 'ΜΗΝ ΑΦΗΝΕΤΕ ΤΗΝ ΠΟΡΤΑ ΑΝΟΙΧΤΗ, ΘΑ ΓΕΜΙΣΟΥΜΕ ΜΥΓΕΣ!', en: "DON'T LEAVE THE DOOR OPEN, WE'LL BE FULL OF FLIES!" },
+  { who: 'vangelio', cam: 'gface', label: ['ΒΑΓΓΕΛΙΩ (Ε.Κ.)', 'VANGELIO (O.S.)'], el: 'ΜΗΝ ΑΦΗΝΕΤΕ ΤΗΝ ΠΟΡΤΑ ΑΝΟΙΧΤΗ, ΘΑ ΓΕΜΙΣΟΥΜΕ ΜΥΓΕΣ!', en: "DON'T LEAVE THE DOOR OPEN, WE'LL BE FULL OF FLIES!", say: 'Μην αφήνετε την πόρτα ανοιχτή, θα γεμίσουμε μύγες!' },
   { who: 'giorgos', cam: 'gface', el: 'Κυρία Βαγγελιώ, έχει σίτα τώρα…', en: "Mrs Vangelio, there's a screen door now…" },
+  { act: 'shadow', d: 1.3, cam: 'kitchen' },     // in the dark kitchen: her silhouette takes off a slipper (the finale's weapon, planted)
   { act: 'slipper', d: 2.6, cam: 'long' },
   { who: 'vangelio', cam: 'long', label: ['ΒΑΓΓΕΛΙΩ (Ε.Κ.)', 'VANGELIO (O.S.)'], el: 'Φέρε μου πίσω την παντόφλα.', en: 'Bring me back my slipper.', gap: .6 },
   { act: 'flinch', d: 2, cam: 'sita' },
@@ -34,6 +46,7 @@ function render(t, _M, sc) {
   const myrSt = { t, talk: talk('myrsini', t), legs: mx[1] ? 'walk' : 'stand', look: mx[1] ? [mx[0] < 1000 ? -1 : 1, 0] : [-.6, .2], mouth: 'smile',
     L: t < M.L[0].b ? [-60, -130] : [-44, -24], R: t < M.L[0].b ? [60, -130] : gesture(t, talk('myrsini', t)), lid: inM(t, M.burn) };
   if (myrIn && t < M.leave.b) { stand(mx[0], 'myrsini', .95, myrSt); }
+  vangelioShadow(t);
   sita({ t, pass: through, open: nerv, sway: Math.sin(t * 1.3) * .25 });
   const fallK = ease(prog(t, M.slipper.a + 1.2, M.slipper.a + 1.7));
   const gLook = t > M.leave.a && t < M.fly.a ? [.3, .9] : lookAtSpeaker(t, 'giorgos', X, [1, -.2]);
@@ -64,13 +77,20 @@ function render(t, _M, sc) {
   if (t > M.slipper.a + 1.2 && fallK < 1) slipper(820, SEAT - 232, 0, 1.1);
   if (fallK >= 1) slipper(700, GROUND - 8, .3, 1);
   for (let i = 0; i < 6; i++) mosquito(640 + Math.sin(t * (1.1 + i * .13) + i) * 380, 330 + Math.cos(t * (1.7 + i * .1) + i * 2) * 110, .9, t);
+  fxBurst(t, M.slipper.a + 1.2, 820, SEAT - 232, { kind: 'dust', n: 6, speed: 160, grav: 0, life: .7 });
+  fxRing(t, M.slipper.a + 1.2, 820, SEAT - 232, 120, .3);
   ctx.restore();
+  const [, sh] = shotAt(sc, t);
+  dayGrade(t);
+  if (sh === 'three' || sh === 'long' || sh === 'door') fxForeground(t, 'left', { blur: 9 });
+  if (sh === 'kitchen') { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); const g = ctx.createRadialGradient(640, 360, 120, 640, 360, 700); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.55)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); ctx.restore(); }
+  fxImpact(t, M.slipper.a + 1.2, 640, 300, .06);
   if (t > M.slipper.a + 1.18 && t < M.slipper.a + 1.7) sfxText('ΠΑΦ!', 640, 200, 110, -.12, '#ffd23f');
   if (inM(t, M.flinch, .3, -.4)) sfxText('κλικ-κλακ', 900, 170, 38, .08, '#fff');
 }
 return {
   id: 'scene05', title: '5 · Η παντόφλα', steps, render,
-  events: M => [[M.enter.a + .3, SFX.clack], [M.enter.a + 1.4, SFX.clack], [M.leave.a + 1.3, SFX.clack], [M.leave.a + 2.4, SFX.clack], [M.fly.a, SFX.flies],
+  events: M => [[M.enter.a + .3, SFX.clack], [M.enter.a + 1.4, SFX.clack], [M.leave.a + 1.3, SFX.clack], [M.leave.a + 2.4, SFX.clack], [M.fly.a, SFX.flies], [M.shadow.a + .3, () => tone(110, 1.1, 'sawtooth', .04, .7)],
     [M.slipper.a + .3, SFX.whoosh], [M.slipper.a + 1.2, () => { SFX.slap(); SFX.thud(); }], [M.slipper.a + 1.6, SFX.crash], [M.flinch.a + .3, () => SFX.clacks(4)]],
   ambience: () => ({ cicada: .03, mosq: .004 }),
 };

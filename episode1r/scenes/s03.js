@@ -4,8 +4,11 @@ const X = { giannos: 460, mimis: 640, giorgos: 820, vasilis: 960 };
 const CAMS = {
   wide: [640, 360, 1], three: [640, 430, 1.35], giannos: [460, 370, 2.1], mimis: [640, 370, 2.1], giorgos: [820, 370, 2.1],
   vasilis: [960, 380, 1.9], vclose: [960, 330, 2.8], door: [1030, 520, 1.9], velcro: [1010, 470, 3.4], thumb: [995, 480, 4.6], two: [760, 420, 1.3],
+  box: [962, 418, 3.6], light: [985, 318, 3.4],
 };
 const steps = [
+  // insert: the box itself, open, with the little bag of spare parts tucked in at the side (Ep. 2 needs it)
+  { act: 'boxins', d: 2.2, cam: 'box' },
   { who: 'vasilis', cam: 'vasilis', el: '«Έξυπνη σίτα! Εύκολη τοποθέτηση χωρίς ειδικό! Εννιά ζευγάρια ισχυροί μαγνήτες! Είκοσι πινέζες! Δώδεκα αυτοκόλλητα βέλκρο!»', en: '"Smart screen door! Easy installation, no technician! Nine pairs of powerful magnets! Twenty pins! Twelve adhesive velcro strips!"' },
   { who: 'giannos', cam: 'giannos', el: 'Και ποιο είναι το έξυπνο;', en: "And what's smart about it?" },
   { who: 'vasilis', cam: 'vasilis', el: 'Κλείνει μόνη της.', en: 'It closes by itself.' },
@@ -19,6 +22,7 @@ const steps = [
   { act: 'looks', d: 1.2, cam: 'vclose' },
   { who: 'vasilis', cam: 'vclose', el: 'Δημητράκι. Έχεις ένα τσιγάρο;', en: 'Dimitraki. Got a cigarette?' },
   { act: 'throw', d: 3.4, cam: 'two' },
+  { act: 'light', d: 1.6, cam: 'light' },     // the lighter, close: first drag, a happy cloud
   { who: 'vasilis', cam: 'door', el: 'Άντε. Πολιτισμός.', en: 'There we go. Civilization.', gap: .2 },
   { act: 'through', d: 3.2, cam: 'door' },
 ];
@@ -31,7 +35,7 @@ function vasilisState(t) {
   let L = [-60, -110], R = [60, -110], item = null, box = reading || t < M.speechless.b;
   if (t >= M.m1.a) { box = false; L = [-40, -30]; R = t < M.m3.b ? [128, -56] : [44, -24]; }
   if (t >= M.L[4].b && t < M.throw.a + 1.2 && t > M.m3.b) R = [40, -150];
-  if (t >= M.throw.a + 1.2) { R = [30, -160]; item = 'cig'; }
+  if (t >= M.throw.a + 1.2) { R = inM(t, M.light) ? [56, -168] : [30, -160]; item = 'cig'; }
   if (inside) walking = true;
   return { x, walking, L, R, item, box, inside };
 }
@@ -43,7 +47,16 @@ function drawVasilis(t) {
     look: t < M.L[0].b ? [0, .9] : t >= M.m1.a && t < M.m3.b + .5 ? [.8, -.6] : t > M.looks.a && t < M.throw.a ? [-.9, .2] : [-.5, .2],
     lid: t > M.L[4].a, mouth: t > M.throw.a + 1.4 ? 'smile' : 'flat', dir: 1,
   });
-  if (v.box) sitaBox(v.x, hips - 110, 1);
+  if (v.box) {
+    if (t < M.speechless.b) sparePartsBag(v.x + 44, hips - 172, .16, 1.2);   // tucked in beside the folded screen, sticking out on the right
+    sitaBox(v.x, hips - 110, 1, { open: t < M.L[0].b ? .55 : 0 });
+  }
+  // the lighter and the first drag
+  if (inM(t, M.light)) {
+    const k = prog(t, M.light.a, M.light.a + .5);
+    if (t < M.light.a + .9) fxFire(v.x + 52, hips - 172, .22, t, Math.min(1, k * 3) * (1 - prog(t, M.light.a + .7, M.light.a + .9)));
+    fxBurst(t, M.light.a + .95, v.x + 70, hips - 196, { kind: 'smoke', n: 6, speed: 60, grav: 300, life: 1.4, size: .28, alpha: .35, dir: -1.2, spread: .8 });
+  }
   // smoke puff after "Πολιτισμός"
   if (t > M.L[7].a && t < M.through.a + 1) for (let i = 0; i < 4; i++) { const p = prog(t, M.L[7].a + i * .1, M.L[7].a + 1.6 + i * .1); if (p > 0 && p < 1) blob(v.x + 30 + p * 80, hips - 190 - p * 60, 10 + p * 40, 8 + p * 30, `rgba(225,225,225,${.6 * (1 - p)})`, { lw: 0 }); }
 }
@@ -106,13 +119,18 @@ function render(t, _M, sc) {
   if (t > M.through.a) { const p = prog(t, M.through.a + .3, M.through.a + 2.2); mosquito(lerp(1180, 1062, p), lerp(420, 560, p), 1.6, t); }
   for (let i = 0; i < 8; i++) mosquito(640 + Math.sin(t * (1.1 + i * .13) + i) * 380, 330 + Math.cos(t * (1.7 + i * .1) + i * 2) * 110, .9, t);
   ctx.restore();
+  const [, sh] = shotAt(sc, t);
+  dayGrade(t);
+  if (sh === 'two') { fxRays(1200, -60, t, .1); fxForeground(t, 'left', { blur: 9 }); }
+  if (sh === 'giannos' || sh === 'vasilis' || sh === 'vclose') fxForeground(t, sh === 'giannos' ? 'left' : 'right', { blur: 12 });
   if (t > M.throw.a + 2.2 && t < M.throw.a + 2.7) sfxText('ΚΛΑΚ!', 900, 200, 60);
   if (t > M.through.a + 2.3 && t < M.through.a + 2.8) sfxText('ΚΛΑΚ!', 900, 200, 60);
 }
 return {
   id: 'scene03', title: '3 · Κλείνει μόνη της', steps, render, fadeIn: false, fadeOut: false, start: .2,
   events: M => [[M.m1.a + .5, SFX.creak], [M.m2.a + .8, SFX.pop], [M.m3.a + .85, SFX.pop], [M.throw.a + .3, SFX.whoosh], [M.throw.a + 1.1, SFX.slap],
-    [M.throw.a + 1.3, () => tone(2200, .15, 'square', .03)], [M.throw.a + 2.2, SFX.clack], [M.through.a + .8, SFX.door], [M.through.a + 2.3, SFX.clack]],
+    [M.throw.a + 1.3, () => tone(2200, .15, 'square', .03)], [M.light.a + .1, () => { noise(.12, .3, 3000, 2, 'bandpass'); tone(2600, .08, 'square', .02); }], [M.light.a + .3, () => noise(.6, .12, 600, .8, 'lowpass')],
+    [M.boxins.a + .2, () => noise(.4, .15, 1500, 1, 'bandpass')], [M.throw.a + 2.2, SFX.clack], [M.through.a + .8, SFX.door], [M.through.a + 2.3, SFX.clack]],
   ambience: () => ({ cicada: .03, mosq: .004 }),
 };
 })());
