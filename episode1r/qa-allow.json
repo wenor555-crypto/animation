@@ -52,5 +52,6 @@
   {"scene": "scene16", "kind": "DOT", "fill": "#ffb81c", "t0": 31, "t1": 40, "why": "egg yolk: the egg on Γιώργος's tee and the yolk splashes over the barricade"},
   {"scene": "scene17", "kind": "DOT", "who": "kostas", "t0": 24, "t1": 32, "why": "feathers on Panik after the hose swats him into the coop"},
   {"scene": "scene17", "kind": "DOT", "fill": "#e8c8e0", "t0": 56, "t1": 58, "why": "the slipper falling off the σίτα's face after the hit"},
-  {"scene": "scene16", "kind": "DOT", "fill": "#f6f2e8", "who": "giorgos", "why": "a feather from the hen air force drifting past Γιώργος during the raid"}
+  {"scene": "scene16", "kind": "DOT", "fill": "#f6f2e8", "who": "giorgos", "why": "a feather from the hen air force drifting past Γιώργος during the raid"},
+  {"scene": "scene13", "kind": "DOT", "fill": "rgba(166,116,62", "who": "mimis", "why": "the freddo he pours on the fire, and the coffee left in his empty cup"}
 ]
