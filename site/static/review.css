@@ -119,3 +119,19 @@
   .rv-zoom button { min-width:48px; min-height:44px; }
   .rv-gdel, .rv-del { min-width:40px; min-height:40px; }
 }
+
+/* the owner's revision check: earlier notes as pins, what changed */
+.rv-rc { display:flex; flex-wrap:wrap; gap:10px; align-items:center; font-size:13px; color:var(--muted); margin-bottom:8px; }
+.rv-rc label { display:inline-flex; gap:5px; align-items:center; cursor:pointer; font-weight:700; color:var(--ink); }
+.rv-lg { display:inline-flex; gap:5px; align-items:center; }
+.rv-lg i { display:inline-block; width:14px; height:10px; border-radius:3px; }
+.rv-lg-new { background:rgba(255,210,63,.75); } .rv-lg-ch { background:rgba(240,140,40,.55); }
+.rv-pinbox { margin-top:8px; border-radius:10px; padding:10px; background:var(--bg, #f4efe4); border-left:5px solid #e8892b; font-size:14px; }
+.rv-pb-h { display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.rv-pb-h button, .rv-pb-act button { border:0; border-radius:8px; padding:6px 10px; font:700 13px "Noto Sans", sans-serif; background:var(--btn); color:var(--btn-ink); cursor:pointer; min-height:34px; }
+.rv-pb-st.fixed { color:#2e9e5b; font-weight:700; } .rv-pb-st.open { color:#e8892b; font-weight:700; }
+.rv-pb-b { display:flex; gap:10px; margin-top:8px; align-items:flex-start; }
+.rv-pb-b img { width:200px; border-radius:6px; display:block; }
+.rv-pb-act { display:flex; gap:8px; margin-top:8px; }
+.rv-pb-ok { background:#2e9e5b !important; color:#fff !important; }
+@media (max-width:640px) { .rv-pb-b { flex-direction:column; } .rv-pb-b img { width:100%; } }

@@ -661,6 +661,12 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
                 rows.append(f'<li><a href="/review/{ep}">{ep}</a> <span class="meta">v{ds[-1]["n"]} · {esc(ds[-1]["ts"])} · {op} ανοιχτά / {len(ns)} σχόλια{f" · {nc} κοινότητας" if nc else ""}</span> '
                             f'<a class="meta" href="/review/{ep}/log">log</a><div class="meta">Drafts: {vers}{" · MP4: " + rels if rels else ""}</div></li>')
             return self.send(200, page('Review', f'<main><p><a href="/">← Η Έξυπνη Σίτα</a></p><h1>Review</h1><p class="meta">{esc(who)} · <a href="/review/users">χρήστες ({len(load_users())})</a> · <form class="inline" method="post" action="/review/logout"><button class="link">έξοδος</button></form></p><ul class="list">{"".join(rows)}</ul></main>'))
+        m = re.match(r'^/review/([a-z0-9_-]+)/v(\d+)/raw$', p)        # a revision as it is (no review overlay): the owner's page reads its structure in a hidden frame
+        if m:
+            if not owner:
+                return self.send(403, '', 'text/plain')
+            f = SITE / 'drafts' / m.group(1) / f'v{int(m.group(2)):02d}.html'
+            return self.file(f, 'text/html; charset=utf-8', cache='private, max-age=86400') if NAME.match(m.group(1)) and f.exists() else self.send(404, '', 'text/plain')
         m = re.match(r'^/review/([a-z0-9_-]+)(?:/v(\d+)|/(log|notes\.md|notes\.csv))?$', p)
         if m:
             ep, vn, sub = m.groups()
@@ -678,7 +684,11 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
                 return self.send(404, page('404', '<main><h1>Δεν υπάρχει αυτό το draft</h1><p><a href="/review">Review</a></p></main>'))
             raw = (SITE / 'drafts' / ep / f'v{cur["n"]:02d}.html').read_bytes()
             info = {'ep': ep, 'build': cur['build'], 'ver': cur['n'], 'latest': ds[-1]['n'], 'built': cur['ts'], 'user': who, 'role': me['role'], 'uid': me['uid'], 'toured': me['toured'],
-                    'versions': [{'n': m['n'], 'ts': m['ts']} for m in ds]}
+                    'versions': [{'n': m['n'], 'ts': m['ts'], 'build': m['build']} for m in ds]}
+            if owner:                                              # the same episode under another name (site.json aliases): its notes and drafts count too
+                alias = site_cfg().get('aliases', {}); target = alias.get(ep, ep)
+                info['related'] = [{'ep': e, 'versions': [{'n': d['n'], 'build': d['build'], 'ts': d['ts']} for d in drafts(e)]}
+                                   for e in review_eps() if e != ep and (e == target or alias.get(e, e) == target)]
             inject = (f'<link rel="stylesheet" href="{asset("review.css")}"><script>window.REVIEW={json.dumps(info, ensure_ascii=False)}</script>'
                       f'<script src="{asset("review.js")}"></script><script src="{asset("player-fs.js")}"></script>').encode()
             i = raw.rfind(b'</body>')

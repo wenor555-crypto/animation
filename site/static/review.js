@@ -172,7 +172,8 @@
     PT.set(e.pointerId, { x: e.clientX }); tlc.setPointerCapture(e.pointerId);
     if (PT.size === 2) { drag = null; pinch = pinchState(); return; }
     const r = tlc.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-    const hit = y > 30 && shownAll().find(n => Math.abs(xOf(n.t) - x) < 7 && (n.community ? y > 52 : y <= 52));
+    if (y > 74 && PIN_ON()) { const pin = PINS.find(q => Math.abs(xOf(q.t) - x) < 8); if (pin) { openPin(pin); return; } }
+    const hit = y > 30 && y <= 74 && shownAll().find(n => Math.abs(xOf(n.t) - x) < 7 && (n.community ? y > 52 : y <= 52));
     if (hit) { focusNote(hit); return; }
     tlc.setPointerCapture(e.pointerId); drag = { x0: x, t0: tOf(x) }; seek(tOf(x));
   });
@@ -188,12 +189,17 @@
     setSpan(span * Math.pow(1.0015, e.deltaY), tOf(x)); }, { passive: false });
   const STEPS = [1 / FPS, 5 / FPS, 10 / FPS, .5, 1, 2, 5, 10, 15, 30, 60, 120, 300];
   function drawTL() {
-    const w = tlc.clientWidth, h = 74, dpr = devicePixelRatio || 1;
-    if (tlc.width !== Math.round(w * dpr)) { tlc.width = Math.round(w * dpr); tlc.height = h * dpr; }
+    const h = R.role === 'owner' ? 98 : 74, w = tlc.clientWidth, dpr = devicePixelRatio || 1;
+    if (tlc.style.height !== h + 'px') tlc.style.height = h + 'px';
+    if (tlc.width !== Math.round(w * dpr) || tlc.height !== h * dpr) { tlc.width = Math.round(w * dpr); tlc.height = h * dpr; }
     tg.setTransform(dpr, 0, 0, dpr, 0, 0); tg.clearRect(0, 0, w, h);
     const css = getComputedStyle(tp), ink = css.getPropertyValue('--ink').trim() || '#231a2e', mut = css.getPropertyValue('--muted').trim() || '#888';
     const t = +scrub.value;
     if (playing() && (t < v0 || t > v0 + span)) v0 = Math.min(Math.max(t - span * .1, 0), EPISODE.dur - span);   // follow the playhead
+    // what changed since the previous revision: tinted bands across the timeline
+    if (DIFF_ON()) for (const ch of CHANGES) { const a = xOf(ch.a), b = Math.max(xOf(ch.b), a + 5); if (b < 0 || a > w) continue;
+      tg.fillStyle = ch.kind === 'new' ? 'rgba(255,210,63,.32)' : ch.kind === 'changed' ? 'rgba(240,140,40,.24)' : 'rgba(240,140,40,.12)'; tg.fillRect(a, 0, b - a, h);
+      tg.fillStyle = ch.kind === 'new' ? '#e8b400' : '#e8892b'; tg.fillRect(a, 28, b - a, 3); }
     // scenes: alternating bands with their titles
     EPISODE.scenes.forEach((sc, i) => { const a = xOf(sc.off), b = xOf(sc.off + sc.dur); if (b < 0 || a > w) return;
       tg.fillStyle = i % 2 ? 'rgba(128,128,128,.10)' : 'rgba(128,128,128,.20)'; tg.fillRect(a, 0, b - a, 16);
@@ -208,6 +214,15 @@
     for (const n of shownAll()) { const x = xOf(n.t); if (x < -8 || x > w + 8) continue; const c = CATS[n.cat]?.col || '#888', y = n.community ? 63 : 41;
       tg.globalAlpha = n.status === 'open' ? 1 : .35; tg.beginPath(); tg.arc(x, y, 6, 0, Math.PI * 2);
       if (n.community) { tg.lineWidth = 2.5; tg.strokeStyle = c; tg.stroke(); } else { tg.fillStyle = c; tg.fill(); } tg.globalAlpha = 1; }
+    // earlier notes, carried over to where their moment is now: green ✓ fixed, orange still open, grey if the scene changed
+    if (R.role === 'owner') {
+      tg.fillStyle = 'rgba(128,128,128,.08)'; tg.fillRect(0, 76, w, 20);
+      if (PIN_ON()) for (const q of PINS) { const x = xOf(q.t); if (x < -10 || x > w + 10) continue;
+        const col = q.lost ? '#9a9aa2' : q.n.status === 'fixed' ? '#2e9e5b' : q.n.status === 'wontfix' ? '#7a7a88' : '#e8892b', sel = PIN_CUR === q;
+        tg.fillStyle = col; tg.beginPath(); tg.moveTo(x, 95); tg.bezierCurveTo(x - 9, 86, x - 7, 77, x, 77); tg.bezierCurveTo(x + 7, 77, x + 9, 86, x, 95); tg.fill();
+        if (sel) { tg.lineWidth = 2; tg.strokeStyle = '#fff'; tg.stroke(); }
+        tg.fillStyle = '#fff'; tg.font = '700 9px "Noto Sans", sans-serif'; tg.textAlign = 'center'; tg.fillText(q.n.status === 'fixed' ? '✓' : q.lost ? '?' : '!', x, 88); tg.textAlign = 'left'; }
+    }
     // playhead
     const px = xOf(t); if (px >= 0 && px <= w) { tg.fillStyle = '#e8392b'; tg.fillRect(px - 1, 0, 2, h); tg.beginPath(); tg.moveTo(px - 6, 0); tg.lineTo(px + 6, 0); tg.lineTo(px, 8); tg.fill(); }
     tcEl.textContent = tc(t);
@@ -324,6 +339,119 @@
     const d = e.target.closest('.rv-gdel'); if (d && confirm('Διαγραφή;')) { try { await post('unpost', { id: d.dataset.id }); } catch (err) { } loadGen(); }
   };
 
+  /* ---------- the owner's revision check ----------
+     Every earlier note is pinned where its moment is in THIS revision: each revision's structure (scenes, lines, actions with
+     their times) is read once from the draft itself in a hidden frame and cached by build hash; a note moves with its line
+     (same text or same slot), else with its action, else proportionally inside its scene. The previous revision's structure
+     also gives the diff: new scenes/actions/lines (yellow), changed or re-voiced lines (orange). */
+  let PINS = [], CHANGES = [], PIN_CUR = null;
+  const PIN_ON = () => R.role === 'owner' && store.get('rv-pins') !== false, DIFF_ON = () => R.role === 'owner' && store.get('rv-diff') !== false;
+  const structOf = E => ({ scenes: E.scenes.map(s => ({ id: s.id, off: s.off, dur: s.dur,
+    lines: (s.lines || []).map(l => ({ who: l.who, el: l.el, a: l.a, b: l.b })),
+    marks: Object.entries(s.M || {}).filter(([k, v]) => k !== 'L' && v && typeof v.a === 'number' && !('el' in v)).map(([k, v]) => ({ name: k, a: v.a, b: v.b })) })) });
+  const verList = ep => ep === R.ep ? R.versions : (R.related || []).find(r => r.ep === ep)?.versions || [];
+  async function loadStruct(ep, n) {
+    const v = verList(ep).find(v => v.n === n); if (!v) return null;
+    const key = 'rv-struct-' + v.build, hit = store.get(key); if (hit) return hit;
+    return new Promise(res => {
+      const f = document.createElement('iframe'); f.setAttribute('aria-hidden', 'true'); f.tabIndex = -1;
+      f.style.cssText = 'position:fixed;left:-4000px;top:0;width:640px;height:360px;opacity:0;pointer-events:none';
+      let tries = 0; const done = st => { f.remove(); if (st) store.set(key, st); res(st); };
+      f.onload = () => { const poll = () => { let E = null; try { E = f.contentWindow.EPISODE; } catch (e) { } if (E && E.scenes) return done(structOf(E)); if (++tries > 100) return done(null); setTimeout(poll, 150); }; poll(); };
+      f.onerror = () => done(null);
+      f.src = `/review/${ep}/v${n}/raw`; document.body.append(f);
+      setTimeout(() => { if (f.isConnected) done(null); }, 40000);
+    });
+  }
+  const clampv = (v, a, b) => Math.min(Math.max(v, a), b);
+  function mapNote(n, os, CUR) {
+    const cs = CUR.scenes.find(s => s.id === n.scene);
+    if (!cs) { const near = CUR.scenes.reduce((a, s) => Math.abs(s.off - n.t) < Math.abs(a.off - n.t) ? s : a); return { t: near.off + .05, lost: true }; }
+    const o = os && os.scenes.find(s => s.id === n.scene), lt = n.lt ?? (n.t - (o ? o.off : cs.off));
+    if (o) {
+      const ol = (n.line?.el && o.lines.find(l => l.who === n.line.who && l.el.startsWith(n.line.el.slice(0, 40)))) || o.lines.find(l => lt >= l.a - .15 && lt < l.b + .3);   // the line the note was about
+      if (ol) {
+        let nl = cs.lines.find(l => l.el === ol.el && l.who === ol.who);
+        if (!nl) { const c = cs.lines[o.lines.indexOf(ol)]; if (c && c.who === ol.who) nl = c; }
+        if (nl) return { t: cs.off + clampv(nl.a + (lt - ol.a), nl.a, nl.b - .05) };
+      }
+      const om = o.marks.filter(m => lt >= m.a && lt < m.b).sort((x, y) => (x.b - x.a) - (y.b - y.a))[0];
+      if (om) { const nm = cs.marks.find(m => m.name === om.name); if (nm) return { t: cs.off + nm.a + (lt - om.a) / (om.b - om.a || 1) * (nm.b - nm.a) }; }
+      return { t: cs.off + clampv(lt / (o.dur || 1), 0, .999) * cs.dur };
+    }
+    if (n.line?.el) { const nl = cs.lines.find(l => l.el.startsWith(n.line.el.slice(0, 40))); if (nl) return { t: cs.off + nl.a + .2 }; }
+    return { t: cs.off + Math.min(lt, cs.dur - .1) };
+  }
+  function diffStruct(P, C) {
+    const out = [];
+    for (const cs of C.scenes) {
+      const ps = P.scenes.find(s => s.id === cs.id);
+      if (!ps) { out.push({ a: cs.off, b: cs.off + cs.dur, kind: 'new', what: 'νέα σκηνή' }); continue; }
+      for (const m of cs.marks) if (!ps.marks.some(x => x.name === m.name)) out.push({ a: cs.off + m.a, b: cs.off + m.b, kind: 'new', what: 'νέο πλάνο' });
+      cs.lines.forEach((l, i) => {
+        const same = ps.lines.find(x => x.el === l.el && x.who === l.who);
+        if (same) { if (Math.abs((l.b - l.a) - (same.b - same.a)) > .12) out.push({ a: cs.off + l.a, b: cs.off + l.b, kind: 'revoiced', what: 'νέα λήψη φωνής' }); return; }
+        const pl = ps.lines[i]; out.push({ a: cs.off + l.a, b: cs.off + l.b, kind: pl && pl.who === l.who ? 'changed' : 'new', what: pl && pl.who === l.who ? 'αλλαγμένη ατάκα' : 'νέα ατάκα' });
+      });
+    }
+    return out;
+  }
+  let PINS_FOR = '';
+  async function revisionCheck() {
+    if (R.role !== 'owner') return;
+    const CUR = structOf(EPISODE), stat = panel.querySelector('.rv-rc-stat');
+    stat.textContent = 'φόρτωση προηγούμενων revision…';
+    // the diff: against the newest earlier revision that loads (a broken draft is skipped), else the related episode's latest
+    let P = null, pv = null;
+    for (const v of [...R.versions].filter(v => v.n < R.ver).sort((a, b) => b.n - a.n)) { P = await loadStruct(R.ep, v.n); if (P) { pv = `v${v.n}`; break; } }
+    if (!P) for (const r of R.related || []) { const v = r.versions[r.versions.length - 1]; if (v) { P = await loadStruct(r.ep, v.n); if (P) { pv = `${r.ep} v${v.n}`; break; } } }
+    CHANGES = P ? diffStruct(P, CUR) : [];
+    // the notes of earlier revisions (and of the related episode), each mapped through its own revision's structure
+    const rel = [];
+    for (const r of R.related || []) { try { const x = await (await fetch(`/api/review/${r.ep}/notes`, { credentials: 'same-origin' })).json(); rel.push(...x.notes.filter(n => !n.community).map(n => ({ ...n, ep: r.ep }))); } catch (e) { } }
+    const old = [...NOTES.filter(n => !n.community && n.ver && n.ver < R.ver).map(n => ({ ...n, ep: R.ep })), ...rel];
+    const cache = {}, pins = [];
+    for (const n of old) { const k = n.ep + '/' + n.ver; if (!(k in cache)) cache[k] = n.ver ? await loadStruct(n.ep, n.ver) : null; pins.push({ n, ...mapNote(n, cache[k], CUR) }); }
+    PINS = pins.sort((a, b) => a.t - b.t);
+    const nf = PINS.filter(q => q.n.status === 'fixed').length;
+    stat.textContent = `${PINS.length} προηγούμενα σχόλια (${nf} διορθωμένα) · ${CHANGES.length} αλλαγές${pv ? ' σε σχέση με ' + pv : ''}`;
+  }
+  window.__rvCheck = () => ({ pins: PINS.map(q => ({ id: q.n.id, ep: q.n.ep, ver: q.n.ver, scene: q.n.scene, t: q.t, lost: !!q.lost, status: q.n.status, text: q.n.text })), changes: CHANGES });   // for tests
+  const pinBox = el('div', 'rv-pinbox'); pinBox.hidden = true;
+  function openPin(q) {
+    PIN_CUR = q; pause(); jump(Math.max(0, Math.round((q.t - .8) * 30) / 30));
+    const n = q.n, c = CATS[n.cat] || CATS.comment, st = n.status === 'fixed' ? `✓ Διορθώθηκε${n.rev ? ' · ' + esc(n.rev) : ''}` : n.status === 'wontfix' ? '– Μένει ως έχει' : 'Ανοιχτό';
+    pinBox.innerHTML = `<div class="rv-pb-h"><span class="rv-ic" style="--c:${c.col}">${c.icon}</span> <b>${esc(n.ep)} v${n.ver || '?'}</b> · ${fmt(n.t)} → τώρα ${fmt(q.t)} · <span class="rv-pb-st ${n.status}">${st}</span>${q.lost ? ' · <i>η σκηνή άλλαξε</i>' : ''}
+      <span class="rv-sp"></span><button class="rv-pb-prev" title="Προηγούμενο (Shift+N)">◀</button><button class="rv-pb-next" title="Επόμενο (N)">Επόμενο ▶</button><button class="rv-pb-x" title="Κλείσιμο">✕</button></div>
+      <div class="rv-pb-b">${n.shot ? `<a href="/review/shot/${n.ep}/${n.id}.jpg" target="_blank"><img src="/review/shot/${n.ep}/${n.id}.jpg" alt=""></a>` : ''}<div><div>${n.text ? esc(n.text) : `<i>${esc(c.el)}</i>`}</div>
+      ${n.line?.el ? `<div class="rv-meta">${esc(n.line.who)}: «${esc(n.line.el.slice(0, 90))}»</div>` : ''}${n.fixnote ? `<div class="rv-fix">${esc(n.fixnote)}</div>` : ''}
+      <div class="rv-pb-act"><button class="rv-pb-ok">✓ Εντάξει</button>${n.status !== 'open' ? '<button class="rv-pb-re">Ξανα-άνοιγμα</button>' : ''}</div></div></div>`;
+    pinBox.hidden = false;
+  }
+  const stepPin = d => { if (!PINS.length) return; const i = PIN_CUR ? PINS.indexOf(PIN_CUR) : (d > 0 ? -1 : PINS.length); openPin(PINS[(i + d + PINS.length) % PINS.length]); };
+  pinBox.onclick = async e => {
+    if (e.target.closest('.rv-pb-x')) { pinBox.hidden = true; PIN_CUR = null; return; }
+    if (e.target.closest('.rv-pb-prev')) return stepPin(-1);
+    if (e.target.closest('.rv-pb-next') || e.target.closest('.rv-pb-ok')) return stepPin(1);
+    if (e.target.closest('.rv-pb-re')) {
+      const n = PIN_CUR.n;
+      try { await fetch(`/api/review/${n.ep}/status`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ id: n.id, status: 'open', note: `ξανα-άνοιξε στο v${R.ver}` }) }); n.status = 'open'; toast('Ξανα-άνοιξε · θα το ξαναδουλέψω', 2000); } catch (err) { }
+      openPin(PIN_CUR); load();
+    }
+  };
+  window.addEventListener('keydown', e => {
+    if (R.role !== 'owner' || e.code !== 'KeyN' || e.target.closest?.('input, textarea, select') || e.ctrlKey || e.metaKey || e.altKey) return;
+    stepPin(e.shiftKey ? -1 : 1);
+  });
+  if (R.role === 'owner') {
+    const bar = el('div', 'rv-rc', `<label><input type="checkbox" class="rv-rc-pins"> 📍 Προηγούμενα σχόλια</label> <label><input type="checkbox" class="rv-rc-diff"> Τι άλλαξε</label>
+      <span class="rv-lg"><i class="rv-lg-new"></i> νέο <i class="rv-lg-ch"></i> αλλαγμένο/νέα φωνή</span> <span class="rv-rc-stat rv-meta"></span> <span class="rv-meta">N = επόμενο σχόλιο</span>`);
+    panel.prepend(bar);
+    const pc = bar.querySelector('.rv-rc-pins'), dc = bar.querySelector('.rv-rc-diff');
+    pc.checked = PIN_ON(); dc.checked = DIFF_ON();
+    pc.onchange = () => store.set('rv-pins', pc.checked); dc.onchange = () => store.set('rv-diff', dc.checked);
+  }
+
   /* ---------- toast ---------- */
   let toastEl = null, toastT = 0;
   function toast(html, ms) { toastEl?.remove(); clearTimeout(toastT); toastEl = el('div', 'rv-toast', html); stage.append(toastEl); if (ms) toastT = setTimeout(() => { toastEl?.remove(); toastEl = null; }, ms); }
@@ -331,7 +459,7 @@
   /* ---------- start ---------- */
   const go = () => {
     if (!window.EPISODE) return setTimeout(go, 200);
-    initTL(); load(); loadGen(); flush();
+    initTL(); document.querySelector('.rv-tp')?.append(pinBox); load().then(() => setTimeout(revisionCheck, 400)); loadGen(); flush();
     if (R.uid && !R.toured) setTimeout(() => { tour(0); markToured(); }, 600);   // every new account, once: it never opens on its own again («?» does)
     if (new URLSearchParams(location.search).get('lang') === 'en' && $('lang').textContent.trim() === 'EN') $('lang').click();   // ?lang=en opens with English subtitles
     const m = location.hash.match(/t=([\d.]+)/); if (m) jump(+m[1]);                // links from the log page: /review/<ep>#t=123.4
