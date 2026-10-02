@@ -5,7 +5,7 @@ Also embeds recorded dialogue: audio/<sceneNN>/<line number, 2 digits>.(mp3|wav|
 (window.CLIP_DUR) so step-based scenes can lay out their timeline from the real voices.
 Lines with a clip play it instead of the placeholder TTS, and the timeline waits for each clip.
 Usage: python3 build.py  -> writes dist/<page>.html for every scene*.html and episode*.html here."""
-import base64, json, pathlib, re
+import base64, json, pathlib, re, sys
 MIME = {'.mp3': 'audio/mpeg', '.wav': 'audio/wav', '.ogg': 'audio/ogg', '.m4a': 'audio/mp4'}
 here = pathlib.Path(__file__).parent
 (here / 'dist').mkdir(exist_ok=True)
@@ -43,6 +43,9 @@ def inline(html):
                   lambda m: '<style>\n' + (here / m.group(1)).read_text(encoding='utf-8') + '\n</style>', html)
 
 
+sys.path.insert(0, str(here.resolve().parent / 'tools'))
+from level_voices import levels                             # every clip at the same loudness unless meant loud/soft
+LEVELS, _held = levels(here, quiet=False) if (here / 'audio').is_dir() else ({}, [])
 pages = sorted(here.glob('scene*.html')) + sorted(here.glob('episode*.html'))
 for page in pages:
     html = inline(page.read_text(encoding='utf-8'))
@@ -57,6 +60,8 @@ for page in pages:
                 if f.suffix.lower() == '.mp3':
                     durs[key] = mp3_duration(f.read_bytes())
     head = f'<script>window.CLIP_DUR = {json.dumps(durs)};</script>\n'
+    if clips and LEVELS:                                    # voice levels (tools/level_voices.py): gain in dB per clip
+        head += '<script>window.CLIP_GAIN = ' + json.dumps({k: LEVELS[k] for k in clips if LEVELS.get(k)}) + ';</script>\n'
     if clips:
         head += '<script>window.CLIPS = ' + json.dumps(clips) + ';</script>\n'
         print(f'  {len(clips)} voice clips embedded')

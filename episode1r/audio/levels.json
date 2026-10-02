@@ -1,0 +1,1810 @@
+{
+"scene01/01": {
+"hash": "ce87cefb84fb559b",
+"lufs": -17.6,
+"peak": -0.5,
+"intent": "normal",
+"gain": 1.6,
+"held": false
+},
+"scene01/02": {
+"hash": "4dbefc5593616e4d",
+"lufs": -16.7,
+"peak": -1.0,
+"intent": "normal",
+"gain": 0.7,
+"held": false
+},
+"scene01/03": {
+"hash": "091ae0027d20703e",
+"lufs": -14.7,
+"peak": -0.9,
+"intent": "normal",
+"gain": -1.3,
+"held": false
+},
+"scene02/01": {
+"hash": "f76dc900051d71ab",
+"lufs": -24.3,
+"peak": -6.5,
+"intent": "normal",
+"gain": 8.3,
+"held": false
+},
+"scene02/02": {
+"hash": "e947675547e4e0d1",
+"lufs": -17.3,
+"peak": -2.8,
+"intent": "normal",
+"gain": 1.3,
+"held": false
+},
+"scene02/03": {
+"hash": "2a2f8b838dab9f76",
+"lufs": -21.1,
+"peak": -8.9,
+"intent": "normal",
+"gain": 5.1,
+"held": false
+},
+"scene02/04": {
+"hash": "3067558260d26b6f",
+"lufs": -18.3,
+"peak": -1.4,
+"intent": "normal",
+"gain": 2.3,
+"held": false
+},
+"scene02/05": {
+"hash": "59299cd6c823ff35",
+"lufs": -23.1,
+"peak": -8.7,
+"intent": "normal",
+"gain": 7.1,
+"held": false
+},
+"scene02/06": {
+"hash": "a944b3065bbfe04a",
+"lufs": -17.6,
+"peak": -4.3,
+"intent": "normal",
+"gain": 1.6,
+"held": false
+},
+"scene02/07": {
+"hash": "591a0c2563c52eb5",
+"lufs": -11.1,
+"peak": -0.3,
+"intent": "normal",
+"gain": -4.9,
+"held": false
+},
+"scene02/08": {
+"hash": "40360ac6d11d5ffd",
+"lufs": -23.7,
+"peak": -10.3,
+"intent": "normal",
+"gain": 7.7,
+"held": false
+},
+"scene02/09": {
+"hash": "11d777fd07b041d4",
+"lufs": -11.2,
+"peak": 1.0,
+"intent": "normal",
+"gain": -4.8,
+"held": false
+},
+"scene02/10": {
+"hash": "425a9bda49ebe3ee",
+"lufs": -18.6,
+"peak": -3.5,
+"intent": "normal",
+"gain": 2.6,
+"held": false
+},
+"scene02/11": {
+"hash": "136f0f434e5126f5",
+"lufs": -11.5,
+"peak": -0.4,
+"intent": "normal",
+"gain": -4.5,
+"held": false
+},
+"scene02/12": {
+"hash": "eed5b5c95c5ad6ff",
+"lufs": -26.1,
+"peak": -9.7,
+"intent": "normal",
+"gain": 10.1,
+"held": false
+},
+"scene02/13": {
+"hash": "741bd31410056e55",
+"lufs": -10.8,
+"peak": 0.1,
+"intent": "normal",
+"gain": -5.2,
+"held": false
+},
+"scene02/14": {
+"hash": "89cfa6150398eecd",
+"lufs": -12.3,
+"peak": -0.5,
+"intent": "loud",
+"gain": -0.7,
+"held": false
+},
+"scene02/15": {
+"hash": "e39ca0097bb469c3",
+"lufs": -17.8,
+"peak": -2.3,
+"intent": "normal",
+"gain": 1.8,
+"held": false
+},
+"scene02/16": {
+"hash": "30c9b2493a6337c0",
+"lufs": -14.1,
+"peak": -1.3,
+"intent": "normal",
+"gain": -1.9,
+"held": false
+},
+"scene02/17": {
+"hash": "656fc840db79b3b5",
+"lufs": -21.1,
+"peak": -3.4,
+"intent": "normal",
+"gain": 5.1,
+"held": false
+},
+"scene02/18": {
+"hash": "db8bf2b128d00133",
+"lufs": -12.2,
+"peak": -0.9,
+"intent": "normal",
+"gain": -3.8,
+"held": false
+},
+"scene02/19": {
+"hash": "b36099d785f4a670",
+"lufs": -18.7,
+"peak": -1.7,
+"intent": "normal",
+"gain": 2.7,
+"held": false
+},
+"scene02/20": {
+"hash": "3e5c71ee6ef9bcc6",
+"lufs": -12.3,
+"peak": -0.7,
+"intent": "normal",
+"gain": -3.7,
+"held": false
+},
+"scene02/21": {
+"hash": "9500220bd8b96cfc",
+"lufs": -17.9,
+"peak": -1.0,
+"intent": "normal",
+"gain": 1.9,
+"held": false
+},
+"scene03/01": {
+"hash": "68ec276641c18b21",
+"lufs": -16.0,
+"peak": -0.1,
+"intent": "loud",
+"gain": 3.0,
+"held": false
+},
+"scene03/02": {
+"hash": "a790ab59aba97e29",
+"lufs": -23.5,
+"peak": -8.7,
+"intent": "normal",
+"gain": 7.5,
+"held": false
+},
+"scene03/03": {
+"hash": "21018a2dd31d8930",
+"lufs": -12.7,
+"peak": -0.8,
+"intent": "normal",
+"gain": -3.3,
+"held": false
+},
+"scene03/04": {
+"hash": "c875f0e8873df57a",
+"lufs": -23.6,
+"peak": -7.8,
+"intent": "normal",
+"gain": 7.6,
+"held": false
+},
+"scene03/05": {
+"hash": "d478e9d55381d491",
+"lufs": -16.2,
+"peak": -0.5,
+"intent": "normal",
+"gain": 0.2,
+"held": false
+},
+"scene03/06": {
+"hash": "d9b302ca1b46ee7c",
+"lufs": -16.7,
+"peak": -1.5,
+"intent": "normal",
+"gain": 0.7,
+"held": false
+},
+"scene03/07": {
+"hash": "2fe5b0b9f61226ae",
+"lufs": -15.8,
+"peak": -0.3,
+"intent": "normal",
+"gain": -0.2,
+"held": false
+},
+"scene03/08": {
+"hash": "e0245fcfca372246",
+"lufs": -16.7,
+"peak": -1.3,
+"intent": "normal",
+"gain": 0.7,
+"held": false
+},
+"scene04/01": {
+"hash": "6da8be8671aa73e6",
+"lufs": -23.9,
+"peak": -7.1,
+"intent": "normal",
+"gain": 7.9,
+"held": false
+},
+"scene04/02": {
+"hash": "e23c7196cb275c59",
+"lufs": -18.7,
+"peak": -2.4,
+"intent": "normal",
+"gain": 2.7,
+"held": false
+},
+"scene04/03": {
+"hash": "173a3e547c4499a2",
+"lufs": -22.9,
+"peak": -5.2,
+"intent": "normal",
+"gain": 6.9,
+"held": false
+},
+"scene04/04": {
+"hash": "97263d9f5b3265a4",
+"lufs": -23.8,
+"peak": -6.8,
+"intent": "normal",
+"gain": 7.8,
+"held": false
+},
+"scene04/05": {
+"hash": "a3f566fabf9bd916",
+"lufs": -19.2,
+"peak": -2.1,
+"intent": "normal",
+"gain": 3.2,
+"held": false
+},
+"scene04/06": {
+"hash": "d101e57199f6cfe2",
+"lufs": -22.4,
+"peak": -6.0,
+"intent": "normal",
+"gain": 6.4,
+"held": false
+},
+"scene04/07": {
+"hash": "df57fb5cdb5dbd79",
+"lufs": -17.8,
+"peak": -2.9,
+"intent": "normal",
+"gain": 1.8,
+"held": false
+},
+"scene04/08": {
+"hash": "627556175b687dae",
+"lufs": -10.8,
+"peak": 0.3,
+"intent": "normal",
+"gain": -5.2,
+"held": false
+},
+"scene04/09": {
+"hash": "eb0084e7d69507cc",
+"lufs": -22.7,
+"peak": -4.5,
+"intent": "normal",
+"gain": 6.7,
+"held": false
+},
+"scene04/10": {
+"hash": "3693b1291b7bfd53",
+"lufs": -19.3,
+"peak": -1.5,
+"intent": "normal",
+"gain": 3.3,
+"held": false
+},
+"scene04/11": {
+"hash": "440ef8215a5c6e97",
+"lufs": -22.3,
+"peak": -6.3,
+"intent": "normal",
+"gain": 6.3,
+"held": false
+},
+"scene04/12": {
+"hash": "d736061079a752ab",
+"lufs": -11.1,
+"peak": -0.0,
+"intent": "normal",
+"gain": -4.9,
+"held": false
+},
+"scene04/13": {
+"hash": "a95cb0af4fb2852e",
+"lufs": -23.9,
+"peak": -9.2,
+"intent": "normal",
+"gain": 7.9,
+"held": false
+},
+"scene04/14": {
+"hash": "d8e5ad5290687b1b",
+"lufs": -11.1,
+"peak": 0.0,
+"intent": "normal",
+"gain": -4.9,
+"held": false
+},
+"scene04/15": {
+"hash": "5098642549187c4f",
+"lufs": -22.9,
+"peak": -8.0,
+"intent": "normal",
+"gain": 6.9,
+"held": false
+},
+"scene04/16": {
+"hash": "ce52e986d7d48ef0",
+"lufs": -10.4,
+"peak": 0.3,
+"intent": "normal",
+"gain": -5.6,
+"held": false
+},
+"scene04/17": {
+"hash": "b35a42efc8629938",
+"lufs": -22.3,
+"peak": -9.7,
+"intent": "normal",
+"gain": 6.3,
+"held": false
+},
+"scene04/18": {
+"hash": "f3f9c28e28432eda",
+"lufs": -11.0,
+"peak": -0.6,
+"intent": "normal",
+"gain": -5.0,
+"held": false
+},
+"scene04/19": {
+"hash": "9fb690a517273496",
+"lufs": -17.7,
+"peak": -0.9,
+"intent": "normal",
+"gain": 1.7,
+"held": false
+},
+"scene04/20": {
+"hash": "a9ffb717477034ac",
+"lufs": -23.7,
+"peak": -8.6,
+"intent": "normal",
+"gain": 7.7,
+"held": false
+},
+"scene04/21": {
+"hash": "a5d42947611e55d0",
+"lufs": -19.8,
+"peak": -1.3,
+"intent": "normal",
+"gain": 3.8,
+"held": false
+},
+"scene05/01": {
+"hash": "4129420cd07e444f",
+"lufs": -14.1,
+"peak": -0.8,
+"intent": "normal",
+"gain": -1.9,
+"held": false
+},
+"scene05/02": {
+"hash": "a42833200fe70e81",
+"lufs": -9.6,
+"peak": -0.3,
+"intent": "normal",
+"gain": -6.4,
+"held": false
+},
+"scene05/03": {
+"hash": "37a85d5be7f3360b",
+"lufs": -12.8,
+"peak": 1.0,
+"intent": "normal",
+"gain": -3.2,
+"held": false
+},
+"scene05/04": {
+"hash": "f3ced6da4949cb8e",
+"lufs": -16.8,
+"peak": -1.8,
+"intent": "loud",
+"gain": 3.8,
+"held": false
+},
+"scene05/05": {
+"hash": "cee796ed5695f534",
+"lufs": -11.1,
+"peak": -0.1,
+"intent": "normal",
+"gain": -4.9,
+"held": false
+},
+"scene05/06": {
+"hash": "18841d6135539462",
+"lufs": -15.6,
+"peak": -0.4,
+"intent": "normal",
+"gain": -0.4,
+"held": false
+},
+"scene05/07": {
+"hash": "4ad14ef27a20d8a3",
+"lufs": -17.8,
+"peak": -1.1,
+"intent": "normal",
+"gain": 1.8,
+"held": false
+},
+"scene06/01": {
+"hash": "89fd0082fabcecff",
+"lufs": -24.6,
+"peak": -10.5,
+"intent": "normal",
+"gain": 8.6,
+"held": false
+},
+"scene06/02": {
+"hash": "dd1a3a14b171cb9b",
+"lufs": -11.0,
+"peak": -0.2,
+"intent": "normal",
+"gain": -5.0,
+"held": false
+},
+"scene06/03": {
+"hash": "992ea416e9289457",
+"lufs": -21.9,
+"peak": -6.1,
+"intent": "normal",
+"gain": 5.9,
+"held": false
+},
+"scene06/04": {
+"hash": "0e3b7d66118cf592",
+"lufs": -10.9,
+"peak": 0.3,
+"intent": "normal",
+"gain": -5.1,
+"held": false
+},
+"scene06/05": {
+"hash": "f012a15cd27dffb5",
+"lufs": -23.3,
+"peak": -3.9,
+"intent": "normal",
+"gain": 7.3,
+"held": true
+},
+"scene06/06": {
+"hash": "579571bb1be14995",
+"lufs": -10.7,
+"peak": 0.2,
+"intent": "normal",
+"gain": -5.3,
+"held": false
+},
+"scene06/07": {
+"hash": "81c8a9612474eea1",
+"lufs": -24.0,
+"peak": -8.9,
+"intent": "normal",
+"gain": 8.0,
+"held": false
+},
+"scene06/08": {
+"hash": "7ee81d57a3df9d90",
+"lufs": -11.0,
+"peak": -0.7,
+"intent": "normal",
+"gain": -5.0,
+"held": false
+},
+"scene06/09": {
+"hash": "33126790ff425d9d",
+"lufs": -20.9,
+"peak": -7.8,
+"intent": "normal",
+"gain": 4.9,
+"held": false
+},
+"scene06/10": {
+"hash": "3cbe9b45a4fb254c",
+"lufs": -13.3,
+"peak": -1.0,
+"intent": "normal",
+"gain": -2.7,
+"held": false
+},
+"scene06/11": {
+"hash": "cb72c8a4e793a108",
+"lufs": -15.3,
+"peak": -0.7,
+"intent": "normal",
+"gain": -0.7,
+"held": false
+},
+"scene06/12": {
+"hash": "3491ef5f7bf6781b",
+"lufs": -17.8,
+"peak": -4.4,
+"intent": "normal",
+"gain": 1.8,
+"held": false
+},
+"scene06/13": {
+"hash": "e1290a8d9dee5b62",
+"lufs": -24.8,
+"peak": -9.2,
+"intent": "normal",
+"gain": 8.8,
+"held": false
+},
+"scene07/01": {
+"hash": "1585f36adac5e9b2",
+"lufs": -11.4,
+"peak": -0.9,
+"intent": "normal",
+"gain": -4.6,
+"held": false
+},
+"scene07/02": {
+"hash": "21756c72923d8e8c",
+"lufs": -17.0,
+"peak": -1.2,
+"intent": "loud",
+"gain": 4.0,
+"held": false
+},
+"scene07/03": {
+"hash": "4cd9b29f7c65fd61",
+"lufs": -23.5,
+"peak": -7.5,
+"intent": "normal",
+"gain": 7.5,
+"held": false
+},
+"scene07/04": {
+"hash": "077e5590da10f8cc",
+"lufs": -15.1,
+"peak": -0.8,
+"intent": "loud",
+"gain": 2.1,
+"held": false
+},
+"scene07/05": {
+"hash": "4b00341190eec5de",
+"lufs": -25.6,
+"peak": -8.8,
+"intent": "normal",
+"gain": 9.6,
+"held": false
+},
+"scene07/06": {
+"hash": "0f58fa7b355ff9a2",
+"lufs": -17.0,
+"peak": -2.0,
+"intent": "loud",
+"gain": 4.0,
+"held": false
+},
+"scene07/07": {
+"hash": "063ba97c7df41cd0",
+"lufs": -17.0,
+"peak": -3.1,
+"intent": "loud",
+"gain": 4.0,
+"held": false
+},
+"scene07/08": {
+"hash": "0b1573a27f5b13e6",
+"lufs": -18.9,
+"peak": -0.9,
+"intent": "normal",
+"gain": 2.9,
+"held": false
+},
+"scene07/09": {
+"hash": "7a5efc31329eff08",
+"lufs": -11.3,
+"peak": 0.0,
+"intent": "normal",
+"gain": -4.7,
+"held": false
+},
+"scene07/10": {
+"hash": "cc92e2e71e17ec21",
+"lufs": -21.4,
+"peak": -4.1,
+"intent": "normal",
+"gain": 5.4,
+"held": false
+},
+"scene07/11": {
+"hash": "76d5e2dadf081871",
+"lufs": -10.9,
+"peak": 0.8,
+"intent": "normal",
+"gain": -5.1,
+"held": false
+},
+"scene07/12": {
+"hash": "3764c20dae6e727b",
+"lufs": -10.5,
+"peak": 1.4,
+"intent": "normal",
+"gain": -5.5,
+"held": false
+},
+"scene07/13": {
+"hash": "a20e90b7d807e342",
+"lufs": -16.1,
+"peak": -0.3,
+"intent": "loud",
+"gain": 3.1,
+"held": false
+},
+"scene07/14": {
+"hash": "3c19c1c635072a07",
+"lufs": -16.6,
+"peak": -1.8,
+"intent": "normal",
+"gain": 0.6,
+"held": false
+},
+"scene07/15": {
+"hash": "453122c19ba0af83",
+"lufs": -16.2,
+"peak": -1.1,
+"intent": "normal",
+"gain": 0.2,
+"held": false
+},
+"scene07/16": {
+"hash": "bdc75acc30c6e51c",
+"lufs": -13.0,
+"peak": -0.5,
+"intent": "normal",
+"gain": -3.0,
+"held": false
+},
+"scene08/01": {
+"hash": "2e9ccc969347e010",
+"lufs": -19.6,
+"peak": -1.1,
+"intent": "normal",
+"gain": 3.6,
+"held": false
+},
+"scene08/02": {
+"hash": "20d7d43aa2f9c0f2",
+"lufs": -15.2,
+"peak": -1.5,
+"intent": "loud",
+"gain": 2.2,
+"held": false
+},
+"scene08/03": {
+"hash": "35f4d042c62e203a",
+"lufs": -19.0,
+"peak": -4.6,
+"intent": "normal",
+"gain": 3.0,
+"held": false
+},
+"scene09/01": {
+"hash": "f3c77ffe27bbd676",
+"lufs": -16.1,
+"peak": -0.5,
+"intent": "normal",
+"gain": 0.1,
+"held": false
+},
+"scene09/02": {
+"hash": "b40b8db06442a50d",
+"lufs": -14.7,
+"peak": -0.5,
+"intent": "normal",
+"gain": -1.3,
+"held": false
+},
+"scene09/03": {
+"hash": "164afd1afe19599f",
+"lufs": -17.1,
+"peak": -0.2,
+"intent": "loud",
+"gain": 4.1,
+"held": true
+},
+"scene09/04": {
+"hash": "368c0ec007d9e773",
+"lufs": -17.4,
+"peak": -0.8,
+"intent": "normal",
+"gain": 1.4,
+"held": false
+},
+"scene09/05": {
+"hash": "c970ff544fd4d918",
+"lufs": -12.8,
+"peak": -0.5,
+"intent": "normal",
+"gain": -3.2,
+"held": false
+},
+"scene09/06": {
+"hash": "24c68faab118f2b1",
+"lufs": -20.8,
+"peak": -5.0,
+"intent": "normal",
+"gain": 4.8,
+"held": false
+},
+"scene10/01": {
+"hash": "ff8e3728ea4375e1",
+"lufs": -17.8,
+"peak": -1.5,
+"intent": "loud",
+"gain": 4.8,
+"held": true
+},
+"scene10/02": {
+"hash": "15483958187bad38",
+"lufs": -14.9,
+"peak": -2.4,
+"intent": "normal",
+"gain": -1.1,
+"held": false
+},
+"scene10/03": {
+"hash": "7016ae1c1023c77a",
+"lufs": -14.9,
+"peak": -1.9,
+"intent": "loud",
+"gain": 1.9,
+"held": false
+},
+"scene10/04": {
+"hash": "2c50873b31f6c067",
+"lufs": -15.5,
+"peak": -2.2,
+"intent": "normal",
+"gain": -0.5,
+"held": false
+},
+"scene10/05": {
+"hash": "f74f0904c0381628",
+"lufs": -14.7,
+"peak": -1.9,
+"intent": "normal",
+"gain": -1.3,
+"held": false
+},
+"scene10/06": {
+"hash": "5eac1b039a18afee",
+"lufs": -18.0,
+"peak": -0.7,
+"intent": "loud",
+"gain": 5.0,
+"held": true
+},
+"scene10/07": {
+"hash": "33a63f7a2dbdc652",
+"lufs": -15.8,
+"peak": -1.7,
+"intent": "loud",
+"gain": 2.8,
+"held": false
+},
+"scene10/08": {
+"hash": "88698bd595bdc693",
+"lufs": -17.9,
+"peak": -1.5,
+"intent": "normal",
+"gain": 1.9,
+"held": false
+},
+"scene10/09": {
+"hash": "fe8d34eaedc9231c",
+"lufs": -12.6,
+"peak": -0.8,
+"intent": "loud",
+"gain": -0.4,
+"held": false
+},
+"scene10/10": {
+"hash": "e24b5a33c3f4e8be",
+"lufs": -17.5,
+"peak": -1.5,
+"intent": "loud",
+"gain": 4.5,
+"held": false
+},
+"scene10/11": {
+"hash": "0fa5bd63279d22e3",
+"lufs": -17.6,
+"peak": -0.3,
+"intent": "normal",
+"gain": 1.6,
+"held": false
+},
+"scene10/12": {
+"hash": "c03fe882ef89a1d8",
+"lufs": -21.0,
+"peak": -8.0,
+"intent": "normal",
+"gain": 5.0,
+"held": false
+},
+"scene10/13": {
+"hash": "bb1bc8b638f085ce",
+"lufs": -17.1,
+"peak": -3.1,
+"intent": "normal",
+"gain": 1.1,
+"held": false
+},
+"scene10/14": {
+"hash": "6d8b33a12e9545a9",
+"lufs": -13.9,
+"peak": -1.8,
+"intent": "normal",
+"gain": -2.1,
+"held": false
+},
+"scene10/15": {
+"hash": "87204b29d5ace992",
+"lufs": -13.0,
+"peak": 0.1,
+"intent": "loud",
+"gain": 0.0,
+"held": false
+},
+"scene10/16": {
+"hash": "8cd30bead57476c1",
+"lufs": -14.8,
+"peak": -2.5,
+"intent": "loud",
+"gain": 1.8,
+"held": false
+},
+"scene10/17": {
+"hash": "3199cb22d4146d39",
+"lufs": -20.0,
+"peak": -4.1,
+"intent": "normal",
+"gain": 4.0,
+"held": false
+},
+"scene10/18": {
+"hash": "520aee4c382a7600",
+"lufs": -16.1,
+"peak": -2.4,
+"intent": "normal",
+"gain": 0.1,
+"held": false
+},
+"scene10/19": {
+"hash": "a174e794a4d4240c",
+"lufs": -18.6,
+"peak": -4.5,
+"intent": "normal",
+"gain": 2.6,
+"held": false
+},
+"scene10/20": {
+"hash": "7ad501b54fafbd40",
+"lufs": -17.4,
+"peak": -2.0,
+"intent": "loud",
+"gain": 4.4,
+"held": false
+},
+"scene11/01": {
+"hash": "b952aabe0f925d60",
+"lufs": -17.7,
+"peak": -1.4,
+"intent": "normal",
+"gain": 1.7,
+"held": false
+},
+"scene11/02": {
+"hash": "ae0e28f3b7839824",
+"lufs": -20.6,
+"peak": -4.5,
+"intent": "normal",
+"gain": 4.6,
+"held": false
+},
+"scene11/03": {
+"hash": "2e93613e08d57b77",
+"lufs": -15.3,
+"peak": -3.5,
+"intent": "normal",
+"gain": -0.7,
+"held": false
+},
+"scene11/04": {
+"hash": "62bf556633e74e1e",
+"lufs": -17.8,
+"peak": -2.2,
+"intent": "normal",
+"gain": 1.8,
+"held": false
+},
+"scene11/05": {
+"hash": "c42220a4ccc796de",
+"lufs": -16.0,
+"peak": -0.7,
+"intent": "normal",
+"gain": 0.0,
+"held": false
+},
+"scene11/06": {
+"hash": "92a2ff0956ec1a58",
+"lufs": -16.7,
+"peak": -1.5,
+"intent": "normal",
+"gain": 0.7,
+"held": false
+},
+"scene11/07": {
+"hash": "c8f7ee429d251cea",
+"lufs": -16.4,
+"peak": -1.8,
+"intent": "normal",
+"gain": 0.4,
+"held": false
+},
+"scene12/01": {
+"hash": "5421701cb474c5b1",
+"lufs": -15.2,
+"peak": 0.1,
+"intent": "loud",
+"gain": 2.2,
+"held": false
+},
+"scene12/02": {
+"hash": "cda6779124bf6996",
+"lufs": -15.7,
+"peak": -2.3,
+"intent": "loud",
+"gain": 2.7,
+"held": false
+},
+"scene12/03": {
+"hash": "07b1a831359b02d4",
+"lufs": -17.5,
+"peak": -1.5,
+"intent": "loud",
+"gain": 4.5,
+"held": false
+},
+"scene12/04": {
+"hash": "0d073e81008585f3",
+"lufs": -14.1,
+"peak": -2.9,
+"intent": "loud",
+"gain": 1.1,
+"held": false
+},
+"scene12/05": {
+"hash": "dac07c5c56bfcd86",
+"lufs": -17.5,
+"peak": -2.5,
+"intent": "loud",
+"gain": 4.5,
+"held": false
+},
+"scene12/06": {
+"hash": "23d7cddaa1c7f573",
+"lufs": -17.4,
+"peak": -1.2,
+"intent": "loud",
+"gain": 4.4,
+"held": true
+},
+"scene12/07": {
+"hash": "e75ec1031640b955",
+"lufs": -16.8,
+"peak": -2.0,
+"intent": "loud",
+"gain": 3.8,
+"held": false
+},
+"scene12/08": {
+"hash": "f5a20c8746b2162f",
+"lufs": -14.8,
+"peak": -1.8,
+"intent": "normal",
+"gain": -1.2,
+"held": false
+},
+"scene12/09": {
+"hash": "d26c3ffe4d82cce4",
+"lufs": -16.4,
+"peak": -1.3,
+"intent": "loud",
+"gain": 3.4,
+"held": false
+},
+"scene12/10": {
+"hash": "96cd30285594bd54",
+"lufs": -16.8,
+"peak": -3.2,
+"intent": "loud",
+"gain": 3.8,
+"held": false
+},
+"scene12/11": {
+"hash": "6ef143342df95b29",
+"lufs": -18.8,
+"peak": -4.3,
+"intent": "normal",
+"gain": 2.8,
+"held": false
+},
+"scene12/12": {
+"hash": "bd0514ee8a2ed4b0",
+"lufs": -14.8,
+"peak": -0.8,
+"intent": "normal",
+"gain": -1.2,
+"held": false
+},
+"scene12/13": {
+"hash": "48478dde369ac976",
+"lufs": -16.5,
+"peak": -2.8,
+"intent": "loud",
+"gain": 3.5,
+"held": false
+},
+"scene12/14": {
+"hash": "df6fe68fa0f64f0f",
+"lufs": -15.3,
+"peak": -4.0,
+"intent": "loud",
+"gain": 2.3,
+"held": false
+},
+"scene12/15": {
+"hash": "f48c1f3b70c6f36e",
+"lufs": -16.1,
+"peak": -1.3,
+"intent": "loud",
+"gain": 3.1,
+"held": false
+},
+"scene12/16": {
+"hash": "d21a8c7ecf456691",
+"lufs": -16.7,
+"peak": -2.5,
+"intent": "loud",
+"gain": 3.7,
+"held": false
+},
+"scene13/01": {
+"hash": "aa3351fb5422a594",
+"lufs": -18.9,
+"peak": -2.4,
+"intent": "normal",
+"gain": 2.9,
+"held": false
+},
+"scene13/02": {
+"hash": "ac72bbc8d3588e2f",
+"lufs": -20.6,
+"peak": -7.5,
+"intent": "normal",
+"gain": 4.6,
+"held": false
+},
+"scene13/03": {
+"hash": "b193189d217fe393",
+"lufs": -21.3,
+"peak": -2.0,
+"intent": "normal",
+"gain": 5.3,
+"held": true
+},
+"scene13/04": {
+"hash": "15b6e256b72bd6cc",
+"lufs": -20.3,
+"peak": -0.5,
+"intent": "normal",
+"gain": 4.3,
+"held": true
+},
+"scene13/05": {
+"hash": "391fd3d81fb39b40",
+"lufs": -27.2,
+"peak": -10.8,
+"intent": "normal",
+"gain": 11.2,
+"held": false
+},
+"scene13/06": {
+"hash": "9d1943187d641808",
+"lufs": -20.1,
+"peak": -4.3,
+"intent": "normal",
+"gain": 4.1,
+"held": false
+},
+"scene13/07": {
+"hash": "7b9decb298aa0a8f",
+"lufs": -30.8,
+"peak": -12.1,
+"intent": "normal",
+"gain": 12.0,
+"held": true
+},
+"scene13/08": {
+"hash": "2e2eab6565798002",
+"lufs": -17.9,
+"peak": -1.8,
+"intent": "normal",
+"gain": 1.9,
+"held": false
+},
+"scene13/09": {
+"hash": "6b8b917ec60f67a7",
+"lufs": -22.1,
+"peak": -6.5,
+"intent": "normal",
+"gain": 6.1,
+"held": false
+},
+"scene13/10": {
+"hash": "23d0e99dd25c8c84",
+"lufs": -16.5,
+"peak": -1.2,
+"intent": "normal",
+"gain": 0.5,
+"held": false
+},
+"scene13/11": {
+"hash": "d9d37ad0e0dfa52d",
+"lufs": -24.5,
+"peak": -6.7,
+"intent": "normal",
+"gain": 8.5,
+"held": false
+},
+"scene13/12": {
+"hash": "4c09b0ca8f913f77",
+"lufs": -18.3,
+"peak": -1.2,
+"intent": "normal",
+"gain": 2.3,
+"held": false
+},
+"scene14/01": {
+"hash": "80921eb43a43c8a5",
+"lufs": -16.6,
+"peak": -2.1,
+"intent": "normal",
+"gain": 0.6,
+"held": false
+},
+"scene14/02": {
+"hash": "4b748a77fbba616e",
+"lufs": -11.0,
+"peak": 0.1,
+"intent": "normal",
+"gain": -5.0,
+"held": false
+},
+"scene14/03": {
+"hash": "14ad42297d7e6836",
+"lufs": -22.4,
+"peak": -8.4,
+"intent": "normal",
+"gain": 6.4,
+"held": false
+},
+"scene14/04": {
+"hash": "a6a3b9531e07db1c",
+"lufs": -9.7,
+"peak": -0.3,
+"intent": "normal",
+"gain": -6.3,
+"held": false
+},
+"scene14/05": {
+"hash": "cd5f11c9c578a013",
+"lufs": -16.7,
+"peak": -3.1,
+"intent": "loud",
+"gain": 3.7,
+"held": false
+},
+"scene14/06": {
+"hash": "3bef9cdf4d3e5e75",
+"lufs": -18.0,
+"peak": -3.2,
+"intent": "normal",
+"gain": 2.0,
+"held": false
+},
+"scene14/07": {
+"hash": "b4f5b1e100725b60",
+"lufs": -17.9,
+"peak": -2.5,
+"intent": "normal",
+"gain": 1.9,
+"held": false
+},
+"scene14/08": {
+"hash": "dfe2d205ba236466",
+"lufs": -19.4,
+"peak": -4.7,
+"intent": "normal",
+"gain": 3.4,
+"held": false
+},
+"scene14/09": {
+"hash": "d349458ee5591cb1",
+"lufs": -12.2,
+"peak": -0.2,
+"intent": "normal",
+"gain": -3.8,
+"held": false
+},
+"scene14/10": {
+"hash": "95fe9445f936ba90",
+"lufs": -14.8,
+"peak": -1.3,
+"intent": "loud",
+"gain": 1.8,
+"held": false
+},
+"scene14/11": {
+"hash": "d043d3a7f6d04972",
+"lufs": -15.6,
+"peak": -0.9,
+"intent": "loud",
+"gain": 2.6,
+"held": false
+},
+"scene14/12": {
+"hash": "0647ba2e6c1f1b4a",
+"lufs": -23.9,
+"peak": -7.9,
+"intent": "normal",
+"gain": 7.9,
+"held": false
+},
+"scene14/13": {
+"hash": "12aed81533d9e470",
+"lufs": -18.2,
+"peak": -0.7,
+"intent": "normal",
+"gain": 2.2,
+"held": false
+},
+"scene14/14": {
+"hash": "3782620a20053b93",
+"lufs": -15.4,
+"peak": -1.6,
+"intent": "normal",
+"gain": -0.6,
+"held": false
+},
+"scene14/15": {
+"hash": "2578f1c091bd1da0",
+"lufs": -17.3,
+"peak": -3.2,
+"intent": "normal",
+"gain": 1.3,
+"held": false
+},
+"scene14/16": {
+"hash": "ccbd747c65703cca",
+"lufs": -17.6,
+"peak": -3.8,
+"intent": "normal",
+"gain": 1.6,
+"held": false
+},
+"scene15/01": {
+"hash": "0b76de1dcb32a6e7",
+"lufs": -15.3,
+"peak": -0.9,
+"intent": "loud",
+"gain": 2.3,
+"held": false
+},
+"scene15/02": {
+"hash": "f71b47be14213243",
+"lufs": -11.3,
+"peak": -0.1,
+"intent": "normal",
+"gain": -4.7,
+"held": false
+},
+"scene15/03": {
+"hash": "bfd94171dc25f753",
+"lufs": -22.1,
+"peak": -9.6,
+"intent": "normal",
+"gain": 6.1,
+"held": false
+},
+"scene15/04": {
+"hash": "24e73ec6684fb797",
+"lufs": -11.2,
+"peak": -0.4,
+"intent": "loud",
+"gain": -1.8,
+"held": false
+},
+"scene15/05": {
+"hash": "8005e3e80e117e48",
+"lufs": -16.1,
+"peak": -0.8,
+"intent": "normal",
+"gain": 0.1,
+"held": false
+},
+"scene15/06": {
+"hash": "b6b0ba7311a149dc",
+"lufs": -10.9,
+"peak": 0.8,
+"intent": "normal",
+"gain": -5.1,
+"held": false
+},
+"scene15/07": {
+"hash": "a007cf1690556995",
+"lufs": -18.6,
+"peak": -5.2,
+"intent": "normal",
+"gain": 2.6,
+"held": false
+},
+"scene15/08": {
+"hash": "1661d072eef7f329",
+"lufs": -10.8,
+"peak": 0.5,
+"intent": "normal",
+"gain": -5.2,
+"held": false
+},
+"scene15/09": {
+"hash": "491a0813f7906139",
+"lufs": -15.0,
+"peak": -2.3,
+"intent": "loud",
+"gain": 2.0,
+"held": false
+},
+"scene15/10": {
+"hash": "ca22c4fab97f855e",
+"lufs": -11.7,
+"peak": -0.2,
+"intent": "normal",
+"gain": -4.3,
+"held": false
+},
+"scene15/11": {
+"hash": "8ee6490fd52858d6",
+"lufs": -19.2,
+"peak": -1.5,
+"intent": "normal",
+"gain": 3.2,
+"held": false
+},
+"scene15/12": {
+"hash": "8d83ea08b4660880",
+"lufs": -25.5,
+"peak": -7.2,
+"intent": "normal",
+"gain": 9.5,
+"held": false
+},
+"scene15/13": {
+"hash": "e5b4bb544807eaca",
+"lufs": -16.8,
+"peak": -3.0,
+"intent": "normal",
+"gain": 0.8,
+"held": false
+},
+"scene15/14": {
+"hash": "16284de708b275ec",
+"lufs": -15.6,
+"peak": -1.8,
+"intent": "loud",
+"gain": 2.6,
+"held": false
+},
+"scene15/15": {
+"hash": "cefd0435e350cbed",
+"lufs": -19.7,
+"peak": -3.1,
+"intent": "loud",
+"gain": 6.7,
+"held": true
+},
+"scene15/16": {
+"hash": "08706b623e1be7bf",
+"lufs": -18.9,
+"peak": -0.9,
+"intent": "normal",
+"gain": 2.9,
+"held": false
+},
+"scene15/17": {
+"hash": "b4748bb73568db98",
+"lufs": -24.7,
+"peak": -10.6,
+"intent": "normal",
+"gain": 8.7,
+"held": false
+},
+"scene15/18": {
+"hash": "17391e5ddff57484",
+"lufs": -18.3,
+"peak": -1.3,
+"intent": "normal",
+"gain": 2.3,
+"held": false
+},
+"scene16/01": {
+"hash": "249a86bcdcd7f2aa",
+"lufs": -19.1,
+"peak": -0.9,
+"intent": "normal",
+"gain": 3.1,
+"held": false
+},
+"scene16/02": {
+"hash": "8bd787c058178883",
+"lufs": -22.9,
+"peak": -5.1,
+"intent": "normal",
+"gain": 6.9,
+"held": false
+},
+"scene16/03": {
+"hash": "b13b39c7b88b6e80",
+"lufs": -18.2,
+"peak": -2.1,
+"intent": "normal",
+"gain": 2.2,
+"held": false
+},
+"scene16/04": {
+"hash": "ad54228395abacdb",
+"lufs": -16.5,
+"peak": -0.8,
+"intent": "loud",
+"gain": 3.5,
+"held": false
+},
+"scene16/05": {
+"hash": "04910b4d36b33922",
+"lufs": -22.2,
+"peak": -3.9,
+"intent": "loud",
+"gain": 9.2,
+"held": true
+},
+"scene16/06": {
+"hash": "ac0394a4ee20d02b",
+"lufs": -11.0,
+"peak": -0.8,
+"intent": "loud",
+"gain": -2.0,
+"held": false
+},
+"scene16/07": {
+"hash": "01aecf6d8b1ec2f2",
+"lufs": -16.6,
+"peak": -1.9,
+"intent": "normal",
+"gain": 0.6,
+"held": false
+},
+"scene16/08": {
+"hash": "80050f7fb4cb0417",
+"lufs": -16.1,
+"peak": -1.3,
+"intent": "loud",
+"gain": 3.1,
+"held": false
+},
+"scene16/09": {
+"hash": "8836e8c8f2346b01",
+"lufs": -19.0,
+"peak": -1.3,
+"intent": "normal",
+"gain": 3.0,
+"held": false
+},
+"scene16/10": {
+"hash": "886d51017acb52f4",
+"lufs": -13.8,
+"peak": -1.6,
+"intent": "normal",
+"gain": -2.2,
+"held": false
+},
+"scene16/11": {
+"hash": "00b1510cd978efdb",
+"lufs": -17.4,
+"peak": -3.1,
+"intent": "normal",
+"gain": 1.4,
+"held": false
+},
+"scene16/12": {
+"hash": "834514937905d512",
+"lufs": -23.5,
+"peak": -7.1,
+"intent": "normal",
+"gain": 7.5,
+"held": false
+},
+"scene16/13": {
+"hash": "17fff3132002b81f",
+"lufs": -18.8,
+"peak": -2.4,
+"intent": "normal",
+"gain": 2.8,
+"held": false
+},
+"scene16/14": {
+"hash": "96d3d055604661c7",
+"lufs": -15.3,
+"peak": -0.7,
+"intent": "loud",
+"gain": 2.3,
+"held": false
+},
+"scene16/15": {
+"hash": "e1b128d070712d23",
+"lufs": -16.2,
+"peak": -0.4,
+"intent": "normal",
+"gain": 0.2,
+"held": false
+},
+"scene17/01": {
+"hash": "474b91026fe0b3e8",
+"lufs": -15.0,
+"peak": -1.7,
+"intent": "loud",
+"gain": 2.0,
+"held": false
+},
+"scene17/02": {
+"hash": "fdf91db45282efa9",
+"lufs": -17.3,
+"peak": -4.5,
+"intent": "normal",
+"gain": 1.3,
+"held": false
+},
+"scene17/03": {
+"hash": "eaf0ec520af9462b",
+"lufs": -20.8,
+"peak": -4.9,
+"intent": "normal",
+"gain": 4.8,
+"held": false
+},
+"scene17/04": {
+"hash": "f107454be73845cf",
+"lufs": -18.0,
+"peak": -1.6,
+"intent": "normal",
+"gain": 2.0,
+"held": false
+},
+"scene17/05": {
+"hash": "7db3b154fb804a2f",
+"lufs": -16.8,
+"peak": -1.2,
+"intent": "normal",
+"gain": 0.8,
+"held": false
+},
+"scene17/06": {
+"hash": "7629a7c11ee4126b",
+"lufs": -14.8,
+"peak": -0.9,
+"intent": "loud",
+"gain": 1.8,
+"held": false
+},
+"scene17/07": {
+"hash": "8e7f8c9867865140",
+"lufs": -10.6,
+"peak": -0.3,
+"intent": "normal",
+"gain": -5.4,
+"held": false
+},
+"scene17/08": {
+"hash": "8455827c7ac55c5e",
+"lufs": -10.1,
+"peak": 1.1,
+"intent": "normal",
+"gain": -5.9,
+"held": false
+},
+"scene17/09": {
+"hash": "b2a8bf9a5c02b756",
+"lufs": -17.4,
+"peak": -0.7,
+"intent": "normal",
+"gain": 1.4,
+"held": false
+},
+"scene17/10": {
+"hash": "e5bbb14b422dd8dd",
+"lufs": -15.2,
+"peak": -0.6,
+"intent": "normal",
+"gain": -0.8,
+"held": false
+},
+"scene17/11": {
+"hash": "354d2c385053c81e",
+"lufs": -16.7,
+"peak": -1.1,
+"intent": "normal",
+"gain": 0.7,
+"held": false
+},
+"scene17/12": {
+"hash": "d0684eff5cf1c89f",
+"lufs": -18.4,
+"peak": -2.3,
+"intent": "normal",
+"gain": 2.4,
+"held": false
+},
+"scene17/13": {
+"hash": "4f5e61105f3bd884",
+"lufs": -18.5,
+"peak": -2.5,
+"intent": "loud",
+"gain": 5.5,
+"held": false
+},
+"scene18/01": {
+"hash": "130f54bd761bdcef",
+"lufs": -16.6,
+"peak": -0.6,
+"intent": "normal",
+"gain": 0.6,
+"held": false
+},
+"scene18/02": {
+"hash": "36a4271d62530faa",
+"lufs": -17.0,
+"peak": -0.3,
+"intent": "normal",
+"gain": 1.0,
+"held": false
+},
+"scene18/03": {
+"hash": "8453869d2496ba9d",
+"lufs": -17.9,
+"peak": -2.2,
+"intent": "normal",
+"gain": 1.9,
+"held": false
+},
+"scene18/04": {
+"hash": "205cd9620559e8f8",
+"lufs": -17.8,
+"peak": -2.9,
+"intent": "normal",
+"gain": 1.8,
+"held": false
+},
+"scene18/05": {
+"hash": "15bac386a6d42a0b",
+"lufs": -12.0,
+"peak": -1.1,
+"intent": "normal",
+"gain": -4.0,
+"held": false
+},
+"scene18/06": {
+"hash": "663641e1c75989cd",
+"lufs": -13.3,
+"peak": -0.1,
+"intent": "loud",
+"gain": 0.3,
+"held": false
+},
+"scene19/01": {
+"hash": "d55208f691eb87cd",
+"lufs": -17.7,
+"peak": -0.5,
+"intent": "normal",
+"gain": 1.7,
+"held": false
+},
+"scene19/02": {
+"hash": "6d1317c02d02fabb",
+"lufs": -14.6,
+"peak": -2.5,
+"intent": "normal",
+"gain": -1.4,
+"held": false
+},
+"scene19/03": {
+"hash": "7ed41da98bdbdfdd",
+"lufs": -18.2,
+"peak": -1.2,
+"intent": "normal",
+"gain": 2.2,
+"held": false
+},
+"scene19/04": {
+"hash": "cacf914e1bf52414",
+"lufs": -17.0,
+"peak": -2.6,
+"intent": "normal",
+"gain": 1.0,
+"held": false
+},
+"scene20/01": {
+"hash": "b47d94459f70ad4e",
+"lufs": -17.1,
+"peak": -1.6,
+"intent": "normal",
+"gain": 1.1,
+"held": false
+}
+}

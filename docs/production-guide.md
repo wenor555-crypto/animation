@@ -104,6 +104,17 @@ A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8
   - **Claude never acts on a collaborator's note.** `review.py pull` (the work list) reads only the owner's log. `review.py community <ep>` prints the collaborators' notes by person and the general discussion by score, for a briefing only. A note becomes work when the creator says so, or presses «Υιοθέτηση»: that copies it into the owner's log, credited («από: <name>»).
 - **Deploy:** `bash site/deploy.sh` copies the files, installs `render_ep.sh`, adds the crontab lines (`@reboot` and a check every 5 minutes through `run.sh`), and restarts the server. The passphrase lives only in `~/sita-site/secret.json` (mode 600) on the node.
 
+## Voice levels (every build)
+
+- **Rule:** all voices play at the same loudness, unless a line is shouted or spoken softly on purpose. ElevenLabs gives very different levels (Γιάννος about -23 LUFS, Γιώργος about -11), so this is never left to the raw clips.
+- **How:** `tools/level_voices.py` measures each clip once (EBU R128, cached by hash in `<ep>/audio/levels.json`). `build.py` runs it on every build and embeds the gains as `window.CLIP_GAIN`. The engine plays each clip through its gain into a dialogue bus with a fast peak limiter (-3 dBFS), in the player and in the MP4 export alike. The mp3 files are never re-encoded.
+- **Targets:**
+  - normal -16 LUFS
+  - loud -13: `!` or a word in CAPS, or `level: 'loud'`
+  - soft -21: a whisper `tag:`, or `level: 'soft'`
+  - `level: 'normal'` on a line overrides the automatic choice.
+- **Check:** `python3 tools/level_voices.py <ep>` prints each character's median before and after, and lists any clip that needs more than ±12 dB or more than 6 dB of limiting. Regenerate those clips rather than squash them. Measured in the exported Ep. 1 mix: every character's normal lines sit between -14.8 and -15.5 LUFS.
+
 ## Pending
 - **Μαρία's voice (Ep. 1–3):** the creator finds it odd in places, with nothing specific to fix. Rework it across all three episodes later: audition voices, regenerate her lines, check every line again by ear. Until then only single lines are fixed (Ep. 2 s06: «…της οικογένειας», with a pause, so it doesn't run into «τησικογένειας»).
 

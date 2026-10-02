@@ -87,7 +87,7 @@ function mosquito(x, y, s, t) {
 /* =========================================================
    AUDIO: synth SFX + ambience
    ========================================================= */
-let AC = null, master = null, amb = null, soundOn = true, voOn = true, playing = false;
+let AC = null, master = null, voiceBus = null, amb = null, soundOn = true, voOn = true, playing = false;
 let AT = null;       // when set, sounds are scheduled at this time instead of "now" (offline export)
 const audioNow = () => AT ?? AC.currentTime;
 function ensureAudio() {
@@ -98,6 +98,11 @@ function ensureAudio() {
 function buildAudio() {
   {
     master = AC.createGain(); master.connect(AC.destination);
+    // the dialogue bus: every clip is levelled (window.CLIP_GAIN, dB, from tools/level_voices.py) and goes through a
+    // fast peak limiter, so a quiet voice brought up to the others' loudness doesn't clip on its transients
+    voiceBus = AC.createDynamicsCompressor();
+    voiceBus.threshold.value = -3; voiceBus.knee.value = 0; voiceBus.ratio.value = 20; voiceBus.attack.value = .001; voiceBus.release.value = .08;
+    voiceBus.connect(master);
     const osc = (type, f) => { const o = AC.createOscillator(); o.type = type; o.frequency.value = f; o.start(); return o; };
     const gain = v => { const g = AC.createGain(); g.gain.value = v; return g; };
     const nb = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate), d = nb.getChannelData(0);
@@ -215,9 +220,12 @@ function queueClips() {
   for (const id of keep) decodeScene(id);
 }
 const clipKey = (sc, idx) => `${sc.id}/${String(idx + 1).padStart(2, '0')}`;
+function clipOut(key) {   // the clip's own level into the dialogue bus
+  const g = AC.createGain(); g.gain.value = Math.pow(10, ((window.CLIP_GAIN || {})[key] || 0) / 20); g.connect(voiceBus || master); return g;
+}
 function startClip(key) {
   pendingKey = null;
-  curClip = AC.createBufferSource(); curClip.buffer = BUFS[key]; curClip.connect(master);
+  curClip = AC.createBufferSource(); curClip.buffer = BUFS[key]; curClip.connect(clipOut(key));
   curClip.onended = () => { speaking = false; };
   speaking = true; speakStart = performance.now(); speakMax = BUFS[key].duration + 1.5; curClip.start();
 }
@@ -447,7 +455,7 @@ async function exportAudio(sr = 44100) {
     for (let lt = 0; lt < sc.dur; lt += step) {
       const prev = lt - step, t = sc.off + lt;
       for (const [et, fn] of sc.events) if (et > prev && et <= lt) { AT = sc.off + et; fn(); }
-      sc.lines.forEach((L, i) => { if (L.a > prev && L.a <= lt) { const b = bufs[clipKey(sc, i)]; if (b) { const s = AC.createBufferSource(); s.buffer = b; s.connect(master); s.start(sc.off + L.a); } } });
+      sc.lines.forEach((L, i) => { if (L.a > prev && L.a <= lt) { const k = clipKey(sc, i), b = bufs[k]; if (b) { const s = AC.createBufferSource(); s.buffer = b; s.connect(clipOut(k)); s.start(sc.off + L.a); } } });
       const a = sc.ambience ? sc.ambience(lt, sc.M) : {}, key = JSON.stringify(a);
       if (key !== lastA) { setAmbience(a, t); lastA = key; }
     }
