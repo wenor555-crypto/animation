@@ -362,6 +362,8 @@ class H(BaseHTTPRequestHandler):
             if m:
                 f = SITE / 'releases' / m.group(1) / f'r{int(m.group(2)):02d}.{m.group(3)}.vtt'
                 return self.file(f, 'text/vtt; charset=utf-8', cache='public, max-age=300') if f.exists() else self.send(404, '', 'text/plain')
+            if p in ('/privacy', '/terms'):
+                return self.send(200, self.legal(p[1:]))
             if p == '/review/login':
                 return self.send(200, self.login_page())
             if p == '/review/signup':
@@ -478,6 +480,23 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
         self.send(200, page(title, body))
 
     # ---------- review ----------
+    def legal(self, which):
+        mail = site_cfg().get('contact_email', '')
+        if which == 'privacy':
+            return page('Απόρρητο · Η Έξυπνη Σίτα', f'''<main><p><a href="/">← Η Έξυπνη Σίτα</a></p><h1>Πολιτική απορρήτου</h1>
+<p>Η παρακολούθηση των επεισοδίων δεν χρειάζεται λογαριασμό και δεν κρατάμε στοιχεία για όσους απλώς βλέπουν.</p>
+<p>Αν φτιάξεις λογαριασμό για να συμμετέχεις στην παραγωγή (με Google ή με email), κρατάμε:</p>
+<ul><li>το email σου και το όνομα που θα φαίνεται στα σχόλιά σου (από τη Google μόνο αυτά τα δύο: δεν βλέπουμε ούτε αγγίζουμε τίποτα άλλο στον λογαριασμό σου),</li>
+<li>τον κωδικό σου, μόνο ως κρυπτογραφικό hash (αν δεν μπεις με Google),</li><li>τα σχόλιά σου και το καρέ πάνω στο οποίο τα άφησες.</li></ul>
+<p>Το όνομα και τα σχόλιά σου τα βλέπουν ο δημιουργός της σειράς και οι άλλοι συνεργάτες. Το email σου το βλέπει μόνο ο δημιουργός. Δεν πουλάμε, δεν μοιραζόμαστε και δεν χρησιμοποιούμε τα στοιχεία σου για διαφήμιση. Κρατάμε ένα μόνο cookie σύνδεσης.</p>
+<p>Για να σβηστεί ο λογαριασμός και τα στοιχεία σου, γράψε στο <a href="mailto:{esc(mail)}">{esc(mail)}</a>.</p>
+<h2>Privacy (English)</h2><p>Watching needs no account. If you sign up to take part (Google or email), we keep your email, display name, a password hash (email sign-up only) and your notes. Your name and notes are visible to the creator and other collaborators; your email only to the creator. Nothing is sold or shared. To delete your account, write to <a href="mailto:{esc(mail)}">{esc(mail)}</a>.</p></main>''')
+        return page('Όροι · Η Έξυπνη Σίτα', f'''<main><p><a href="/">← Η Έξυπνη Σίτα</a></p><h1>Όροι χρήσης</h1>
+<p>Τα επεισόδια της «Έξυπνης Σίτας» είναι δημιουργικό έργο του δημιουργού τους. Μπορείς να τα βλέπεις και να τα κατεβάζεις για προσωπική χρήση.</p>
+<p>Το studio δείχνει εκδόσεις που δεν έχουν βγει ακόμα: μην τις αναδημοσιεύεις. Τα σχόλιά σου είναι προτάσεις· ο δημιουργός αποφασίζει τι θα αλλάξει και μπορεί να τα χρησιμοποιήσει ελεύθερα στην παραγωγή. Σεβόμαστε ο ένας τον άλλον: προσβλητικά σχόλια σβήνονται και ο λογαριασμός μπορεί να απενεργοποιηθεί.</p>
+<p>Επικοινωνία: <a href="mailto:{esc(mail)}">{esc(mail)}</a></p>
+<h2>Terms (English)</h2><p>The episodes are the creator's work; watch and download them for personal use. The studio shows unreleased drafts: please don't repost them. Notes are suggestions the creator may use freely. Abusive notes are removed and accounts may be blocked.</p></main>''')
+
     def google_block(self):
         cid = site_cfg().get('google_client_id')
         if not cid:
@@ -504,7 +523,7 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
 <label>Email<input name="email" type="email" required maxlength="254" value="{v('email')}" autocomplete="email"></label>
 <label>Κωδικός (τουλάχιστον 8 χαρακτήρες)<input name="pw" type="password" required minlength="8" autocomplete="new-password"></label>
 <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
-<button class="btn">Δημιουργία λογαριασμού</button></form><p>Έχεις ήδη; <a href="/review/login">Είσοδος</a></p></main>''')
+<button class="btn">Δημιουργία λογαριασμού</button></form><p class="meta">Με την εγγραφή δέχεσαι τους <a href="/terms">όρους</a> και την <a href="/privacy">πολιτική απορρήτου</a>.</p><p>Έχεις ήδη; <a href="/review/login">Είσοδος</a></p></main>''')
 
     def form(self):
         try:
