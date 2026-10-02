@@ -47,5 +47,9 @@
   {"scene": "scene17", "kind": "DOT", "fill": "#3a3f46", "why": "manga halftone dots"},
   {"scene": "scene17", "kind": "DOT", "fill": "#ff2a2a", "why": "laser dot in the manga panel"},
   {"scene": "scene01", "kind": "GAP", "why": "a 1 px row under the title card: black in the video, harmless"},
-  {"scene": "scene10", "kind": "HAND", "who": "kostas", "why": "Panik's hand against his face inside the hood (intentional pose)"}
+  {"scene": "scene10", "kind": "HAND", "who": "kostas", "why": "Panik's hand against his face inside the hood (intentional pose)"},
+  {"scene": "scene16", "kind": "DOT", "who": "christos", "t0": 29.8, "t1": 30.4, "why": "a racket-plane with its hen pilot climbs past Χρήστος's face at the start of the sortie"},
+  {"scene": "scene16", "kind": "DOT", "fill": "#ffb81c", "t0": 31, "t1": 40, "why": "egg yolk: the egg on Γιώργος's tee and the yolk splashes over the barricade"},
+  {"scene": "scene17", "kind": "DOT", "who": "kostas", "t0": 25, "t1": 29, "why": "feathers on Panik after the hose swats him into the coop"},
+  {"scene": "scene17", "kind": "DOT", "fill": "#e8c8e0", "t0": 56, "t1": 58, "why": "the slipper falling off the σίτα's face after the hit"}
 ]
