@@ -232,9 +232,17 @@ def esc(s):
     return html.escape(str(s or ''))
 
 
+def asset(name):
+    """/static/<name>?v=<mtime>: a new URL whenever the file changes, so Cloudflare and browsers never serve a stale copy"""
+    try:
+        return f'/static/{name}?v={int((STATIC / name).stat().st_mtime)}'
+    except OSError:
+        return f'/static/{name}'
+
+
 def page(title, body, extra_head=''):
     return f'''<!doctype html><html lang="el"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>{esc(title)}</title><link rel="stylesheet" href="/static/site.css">{extra_head}</head><body>{body}</body></html>'''
+<title>{esc(title)}</title><link rel="stylesheet" href="{asset('site.css')}">{extra_head}</head><body>{body}</body></html>'''
 
 
 class H(BaseHTTPRequestHandler):
@@ -631,8 +639,8 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
             raw = (SITE / 'drafts' / ep / f'v{cur["n"]:02d}.html').read_bytes()
             info = {'ep': ep, 'build': cur['build'], 'ver': cur['n'], 'latest': ds[-1]['n'], 'built': cur['ts'], 'user': who, 'role': me['role'], 'uid': me['uid'], 'toured': me['toured'],
                     'versions': [{'n': m['n'], 'ts': m['ts']} for m in ds]}
-            inject = (f'<link rel="stylesheet" href="/static/review.css"><script>window.REVIEW={json.dumps(info, ensure_ascii=False)}</script>'
-                      '<script src="/static/review.js"></script>').encode()
+            inject = (f'<link rel="stylesheet" href="{asset("review.css")}"><script>window.REVIEW={json.dumps(info, ensure_ascii=False)}</script>'
+                      f'<script src="{asset("review.js")}"></script>').encode()
             i = raw.rfind(b'</body>')
             out = raw[:i] + inject + raw[i:] if i >= 0 else raw + inject
             return self.send(200, out, headers={'Cache-Control': 'no-store'})
