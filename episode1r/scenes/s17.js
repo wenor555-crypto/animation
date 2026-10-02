@@ -10,7 +10,7 @@ const steps = [
   { who: 'christos', cam: 'chr', el: '…Nani.', en: '…Nani.' },
   { who: 'giannos', cam: 'gia', mark: 'pies', el: 'Κώστα. Πιες.', en: 'Kostas. Drink.' },
   { act: 'drink', d: 3, cam: 'kos' },
-  { who: 'panik', cam: 'kos', el: 'Η πόλη ξύπνησε. Κι εγώ, θέλω τσιγάρο.', en: 'The city is awake. And I want a cigarette.' },
+  { who: 'panik', cam: 'kos', el: 'Η πόλη ξύπνησε. Και εγώ… θέλω τσιγάρο.', en: 'The city is awake. And I want a cigarette.' },
   { act: 'charge', d: 4.2, cam: 'wide' },
   { who: 'panik', cam: 'coop', mark: 'personal', el: '…Ωραία. Τώρα είναι προσωπικό.', en: "…Fine. Now it's personal." },
   { who: 'sita', cam: 'head', el: 'CEO! Βοήθησέ με!', en: 'CEO! Help me!' },

@@ -7,7 +7,7 @@ const steps = [
   { who: 'mimis', cam: 'face', el: '…μαμά, είναι Αύγουστος…', en: "…mum, it's August…" },
   { act: 'fire', d: 3.4, cam: 'bed' },
   { who: 'mimis', cam: 'face', el: 'Χμ.', en: 'Hm.' },
-  { act: 'douse', d: 2.2, cam: 'bed' },
+  { act: 'douse', d: 3.4, cam: 'bed' },     // he gets up, takes the freddo off the bedside table and pours it on the fire
   { who: 'mimis', cam: 'face', el: 'Κρίμα. Είχε ακόμα.', en: 'Shame. There was some left.' },
   { act: 'open1', d: 3, cam: 'hallway' },
   { act: 'shut1', d: 2.4, cam: 'door' },
@@ -29,7 +29,7 @@ let M;
 function render(t, _M, sc) {
   M = _M;
   const c = shotCam(sc, t, CAMS), [, shot] = shotAt(sc, t);
-  const up = t > M.douse.b;
+  const D0 = M.douse.a, up = t > D0, pick = D0 + 1.3, pourA = D0 + 1.7, pourB = D0 + 2.4;
   ctx.save(); applyCam(c);
   room({ wall: '#a8b4c8', floor: '#7a6048', floorY: 600 });
   // poster, window
@@ -47,47 +47,53 @@ function render(t, _M, sc) {
   // the bed
   rect(160, 480, 620, 120, '#d8d0c0', { lw: 4, w: .5 }); rect(140, 400, 36, 200, '#6a4a32', { lw: 4 });
   rect(810, 520, 90, 80, '#8a6a4a', { lw: 3.5 });                  // bedside table
+  // fire at the blanket corner, doused with freddo
+  const fireK = inM(t, M.fire, 1, 0) || inM(t, M.L[1], 0, 0) ? prog(t, M.fire.a + 1, M.fire.a + 2) : inM(t, M.douse, 0, .6) ? 1 - prog(t, pourA + .3, pourB) : 0;
+  if (fireK > 0) { flame(740, 480, .7 * fireK, t); fxFire(740, 486, .55 * fireK, t, fireK); }
+  const cupEmpty = t > pourB;
   if (!up) {
     // Μίμης face-down, sweating, under the electric blanket (9 – MAX)
     ctx.save(); ctx.translate(360, 468); ctx.rotate(-1.52); person(0, 190, .8, CAST.mimis, { t, part: 'body', talk: talk('mimis', t), blink: t < M.fire.a + 1.4, look: [1, 0], lid: t > M.fire.a + 1.4 }); ctx.restore();
     blanket(300, 470, 460, 90, { t, heat: 1, ctrlX: 850, ctrlY: 470, wave: .3, col: '#c9443a' });
     for (let i = 0; i < 4; i++) { const p = (t * .8 + i / 4) % 1; blob(250 + i * 30, 430 + p * 30, 4, 6, '#9ad8ff', { lw: 1.5 }); }
+  } else if (t <= M.douse.b) {
+    // he throws the blanket off, gets up, two steps to the bedside table, takes the freddo, turns and pours it on the fire
+    blanket(300, 520, 460, 70, { t, ctrl: false, col: '#6a2a2a' });
+    const rise = ease(prog(t, D0, D0 + .5));
+    const [mx, walking] = path(t, [[D0 + .5, 560], [D0 + 1.2, 845]]);   // to the right of the fire, by the bedside table
+    const pouring = t > pourA - .1, tilt = ease(prog(t, pourA, pourA + .35)) * 1.9 * (1 - ease(prog(t, pourB, pourB + .3)));
+    const R2 = t < pick - .15 ? [44, -24] : t < pick ? [lerp(44, 52, prog(t, pick - .15, pick)), lerp(-24, -12, prog(t, pick - .15, pick))] : pouring ? [-96, -84] : [40, -60];
+    const st = { t, talk: talk('mimis', t), legs: walking ? 'walk' : 'stand', look: pouring ? [-1, .4] : t > pick - .3 ? [1, .4] : [1, 0], lid: t > pourB, mouth: 'flat', L: [-44, -24], R: R2 };
+    if (rise < 1) { ctx.save(); ctx.translate(560, GROUND); ctx.rotate(-1.5 * (1 - rise)); person(0, -150, 1, CAST.mimis, { ...st, legs: 'stand' }); ctx.restore(); }
+    else stand(mx, 'mimis', 1, st);
+    if (t >= pick) {                                   // the cup in his hand: tilted towards the fire to pour
+      const hx = mx + R2[0], hy = standY() + R2[1];
+      ctx.save(); ctx.translate(hx, hy); ctx.rotate(-tilt); if (!cupEmpty) freddo(0, 0, .9); else emptyCup(0, 0, .9); ctx.restore();
+      if (t > pourA + .2 && t < pourB) fxEmit(t, pourA + .2, pourB, .05, hx - 16, hy - 26, { kind: 'drop', n: 3, speed: 60, grav: 1400, life: .45, dir: Math.PI * .55, spread: .4, col: '#a6743e' });
+    }
   } else {
     blanket(300, 520, 460, 70, { t, ctrl: false, col: '#6a2a2a' });
-    const [mx, walking] = path(t, [[M.douse.b, 520], [M.open1.a, 900], [M.fourth.a, 900], [M.fourth.a + .01, 470]]);
-    stand(t < M.fourth.a ? mx : 470, 'mimis', 1, { t, talk: talk('mimis', t), legs: walking ? 'walk' : 'stand', look: shot === 'cam' ? [0, .1] : shot === 'call' ? [-.4, .1] : [1, 0], lid: true, mouth: 'flat',
-      R: t > M.dial.a ? [30, -175] : [44, -24], itemR: t > M.dial.a ? 'phone' : null });
+    const [mx, walking] = path(t, [[M.douse.b, 845], [M.open1.a, 900], [M.fourth.a, 900], [M.fourth.a + .01, 470]]);
+    const holding = t < M.open1.a;                       // «Κρίμα. Είχε ακόμα.» — looking into the empty cup
+    stand(t < M.fourth.a ? mx : 470, 'mimis', 1, { t, talk: talk('mimis', t), legs: walking ? 'walk' : 'stand', look: holding ? [.2, .6] : shot === 'cam' ? [0, .1] : shot === 'call' ? [-.4, .1] : [1, 0], lid: true, mouth: 'flat',
+      R: t > M.dial.a ? [30, -175] : holding ? [40, -60] : [44, -24], itemR: t > M.dial.a ? 'phone' : null });
+    if (holding) { ctx.save(); ctx.translate(mx + 40, standY() - 60); emptyCup(0, 0, .9); ctx.restore(); }
+    else emptyCup(850, 520, .9);                          // left on the bedside table
   }
-  // fire at the blanket corner, doused with freddo
-  const fireK = inM(t, M.fire, 1, 0) || inM(t, M.L[1], 0, 0) ? prog(t, M.fire.a + 1, M.fire.a + 2) : inM(t, M.douse, 0, .6) ? 1 - prog(t, M.douse.a + .8, M.douse.a + 1.2) : 0;
-  if (fireK > 0 && !up) { flame(740, 480, .7 * fireK, t); fxFire(740, 486, .55 * fireK, t, fireK); }
-  if (inM(t, M.douse, .9, .6)) fxEmit(t, M.douse.a + .9, M.douse.a + 1.6, .1, 745, 470, { kind: 'smoke', n: 2, speed: 50, grav: 400, life: 1.6, size: .5, alpha: .5, spread: .7 });
+  if (inM(t, M.douse, 1.9, .6)) fxEmit(t, pourA + .3, pourB + .5, .1, 745, 470, { kind: 'smoke', n: 2, speed: 50, grav: 400, life: 1.6, size: .5, alpha: .5, spread: .7 });
   if (openK && inM(t, M.open1, 1, 2)) { const rx = lerp(900, 1100, prog(t, M.open1.a + 1, M.open1.a + 1.8)); fxArc(rx - 20, 380, rx + 30, 330, t, { seed: 4 }); }
-  // the douse: his arm comes out from under the blanket, takes the freddo off the bedside table and pours it on the fire
-  const grab = M.douse.a + .45, lift = M.douse.a + .9, pourE = M.douse.a + 1.5, drop = M.douse.a + 1.9;
-  if (inM(t, M.douse, 0, .2) && !up) {
-    const reach = ease(prog(t, M.douse.a, grab)), mv = ease(prog(t, grab, lift)), back = ease(prog(t, drop, M.douse.b));
-    const hx = t < grab ? lerp(700, 850, reach) : t < drop ? lerp(850, 770, mv) : lerp(770, 700, back), hy = t < grab ? lerp(478, 512, reach) : t < drop ? lerp(512, 440, mv) : lerp(440, 478, back);
-    limb([[690, 476], [(690 + hx) / 2, Math.min(476, hy) - 18], [hx, hy]], 13, CAST.mimis.skin, { w: .4 });
-    if (t >= grab && t < drop) {
-      const tilt = ease(prog(t, lift, lift + .3)) * 2.2;
-      ctx.save(); ctx.translate(hx, hy); ctx.rotate(-tilt); freddo(0, 0, 1); ctx.restore();
-      if (t > lift + .2 && t < pourE) fxEmit(t, lift + .2, pourE, .05, hx - 22, hy - 6, { kind: 'drop', n: 3, speed: 60, grav: 1400, life: .45, dir: Math.PI * .6, spread: .5, col: '#a6743e' });
-    }
-  }
-  if (!up && t < grab) freddo(850, 520, 1);                                       // still on the bedside table
-  if (t >= drop) { ctx.save(); ctx.translate(800, 596); ctx.rotate(1.45); poly([[-12, -36], [12, -36], [9, 10], [-9, 10]], 'rgba(226,238,242,.75)', { lw: 3, w: .4 }); curve([[4, -34], [10, -58], [16, -62]], 3.5, '#d8392b', { w: .3 }); blob(0, 4, 7, 3, 'rgba(166,116,62,.6)', { lw: 0 }); ctx.restore(); }   // empty, knocked over on the floor
+  if (t < pick) freddo(850, 520, 1);                                           // on the bedside table until he takes it
   ctx.restore();
   applyLight('night', .55); applyLight('red', openK ? .45 : .15);
   ctx.save(); applyCam(c);
-  if (fireK > 0 && !up) glow(740, 450, 200, 'rgba(255,140,40,1)', .5 * fireK);
+  if (fireK > 0) glow(740, 450, 200, 'rgba(255,140,40,1)', .5 * fireK);
   glow(850, 470, 50, 'rgba(255,60,40,1)', up ? 0 : .4);
   if (t > M.dial.a) glow(500, standY() - 180, 70, 'rgba(160,200,255,1)', .5);
   ctx.restore();
   nightGrade(t, .7);
   vignette(.5);
   fxImpact(t, M.staff.a + .5, 400, 300, .05);
-  if (inM(t, M.douse, .9, .5)) sfxText('ΤΣΣΣ!', 700, 200, 70, .1, '#fff');
+  if (t > pourA + .3 && t < pourB + .4) sfxText('ΤΣΣΣ!', 700, 200, 70, .1, '#fff');
   if (shot === 'call') {         // split screen: Γιάννος in bed on the other side
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.beginPath(); ctx.moveTo(760, 0); ctx.lineTo(1280, 0); ctx.lineTo(1280, 720); ctx.lineTo(680, 720); ctx.closePath(); ctx.clip();
@@ -104,7 +110,7 @@ function render(t, _M, sc) {
 }
 return {
   id: 'scene13', title: '13 · Προσωπικό', steps, render,
-  events: M => [[M.fire.a + 1, SFX.fire], [M.douse.a + .9, SFX.hiss], [M.open1.a + .2, SFX.creak], [M.open1.a + 1, SFX.zap], [M.shut1.a, SFX.door], [M.open2.a + .1, SFX.creak], [M.shut2.a, SFX.door],
+  events: M => [[M.fire.a + 1, SFX.fire], [M.douse.a + 2, SFX.hiss], [M.douse.a + .1, SFX.whoosh], [M.douse.a + 1.3, SFX.clack], [M.open1.a + .2, SFX.creak], [M.open1.a + 1, SFX.zap], [M.shut1.a, SFX.door], [M.open2.a + .1, SFX.creak], [M.shut2.a, SFX.door],
     [M.dial.a + .3, SFX.phone], [M.dial.a + 1.2, SFX.phone], [M.staff.a + .5, () => tone(70, 1, 'sawtooth', .05, .7)]],
   ambience: () => ({ hum: .03 }),
 };

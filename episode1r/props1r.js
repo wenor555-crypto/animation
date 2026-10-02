@@ -90,3 +90,11 @@ function slipperMark(x, y, s = 1, rot = -.25) {
   for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(i * 5 + 2, -5); ctx.lineTo(i * 5 - 1, 5); ctx.stroke(); }
   ctx.restore();
 }
+/* an empty freddo cup (the ice and coffee gone): glass, straw, a brown ring at the bottom */
+function emptyCup(x, y, s = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  curve([[4, -34], [10, -58], [16, -62]], 3.5, '#d8392b', { w: .3 });
+  poly([[-12, -36], [12, -36], [9, 10], [-9, 10]], 'rgba(226,238,242,.75)', { lw: 3, w: .4 });
+  blob(0, 6, 8, 3, 'rgba(166,116,62,.7)', { lw: 0 });
+  ctx.restore();
+}
