@@ -5,7 +5,7 @@ set -e
 cd "$(dirname "$0")/.."
 C="python3 episode1/tools/compute_client.py"
 $C run 'mkdir -p ~/sita-site/static' >/dev/null
-for f in server.py publish.py reviewctl.py run.sh site.json static/site.css static/review.css static/review.js static/player-fs.js; do
+for f in server.py publish.py reviewctl.py run.sh site.json static/site.css static/review.css static/review.js static/player-fs.js static/subs-pick.js; do
   $C put site/$f sita-site/$f >/dev/null && echo "put $f"
 done
 $C put site/render_ep.sh sita-render/render_ep.sh >/dev/null && echo "put render_ep.sh"

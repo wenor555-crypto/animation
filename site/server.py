@@ -274,8 +274,8 @@ def asset(name):
         return f'/static/{name}'
 
 
-def page(title, body, extra_head=''):
-    return f'''<!doctype html><html lang="el"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+def page(title, body, extra_head='', lang='el'):
+    return f'''<!doctype html><html lang="{'en' if lang == 'en' else 'el'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{esc(title)}</title><link rel="stylesheet" href="{asset('site.css')}">{extra_head}</head><body>{body}</body></html>'''
 
 
@@ -307,6 +307,20 @@ class H(BaseHTTPRequestHandler):
 
     def ip(self):
         return self.headers.get('Cf-Connecting-Ip') or self.client_address[0]
+
+    def ui_lang(self, f=None):
+        """The language of the sign-in pages: ?lang=, else the form's hidden lang, else the sita_lang cookie (set by those
+        pages, so Google's redirect back keeps it), else Greek."""
+        q = urllib.parse.parse_qs(urllib.parse.urlsplit(self.path).query).get('lang', [''])[0]
+        if q in ('el', 'en'):
+            return q
+        if f and f.get('lang', [''])[0] in ('el', 'en'):
+            return f['lang'][0]
+        m = re.search(r'(?:^|;\s*)sita_lang=(el|en)', self.headers.get('Cookie', ''))
+        return m.group(1) if m else 'el'
+
+    def lang_cookie(self, lang):
+        return {'Set-Cookie': f'sita_lang={lang}; Path=/; Max-Age=31536000; SameSite=Lax'}
 
     def cookie_for(self, name):
         sig = hmac.new(secret()['key'].encode(), b'rev:' + name.encode(), hashlib.sha256).hexdigest()
@@ -409,13 +423,13 @@ class H(BaseHTTPRequestHandler):
             if p in ('/privacy', '/terms'):
                 return self.send(200, self.legal(p[1:]))
             if p == '/review/login':
-                return self.send(200, self.login_page())
+                lg = self.ui_lang(); return self.send(200, self.login_page(en=lg == 'en'), headers=self.lang_cookie(lg))
             if p == '/review/signup':
-                return self.send(200, self.signup_page())
+                lg = self.ui_lang(); return self.send(200, self.signup_page(en=lg == 'en'), headers=self.lang_cookie(lg))
             if p.startswith('/review') or p.startswith('/api/'):
                 me = self.me()
                 if not me:
-                    return self.json({'error': 'login'}, 401) if p.startswith('/api/') else self.redirect('/review/login')
+                    return self.json({'error': 'login'}, 401) if p.startswith('/api/') else self.redirect('/review/login' + ('?lang=en' if q.get('lang', [''])[0] == 'en' else ''))
                 return self.review_get(p, me)
             self.send(404, page('404', '<main><h1>Δεν βρέθηκε</h1><p><a href="/">Αρχική</a></p></main>'))
         except (BrokenPipeError, ConnectionResetError):
@@ -467,7 +481,7 @@ class H(BaseHTTPRequestHandler):
         me = self.me()
         if me:
             return f'<a class="btn join" href="/review">🎬 {"Studio" if me["role"] == "community" else "Review"}</a>'
-        return f'<a class="btn join" href="/review/signup">🎬 {"Be part of the production!" if en else "Γίνε μέρος της παραγωγής!"}</a>'
+        return f'<a class="btn join" href="/review/signup{"?lang=en" if en else ""}">🎬 {"Be part of the production!" if en else "Γίνε μέρος της παραγωγής!"}</a>'
 
     def home(self, lang):
         cfg, en = site_cfg(), lang == 'en'
@@ -540,33 +554,35 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
 <p>Επικοινωνία: <a href="mailto:{esc(mail)}">{esc(mail)}</a></p>
 <h2>Terms (English)</h2><p>The episodes are the creator's work; watch and download them for personal use. The studio shows unreleased drafts: please don't repost them. Notes are suggestions the creator may use freely. Abusive notes are removed and accounts may be blocked.</p></main>''')
 
-    def google_block(self):
+    def google_block(self, en=False):
         cid = site_cfg().get('google_client_id')
         if not cid:
             return ''
         host = self.headers.get('Host', 'sita.justachillgame.com')
         return (f'''<script src="https://accounts.google.com/gsi/client" async></script>
 <div id="g_id_onload" data-client_id="{esc(cid)}" data-login_uri="https://{esc(host)}/review/auth/google" data-ux_mode="redirect" data-auto_prompt="false"></div>
-<div class="g_id_signin" data-type="standard" data-shape="pill" data-text="continue_with" data-size="large" data-locale="el"></div>
-<p class="or">ή</p>''')
+<div class="g_id_signin" data-type="standard" data-shape="pill" data-text="continue_with" data-size="large" data-locale="{'en' if en else 'el'}"></div>
+<p class="or">{'or' if en else 'ή'}</p>''')
 
-    def login_page(self, err=''):
-        return page('Είσοδος · Σίτα', f'''<main class="login"><h1>Γίνε μέρος της παραγωγής</h1>
-<p class="meta">Δες κάθε revision των επεισοδίων πριν βγουν και άφησε σχόλια πάνω στο καρέ.</p>{f'<p class="err">{esc(err)}</p>' if err else ''}
-{self.google_block()}<form method="post" action="/review/login"><label>Email (ή όνομα χρήστη)<input name="name" required maxlength="254" autocomplete="username" autocapitalize="none"></label>
-<label>Κωδικός<input name="pw" type="password" required autocomplete="current-password"></label><button class="btn">Είσοδος</button></form>
-<p>Πρώτη φορά; <a href="/review/signup">Φτιάξε λογαριασμό</a></p></main>''')
+    def login_page(self, err='', en=False):
+        L = (lambda el_, en_: en_ if en else el_); q = '?lang=en' if en else ''
+        return page(L('Είσοδος · Σίτα', 'Sign in · Sita'), f'''<main class="login"><h1>{L("Γίνε μέρος της παραγωγής", "Be part of the production")}</h1>
+<p class="meta">{L("Δες κάθε revision των επεισοδίων πριν βγουν και άφησε σχόλια πάνω στο καρέ.", "Watch every revision of the episodes before they come out and leave notes right on the frame.")}</p>{f'<p class="err">{esc(err)}</p>' if err else ''}
+{self.google_block(en)}<form method="post" action="/review/login"><input type="hidden" name="lang" value="{"en" if en else "el"}"><label>{L("Email (ή όνομα χρήστη)", "Email (or username)")}<input name="name" required maxlength="254" autocomplete="username" autocapitalize="none"></label>
+<label>{L("Κωδικός", "Password")}<input name="pw" type="password" required autocomplete="current-password"></label><button class="btn">{L("Είσοδος", "Sign in")}</button></form>
+<p>{L("Πρώτη φορά;", "First time?")} <a href="/review/signup{q}">{L("Φτιάξε λογαριασμό", "Create an account")}</a> · <a href="/{q}">{L("← Αρχική", "← Home")}</a></p></main>''', lang='en' if en else 'el')
 
-    def signup_page(self, err='', f=None):
+    def signup_page(self, err='', f=None, en=False):
         f = f or {}
         v = lambda k: esc(f.get(k, [''])[0])
-        return page('Λογαριασμός · Σίτα', f'''<main class="login"><h1>Γίνε μέρος της παραγωγής!</h1>
-<p class="meta">Με λογαριασμό βλέπεις όλα τα revision στο studio και τα σχόλιά σου φτάνουν στον δημιουργό, με το όνομά σου.</p>{f'<p class="err">{esc(err)}</p>' if err else ''}
-{self.google_block()}<form method="post" action="/review/signup"><label>Όνομα (φαίνεται στα σχόλιά σου)<input name="display" required maxlength="30" value="{v('display')}" autocomplete="nickname"></label>
+        L = (lambda el_, en_: en_ if en else el_); q = '?lang=en' if en else ''
+        return page(L('Λογαριασμός · Σίτα', 'Account · Sita'), f'''<main class="login"><h1>{L("Γίνε μέρος της παραγωγής!", "Be part of the production!")}</h1>
+<p class="meta">{L("Με λογαριασμό βλέπεις όλα τα revision στο studio και τα σχόλιά σου φτάνουν στον δημιουργό, με το όνομά σου.", "With an account you see every revision in the studio, and your notes reach the creator under your name.")}</p>{f'<p class="err">{esc(err)}</p>' if err else ''}
+{self.google_block(en)}<form method="post" action="/review/signup"><input type="hidden" name="lang" value="{"en" if en else "el"}"><label>{L("Όνομα (φαίνεται στα σχόλιά σου)", "Name (shown on your notes)")}<input name="display" required maxlength="30" value="{v('display')}" autocomplete="nickname"></label>
 <label>Email<input name="email" type="email" required maxlength="254" value="{v('email')}" autocomplete="email"></label>
-<label>Κωδικός (τουλάχιστον 8 χαρακτήρες)<input name="pw" type="password" required minlength="8" autocomplete="new-password"></label>
+<label>{L("Κωδικός (τουλάχιστον 8 χαρακτήρες)", "Password (at least 8 characters)")}<input name="pw" type="password" required minlength="8" autocomplete="new-password"></label>
 <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
-<button class="btn">Δημιουργία λογαριασμού</button></form><p class="meta">Με την εγγραφή δέχεσαι τους <a href="/terms">όρους</a> και την <a href="/privacy">πολιτική απορρήτου</a>.</p><p>Έχεις ήδη; <a href="/review/login">Είσοδος</a></p></main>''')
+<button class="btn">{L("Δημιουργία λογαριασμού", "Create account")}</button></form><p class="meta">{L("Με την εγγραφή δέχεσαι τους", "By signing up you accept the")} <a href="/terms">{L("όρους", "terms")}</a> {L("και την", "and the")} <a href="/privacy">{L("πολιτική απορρήτου", "privacy policy")}</a>.</p><p>{L("Έχεις ήδη;", "Already have one?")} <a href="/review/login{q}">{L("Είσοδος", "Sign in")}</a> · <a href="/{q}">{L("← Αρχική", "← Home")}</a></p></main>''', lang='en' if en else 'el')
 
     def form(self):
         try:
@@ -579,19 +595,20 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
         if f is None:
             return self.send(400, 'bad', 'text/plain')
         name = (f.get('name', [''])[0].strip() or 'reviewer')[:254]; pw = f.get('pw', [''])[0]
+        en = self.ui_lang(f) == 'en'; L = (lambda el_, en_: en_ if en else el_); home = '/review' + ('?lang=en' if en else '')
         if too_many(self.ip(), 'login', 12):
-            return self.send(429, self.login_page('Πολλές προσπάθειες. Δοκίμασε ξανά σε λίγα λεπτά.'))
+            return self.send(429, self.login_page(L('Πολλές προσπάθειες. Δοκίμασε ξανά σε λίγα λεπτά.', 'Too many attempts. Try again in a few minutes.'), en))
         if '@' in name:                                            # a collaborator (email + password)
             u = find_user(name)
             ok = u and u.get('hash') and hmac.compare_digest(pw_hash(pw, u['salt']), u['hash'])
             if ok and u.get('status') != 'active':
-                return self.send(403, self.login_page('Ο λογαριασμός είναι απενεργοποιημένος.'))
+                return self.send(403, self.login_page(L('Ο λογαριασμός είναι απενεργοποιημένος.', 'This account is disabled.'), en))
             if ok:
-                return self.redirect('/review', self.cookie_for(owner_for(name) or 'u:' + u['id']))
+                return self.redirect(home, self.cookie_for(owner_for(name) or 'u:' + u['id']))
         elif check_login(name[:30], pw):                           # the owner
-            return self.redirect('/review', self.cookie_for(name[:30]))
+            return self.redirect(home, self.cookie_for(name[:30]))
         time.sleep(1.5)
-        return self.send(403, self.login_page('Λάθος στοιχεία'))
+        return self.send(403, self.login_page(L('Λάθος στοιχεία', 'Wrong email or password'), en))
 
     def signup(self):
         f = self.form()
@@ -600,36 +617,39 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
         g = lambda k: f.get(k, [''])[0].strip()
         if g('website'):                                           # the honeypot: bots fill every field
             return self.redirect('/')
+        en = self.ui_lang(f) == 'en'; L = (lambda el_, en_: en_ if en else el_)
         if too_many(self.ip(), 'signup', 5, 3600):
-            return self.send(429, self.signup_page('Πολλές εγγραφές από εδώ. Δοκίμασε αργότερα.', f))
+            return self.send(429, self.signup_page(L('Πολλές εγγραφές από εδώ. Δοκίμασε αργότερα.', 'Too many sign-ups from here. Try again later.'), f, en))
         email, name, pw = g('email').lower(), clean_name(g('display')), f.get('pw', [''])[0]
-        err = 'Γράψε ένα όνομα.' if not name else 'Το email δεν φαίνεται σωστό.' if not EMAIL.match(email) else \
-            'Αυτό το email ανήκει στον δημιουργό: μπες με Google ή ως ceo.' if owner_for(email) else \
-            'Ο κωδικός θέλει τουλάχιστον 8 χαρακτήρες.' if len(pw) < 8 else 'Υπάρχει ήδη λογαριασμός με αυτό το email.' if find_user(email) else ''
+        err = L('Γράψε ένα όνομα.', 'Enter a name.') if not name else L('Το email δεν φαίνεται σωστό.', "That email doesn't look right.") if not EMAIL.match(email) else \
+            L('Αυτό το email ανήκει στον δημιουργό: μπες με Google ή ως ceo.', "This email belongs to the creator: sign in with Google or as ceo.") if owner_for(email) else \
+            L('Ο κωδικός θέλει τουλάχιστον 8 χαρακτήρες.', 'The password needs at least 8 characters.') if len(pw) < 8 else \
+            L('Υπάρχει ήδη λογαριασμός με αυτό το email.', 'There is already an account with this email.') if find_user(email) else ''
         if err:
-            return self.send(400, self.signup_page(err, f))
+            return self.send(400, self.signup_page(err, f, en))
         u = new_user(email, name, 'password', pw)
-        self.redirect('/review', self.cookie_for('u:' + u['id']))
+        self.redirect('/review' + ('?lang=en' if en else ''), self.cookie_for('u:' + u['id']))
 
     def google(self):
         f = self.form()
         if f is None:
             return self.send(400, 'bad', 'text/plain')
+        en = self.ui_lang() == 'en'; L = (lambda el_, en_: en_ if en else el_); home = '/review' + ('?lang=en' if en else '')
         c = self.headers.get('Cookie', ''); m = re.search(r'(?:^|;\s*)g_csrf_token=([^;]+)', c)
         if not m or m.group(1) != f.get('g_csrf_token', [''])[0]:  # Google's double-submit CSRF check
-            return self.send(400, self.login_page('Η σύνδεση με Google απέτυχε (csrf). Δοκίμασε ξανά.'))
+            return self.send(400, self.login_page(L('Η σύνδεση με Google απέτυχε (csrf). Δοκίμασε ξανά.', 'Google sign-in failed (csrf). Try again.'), en))
         if too_many(self.ip(), 'google', 20):
-            return self.send(429, self.login_page('Πολλές προσπάθειες. Δοκίμασε ξανά σε λίγα λεπτά.'))
+            return self.send(429, self.login_page(L('Πολλές προσπάθειες. Δοκίμασε ξανά σε λίγα λεπτά.', 'Too many attempts. Try again in a few minutes.'), en))
         got = google_verify(f.get('credential', [''])[0])
         if not got:
-            return self.send(403, self.login_page('Η σύνδεση με Google απέτυχε.'))
+            return self.send(403, self.login_page(L('Η σύνδεση με Google απέτυχε.', 'Google sign-in failed.'), en))
         email, name = got
         if owner_for(email):                                       # the owner signing in with Google: the ceo account itself
-            return self.redirect('/review', self.cookie_for(owner_for(email)))
+            return self.redirect(home, self.cookie_for(owner_for(email)))
         u = find_user(email) or new_user(email, name, 'google')
         if u.get('status') != 'active':
-            return self.send(403, self.login_page('Ο λογαριασμός είναι απενεργοποιημένος.'))
-        self.redirect('/review', self.cookie_for('u:' + u['id']))
+            return self.send(403, self.login_page(L('Ο λογαριασμός είναι απενεργοποιημένος.', 'This account is disabled.'), en))
+        self.redirect(home, self.cookie_for('u:' + u['id']))
 
     def review_get(self, p, me):
         owner, who = me['role'] == 'owner', me['name']
