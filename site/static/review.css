@@ -80,7 +80,7 @@
 .rv-tour-b button { font:700 14px "Noto Sans", sans-serif; border:0; border-radius:8px; padding:10px 14px; cursor:pointer; min-height:42px; }
 .rv-tour-next { background:#ffd23f; color:#231a2e; }
 .rv-tour-prev, .rv-tour-skip { background:none; color:#231a2e; }
-.rv-tour-skip { margin-right:auto; color:#8a7f95; }
+.rv-tour-skip { margin-right:auto; color:#a59cae; font-weight:400 !important; font-size:12px !important; }
 
 /* votes + general discussion */
 .rv-vote { display:inline-flex; flex-direction:column; align-items:center; min-width:34px; }

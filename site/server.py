@@ -314,7 +314,7 @@ class H(BaseHTTPRequestHandler):
         if n.startswith('u:'):
             u = load_users().get(n[2:])
             if u and u.get('email') in {e.lower() for e in site_cfg().get('owner_emails', [])}:   # an admin by email (site.json)
-                return {'name': u['name'], 'role': 'owner', 'uid': u['id'], 'toured': True}
+                return {'name': u['name'], 'role': 'owner', 'uid': u['id'], 'toured': bool(u.get('toured'))}
             if not u or u.get('status') != 'active':
                 return None
             return {'name': u['name'], 'role': 'community', 'uid': u['id'], 'toured': bool(u.get('toured'))}

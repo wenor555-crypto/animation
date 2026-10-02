@@ -252,19 +252,19 @@
   ];
   function tour(i = 0) {
     document.querySelector('.rv-tour')?.remove();
-    if (i >= TOUR.length) { if (R.role === 'community' && !R.toured) { R.toured = true; fetch('/api/me/toured', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', credentials: 'same-origin' }).catch(() => { }); } return; }
+    if (i >= TOUR.length) { if (R.uid && !R.toured) { R.toured = true; fetch('/api/me/toured', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', credentials: 'same-origin' }).catch(() => { }); } return; }
     const [sel, title, text] = TOUR[i], tgt = document.querySelector(sel); if (!tgt) return tour(i + 1);
     tgt.scrollIntoView({ block: 'center', behavior: 'instant' });
     const r = tgt.getBoundingClientRect(), o = el('div', 'rv-tour');
     o.innerHTML = `<div class="rv-tour-hole" style="left:${r.left - 6}px;top:${r.top - 6}px;width:${r.width + 12}px;height:${r.height + 12}px"></div>
       <div class="rv-tour-card" role="dialog" aria-label="${esc(title)}"><div class="rv-tour-n">${i + 1} / ${TOUR.length}</div><h3>${esc(title)}</h3><p>${esc(text)}</p>
-      <div class="rv-tour-b"><button class="rv-tour-skip">Παράλειψη</button>${i ? '<button class="rv-tour-prev">Πίσω</button>' : ''}<button class="rv-tour-next">${i === TOUR.length - 1 ? 'Ξεκινάμε!' : 'Επόμενο'}</button></div></div>`;
+      <div class="rv-tour-b"><button class="rv-tour-skip" title="Δεν προτείνεται">Παράλειψη (δεν προτείνεται)</button>${i ? '<button class="rv-tour-prev">Πίσω</button>' : ''}<button class="rv-tour-next">${i === TOUR.length - 1 ? 'Ξεκινάμε!' : 'Επόμενο'}</button></div></div>`;
     document.body.append(o);
     const card = o.querySelector('.rv-tour-card'), ch = card.offsetHeight;
     card.style.top = (r.bottom + 14 + ch < innerHeight ? r.bottom + 14 : Math.max(10, r.top - ch - 14)) + 'px';
     o.querySelector('.rv-tour-next').onclick = () => tour(i + 1);
     o.querySelector('.rv-tour-prev')?.addEventListener('click', () => tour(i - 1));
-    o.querySelector('.rv-tour-skip').onclick = () => tour(TOUR.length);
+    o.querySelector('.rv-tour-skip').onclick = () => { if (confirm('Σίγουρα; Η ξενάγηση παίρνει ένα λεπτό και δείχνει πώς αφήνεις σχόλια που φτάνουν στον δημιουργό. Μπορείς να την ξαναδείς από το «?».')) tour(TOUR.length); };
   }
   panel.querySelector('.rv-tour-btn').onclick = () => tour(0);
 
@@ -309,7 +309,7 @@
   const go = () => {
     if (!window.EPISODE) return setTimeout(go, 200);
     initTL(); load(); loadGen(); flush();
-    if (R.role === 'community' && !R.toured) setTimeout(() => tour(0), 600);
+    if (R.uid && !R.toured) setTimeout(() => tour(0), 600);   // every new account (collaborators and admins), until finished or skipped
     if (new URLSearchParams(location.search).get('lang') === 'en' && $('lang').textContent.trim() === 'EN') $('lang').click();   // ?lang=en opens with English subtitles
     const m = location.hash.match(/t=([\d.]+)/); if (m) jump(+m[1]);                // links from the log page: /review/<ep>#t=123.4
     setInterval(flush, 15000); window.addEventListener('online', flush);
