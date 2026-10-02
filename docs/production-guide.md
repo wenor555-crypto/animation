@@ -129,5 +129,7 @@ A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8
   - `publish.py` copies the two `.vtt` next to the release.
   - `/ep/<slug>` shows a ΕΛ | EN | Off picker.
   - `?lang=en` opens in English, also for `/`, `/play/<slug>` and `/review/<ep>`.
-  - Releases rendered before this have Greek burned in; their page says so and points to the interactive version.
+  - The interactive player (`/play/<slug>`, and `/review/<ep>`) gets `static/subs-pick.js`, injected by `server.py`. It shows one **CC** button that cycles ΕΛ → EN → ✕ (off); on the public page the key **C** does the same. "Off" swaps the engine's `drawSubs` for a no-op, the same hook the exporter uses. The choice is kept in `localStorage['sita-subs']`, shared with `/ep`. This needs no rebuild of the episodes.
+  - Every render is soft by default, so the subtitles come with every new episode automatically. Never pass `SUBS=burn` for a release.
+  - Releases rendered before this have Greek burned in; their page says so and points to the interactive version. Re-rendered with soft subtitles: Ep. 2 r02, Ep. 3 r02, Ep. 1 (the remake, r02). Episode 1 r01 is the last burned one and stays only as history.
 
