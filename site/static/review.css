@@ -102,3 +102,20 @@
 .rv-gt { white-space:pre-wrap; font-size:15px; }
 .rv-own { color:var(--accent); }
 .rv-gdel { border:0; background:none; cursor:pointer; opacity:.6; padding:6px; }
+
+/* phones: the quick menu as a bottom sheet, the note form fixed at the bottom, touch-sized targets */
+.rv-sheet { position:fixed; left:0; right:0; bottom:0; z-index:60; background:var(--panel, #fffaf0); border-radius:16px 16px 0 0; padding:12px 14px calc(14px + env(safe-area-inset-bottom)); box-shadow:0 -6px 24px rgba(0,0,0,.35); animation:rv-up .16s ease-out both; }
+@keyframes rv-up { from { transform:translateY(40px); opacity:0; } }
+.rv-sheet-h { font:700 14px "Noto Sans", sans-serif; color:var(--muted); margin-bottom:8px; }
+.rv-sheet-g { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; }
+.rv-opt2 { display:flex; flex-direction:column; align-items:center; gap:2px; border:0; border-radius:12px; padding:10px 4px; min-height:64px; background:var(--bg, #f4efe4); color:var(--ink); font:700 12px "Noto Sans", sans-serif; box-shadow:inset 0 0 0 3px var(--c); cursor:pointer; }
+.rv-opt2 span { font-size:24px; line-height:1.1; }
+.rv-sheet-x { width:100%; margin-top:10px; border:0; background:none; color:var(--muted); font:700 15px "Noto Sans", sans-serif; min-height:44px; cursor:pointer; }
+.rv-form.rv-form-sheet { position:fixed; left:0; right:0; bottom:0; top:auto; border-radius:16px 16px 0 0; padding-bottom:calc(10px + env(safe-area-inset-bottom)); z-index:61; }
+.rv-gform textarea, .rv-gform select, .rv-ver { font-size:16px; }
+@media (pointer: coarse) {
+  .rv-keys { display:none; }
+  .rv-vote button { min-height:36px; min-width:36px; font-size:16px; }
+  .rv-zoom button { min-width:48px; min-height:44px; }
+  .rv-gdel, .rv-del { min-width:40px; min-height:40px; }
+}

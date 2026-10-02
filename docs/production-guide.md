@@ -90,6 +90,7 @@ A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8
   - a ruler, the scene bands with their titles, the note lanes and the playhead
   - zoom with the wheel, + −, or the slider, from the whole episode down to 4 s
   - drag at the zoom's scale; Shift+drag is 10× finer; every position snaps to a frame
+- **On phones** (narrow screens or touch): tapping the frame opens the six choices as a bottom sheet, and the note form sits at the bottom of the screen; the timeline zooms with two fingers (pinch) or + −; hints and the tour speak touch instead of keys; inputs are 16 px so iOS doesn't zoom.
 - **Collaborators ("Γίνε μέρος της παραγωγής!"):** the public pages show that button (or «Studio» when signed in). Anyone can sign up with Google (`google_client_id` in `site.json`; the token is checked with Google's `tokeninfo`, no client secret is used or stored) or with email + password (pbkdf2; a honeypot and per-IP limits; no email confirmation).
   - **The owner's Gmail:** `owner_emails` in `site.json` maps `wenor555@gmail.com` → `ceo`: signing in with that Google account is the `ceo` account itself (same name, notes, rights). Sign-up with that email is refused.
   - Accounts live in `~/sita-site/users.json`. The owner sees them at `/review/users` and can block or unblock anyone.

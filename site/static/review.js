@@ -14,6 +14,7 @@
   const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
   const store = { get: k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } } };
 
+  const TOUCH = matchMedia('(pointer: coarse)').matches;   // phones/tablets: touch hints, bottom-sheet menu, pinch zoom
   let NOTES = [], menu = null, form = null;
   const stage = $('stage'), cv = $('c'), scrub = $('scrub');
 
@@ -65,13 +66,14 @@
   }
 
   /* ---------- the quick menu ---------- */
-  function closeMenu() { menu?.remove(); menu = null; form?.remove(); form = null; }
+  function closeMenu() { menu?.remove(); menu = null; form?.remove(); form = null; stage.querySelectorAll(':scope > .rv-dot').forEach(d => d.remove()); }
   function openMenu(ev) {
     closeMenu();
     const r = cv.getBoundingClientRect(), sr = stage.getBoundingClientRect();
     const pos = { x: (ev.clientX - r.left) / r.width * 1280, y: (ev.clientY - r.top) / r.height * 720 };
     const was = playing(); pause();
     const shot = snapshot(pos.x, pos.y);
+    if (sr.width < 600) return openSheet(ev, pos, shot, was, sr);
     const rad = Math.min(78, sr.height * .3), cx = Math.min(Math.max(ev.clientX - sr.left, rad + 28), sr.width - rad - 28), cy = Math.min(Math.max(ev.clientY - sr.top, rad + 28), sr.height - rad - 28);
     menu = el('div', 'rv-menu'); menu.style.left = cx + 'px'; menu.style.top = cy + 'px';
     const dot = el('div', 'rv-dot'); dot.style.left = (ev.clientX - sr.left - cx) + 'px'; dot.style.top = (ev.clientY - sr.top - cy) + 'px'; menu.append(dot);
@@ -89,6 +91,19 @@
     const x = el('button', 'rv-x', '✕'); x.title = 'Άκυρο'; x.onclick = e => { e.stopPropagation(); closeMenu(); if (was) resume(); }; menu.append(x);
     stage.append(menu);
   }
+  function openSheet(ev, pos, shot, was, sr) {      // phones: the six choices as a sheet under the frame (the frame is too small for the ring)
+    menu = el('div', 'rv-sheet');
+    const dot = el('div', 'rv-dot'); dot.style.left = (ev.clientX - sr.left) + 'px'; dot.style.top = (ev.clientY - sr.top) + 'px'; stage.append(dot);
+    menu.innerHTML = `<div class="rv-sheet-h">${fmt(+scrub.value)} · τι είδες;</div><div class="rv-sheet-g">${Object.keys(CATS).map(k => `<button class="rv-opt2" data-k="${k}" style="--c:${CATS[k].col}"><span>${CATS[k].icon}</span>${CATS[k].el}</button>`).join('')}</div><button class="rv-sheet-x">Άκυρο</button>`;
+    const close = () => { dot.remove(); closeMenu(); };
+    menu.onclick = e => {
+      e.stopPropagation(); const b = e.target.closest('.rv-opt2');
+      if (e.target.closest('.rv-sheet-x')) { close(); if (was) resume(); return; }
+      if (!b) return; const k = b.dataset.k; dot.remove(); menu.remove(); menu = null;
+      if (k === 'visual') { note('visual', pos, '', shot); if (was) resume(); } else ask(k, pos, shot, was);
+    };
+    document.body.append(menu);
+  }
   function ask(cat, pos, shot, was) {                // one line of text (optional except for ✍️), then save
     form = el('form', 'rv-form', `<span class="rv-cat" style="--c:${CATS[cat].col}">${CATS[cat].icon} ${CATS[cat].el} · ${fmt(+scrub.value)}</span>
       <input name="t" maxlength="2000" autocomplete="off" placeholder="${cat === 'comment' ? 'Γράψε το σχόλιο…' : 'Προαιρετικό σχόλιο…'}"><button class="rv-ok">Αποθήκευση</button><button type="button" class="rv-cancel">✕</button>`);
@@ -96,7 +111,7 @@
     inp.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Escape') { closeMenu(); if (was) resume(); } });   // keep Space/arrows away from the player
     form.onsubmit = e => { e.preventDefault(); const text = inp.value.trim(); if (cat === 'comment' && !text) return inp.focus(); closeMenu(); note(cat, pos, text, shot); if (was) resume(); };
     form.querySelector('.rv-cancel').onclick = () => { closeMenu(); if (was) resume(); };
-    stage.append(form); setTimeout(() => inp.focus(), 30);
+    (stage.getBoundingClientRect().width < 600 ? document.body : stage).append(form); if (stage.getBoundingClientRect().width < 600) form.classList.add('rv-form-sheet'); setTimeout(() => inp.focus(), 30);
   }
   cv.addEventListener('click', e => { if (!$('big').hidden) return; if (menu || form) return closeMenu(); openMenu(e); });
 
@@ -110,12 +125,13 @@
     ${R.role === 'owner' ? `<a href="/review/${R.ep}/log" target="_blank">log</a> <a href="/review/users" target="_blank">χρήστες</a>` : `<span class="rv-me">${esc(R.user)} · συνεργάτης</span>`}</div>
     <label class="rv-allv"><input type="checkbox" class="rv-all"> Σχόλια από όλα τα revision</label>
     ${R.role === 'owner' ? '<label class="rv-allv"><input type="checkbox" class="rv-com-on"> Σχόλια κοινότητας <span class="rv-com-n"></span></label>' : ''}
-    <div class="rv-help"><button class="rv-tour-btn" title="Ξενάγηση">?</button> Πάτα πάνω στο καρέ για γρήγορο μενού · V = σημάδι χωρίς παύση · C = σχόλιο</div><ol class="rv-list"></ol>
+    <div class="rv-help"><button class="rv-tour-btn" title="Ξενάγηση">?</button> ${TOUCH ? 'Πάτα πάνω στο καρέ για να αφήσεις σχόλιο εκεί · 📍 = γρήγορο σημάδι' : ''}<span class="rv-keys">Πάτα πάνω στο καρέ για γρήγορο μενού · V = σημάδι χωρίς παύση · C = σχόλιο</span></div><ol class="rv-list"></ol>
     <section class="rv-gen"><h3>Γενικά σχόλια για το επεισόδιο</h3><p class="rv-meta">Ιδέες, απορίες και σχόλια για όλο το επεισόδιο (όχι για μια συγκεκριμένη στιγμή). Ψήφισε ▲ ▼ ό,τι συμφωνείς ή διαφωνείς.</p>
     <form class="rv-gform"><select name="kind"><option value="idea">💡 Ιδέα</option><option value="comment" selected>💬 Σχόλιο</option><option value="question">❓ Ερώτηση</option></select>
     <textarea name="text" maxlength="4000" rows="2" placeholder="Γράψε κάτι για το επεισόδιο…"></textarea><button class="rv-ok">Δημοσίευση</button></form>
     <div class="rv-gsort">Ταξινόμηση: <button data-s="top" class="on">Κορυφαία</button><button data-s="new">Νεότερα</button></div><ol class="rv-glist"></ol></section>`;
   document.querySelector('.bar').after(panel);
+  const hp = document.querySelector('header p'); if (hp) hp.textContent = hp.textContent.replace(/\s*·\s*space\s*=.*$/i, '');
 
   /* ---------- transport + precision timeline (Premiere-style) ----------
      Buttons and keys step by 5 s / 1 s / one frame (1/30 s, the MP4's rate). The timeline zooms (wheel, +/−, slider) from the whole
@@ -130,7 +146,7 @@
     <span class="rv-tc" title="λεπτά:δευτερόλεπτα:καρέ">0:00:00</span><button data-d="+f" title="+1 καρέ (.)">καρέ ▶︎</button><button data-d="1" title="+1 s (→)">+1s</button><button data-d="5" title="+5 s (Shift+→)">+5s</button></div>
     <div class="rv-tl-wrap"><canvas class="rv-tl"></canvas></div>
     <div class="rv-zoom"><button data-z="out" title="Zoom out (−)">−</button><input type="range" min="0" max="1000" value="0" aria-label="Zoom"><button data-z="in" title="Zoom in (+)">+</button><button data-z="fit">Όλο</button>
-    <span class="rv-zhint">ροδέλα = zoom · σύρε = μετακίνηση · Shift+σύρε = λεπτομέρεια · , . = καρέ</span></div>`;
+    <span class="rv-zhint">${TOUCH ? 'σύρε στη μπάρα = μετακίνηση · δύο δάχτυλα (τσίμπημα) ή + − = zoom, μέχρι το καρέ' : 'ροδέλα = zoom · σύρε = μετακίνηση · Shift+σύρε = λεπτομέρεια · , . = καρέ'}</span></div>`;
   document.querySelector('.bar').after(tp);
   const tlc = tp.querySelector('.rv-tl'), tg = tlc.getContext('2d'), zs = tp.querySelector('.rv-zoom input'), tcEl = tp.querySelector('.rv-tc');
   const MINSPAN = 4;
@@ -150,18 +166,23 @@
     e.preventDefault(); e.stopImmediatePropagation(); seek(to);
   }, true);
   const xOf = t => (t - v0) / span * tlc.clientWidth, tOf = x => v0 + x / tlc.clientWidth * span;
-  let drag = null;
+  let drag = null; const PT = new Map(); let pinch = null;
+  const pinchState = () => { const [a, b] = [...PT.values()], r = tlc.getBoundingClientRect(); return { d: Math.abs(a.x - b.x) || 1, at: tOf((a.x + b.x) / 2 - r.left), span }; };
   tlc.addEventListener('pointerdown', e => {
+    PT.set(e.pointerId, { x: e.clientX }); tlc.setPointerCapture(e.pointerId);
+    if (PT.size === 2) { drag = null; pinch = pinchState(); return; }
     const r = tlc.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
     const hit = y > 30 && shownAll().find(n => Math.abs(xOf(n.t) - x) < 7 && (n.community ? y > 52 : y <= 52));
     if (hit) { focusNote(hit); return; }
     tlc.setPointerCapture(e.pointerId); drag = { x0: x, t0: tOf(x) }; seek(tOf(x));
   });
   tlc.addEventListener('pointermove', e => {
+    if (PT.has(e.pointerId)) PT.set(e.pointerId, { x: e.clientX });
+    if (pinch && PT.size === 2) { const [a, b] = [...PT.values()]; setSpan(pinch.span * pinch.d / (Math.abs(a.x - b.x) || 1), pinch.at); return; }
     if (!drag) return; const x = e.clientX - tlc.getBoundingClientRect().left;
     seek(e.shiftKey ? drag.t0 + (x - drag.x0) / tlc.clientWidth * span * .1 : tOf(x));
   });
-  const end = () => { drag = null; }; tlc.addEventListener('pointerup', end); tlc.addEventListener('pointercancel', end);
+  const end = e => { PT.delete(e.pointerId); if (PT.size < 2) pinch = null; drag = null; }; tlc.addEventListener('pointerup', end); tlc.addEventListener('pointercancel', end);
   tlc.addEventListener('wheel', e => { e.preventDefault(); const x = e.clientX - tlc.getBoundingClientRect().left;
     if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) { v0 = Math.min(Math.max(v0 + (e.deltaX || e.deltaY) / tlc.clientWidth * span, 0), EPISODE.dur - span); return; }
     setSpan(span * Math.pow(1.0015, e.deltaY), tOf(x)); }, { passive: false });
@@ -176,7 +197,7 @@
     // scenes: alternating bands with their titles
     EPISODE.scenes.forEach((sc, i) => { const a = xOf(sc.off), b = xOf(sc.off + sc.dur); if (b < 0 || a > w) return;
       tg.fillStyle = i % 2 ? 'rgba(128,128,128,.10)' : 'rgba(128,128,128,.20)'; tg.fillRect(a, 0, b - a, 16);
-      tg.fillStyle = mut; tg.font = '600 10px "Noto Sans", sans-serif'; tg.save(); tg.beginPath(); tg.rect(a, 0, b - a, 16); tg.clip(); tg.fillText(sc.title || sc.id, Math.max(a, 0) + 4, 12); tg.restore(); });
+      if (b - a < 34) return; tg.fillStyle = mut; tg.font = '600 10px "Noto Sans", sans-serif'; tg.save(); tg.beginPath(); tg.rect(a, 0, b - a, 16); tg.clip(); tg.fillText(sc.title || sc.id, Math.max(a, 0) + 4, 12); tg.restore(); });
     // ruler: the finest step that keeps ~70 px between labels
     const step = STEPS.find(s => s / span * w >= 70) || 600, minor = step >= 1 ? step / 5 : step / (step < .5 ? 1 : 5);
     tg.strokeStyle = mut; tg.fillStyle = mut; tg.font = '10px "Noto Sans", sans-serif'; tg.lineWidth = 1;
@@ -243,11 +264,12 @@
 
   /* ---------- the tour (first visit of a collaborator; «?» opens it again) ---------- */
   const TOUR = [
-    ['#stage', 'Καλώς ήρθες στην παραγωγή!', 'Εδώ παίζει το επεισόδιο, όπως είναι αυτή τη στιγμή στο εργαστήριο. Space = play/pause.'],
-    ['.rv-tbtns', 'Μπρος–πίσω με ακρίβεια', 'Πήγαινε 5 ή 1 δευτερόλεπτο, ή ένα καρέ τη φορά. Πλήκτρα: ← → (με Shift 5 s), και , . για καρέ.'],
-    ['.rv-tl-wrap', 'Το timeline', 'Σύρε για να πας σε άλλη στιγμή. Ροδέλα ή + − για zoom, μέχρι το καρέ. Με Shift το σύρσιμο γίνεται 10× πιο αργό. Οι κουκκίδες είναι σχόλια: πάτα μία για να πας εκεί.'],
-    ['#c', 'Είδες κάτι; Πάτα πάνω του', 'Κλικ στο σημείο του καρέ: το επεισόδιο σταματά και ανοίγει μενού. 🎨 οπτικό, 🔊 φωνή/ήχος, ⏱ timing, 💬 ατάκα, 👍 μ\'αρέσει, ✍️ σχόλιο. Κρατάμε τη στιγμή, το σημείο και μια φωτογραφία του καρέ.'],
-    ['.rv-head', 'Revision και γρήγορα σημάδια', 'Από τη λίστα διαλέγεις παλαιότερο revision. 📍 (ή V) = σημάδι χωρίς παύση, ✍️ (ή C) = σχόλιο. Τα σχόλιά σου τα βλέπουν ο δημιουργός και οι άλλοι συνεργάτες, με το όνομά σου.'],
+    ['#stage', 'Καλώς ήρθες στην παραγωγή!', 'Εδώ παίζει το επεισόδιο, όπως είναι αυτή τη στιγμή στο εργαστήριο.' + (TOUCH ? '' : ' Space = play/pause.')],
+    ['.rv-tbtns', 'Μπρος–πίσω με ακρίβεια', 'Πήγαινε 5 ή 1 δευτερόλεπτο, ή ένα καρέ τη φορά.' + (TOUCH ? '' : ' Πλήκτρα: ← → (με Shift 5 s), και , . για καρέ.')],
+    ['.rv-tl-wrap', 'Το timeline', TOUCH ? 'Σύρε το δάχτυλο για να πας σε άλλη στιγμή. Με δύο δάχτυλα (τσίμπημα) ή με + − κάνεις zoom, μέχρι το καρέ. Οι κουκκίδες είναι σχόλια: πάτα μία για να πας εκεί.'
+      : 'Σύρε για να πας σε άλλη στιγμή. Ροδέλα ή + − για zoom, μέχρι το καρέ. Με Shift το σύρσιμο γίνεται 10× πιο αργό. Οι κουκκίδες είναι σχόλια: πάτα μία για να πας εκεί.'],
+    ['#c', 'Είδες κάτι; Πάτα πάνω του', (TOUCH ? 'Άγγιξε' : 'Κλικ στο') + ' σημείο του καρέ: το επεισόδιο σταματά και ανοίγει μενού. 🎨 οπτικό, 🔊 φωνή/ήχος, ⏱ timing, 💬 ατάκα, 👍 μ\'αρέσει, ✍️ σχόλιο. Κρατάμε τη στιγμή, το σημείο και μια φωτογραφία του καρέ.'],
+    ['.rv-head', 'Revision και γρήγορα σημάδια', 'Από τη λίστα διαλέγεις παλαιότερο revision. 📍' + (TOUCH ? '' : ' (ή V)') + ' = σημάδι χωρίς παύση, ✍️' + (TOUCH ? '' : ' (ή C)') + ' = σχόλιο. Τα σχόλιά σου τα βλέπουν ο δημιουργός και οι άλλοι συνεργάτες, με το όνομά σου.'],
     ['.rv-gen', 'Γενικά σχόλια και ψήφοι', 'Για ιδέες και σχόλια για όλο το επεισόδιο υπάρχει αυτή η ενότητα. Με ▲ ▼ ψηφίζεις σχόλια και ιδέες, δικά σου και των άλλων: έτσι ο δημιουργός βλέπει τι θέλει η ομάδα.'],
   ];
   function markToured() { if (R.toured) return; R.toured = true; fetch('/api/me/toured', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', credentials: 'same-origin' }).catch(() => { }); }
