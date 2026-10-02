@@ -109,6 +109,14 @@ def too_many(ip, what, n=8, per=600):
     return len(h) > n
 
 
+def owner_for(email):
+    """The owner account an email signs in as (site.json "owner_emails": {email: owner name}), else None."""
+    m = site_cfg().get('owner_emails', {})
+    if isinstance(m, list):
+        m = {e: 'ceo' for e in m}
+    return {k.lower(): v for k, v in m.items()}.get((email or '').strip().lower())
+
+
 def google_verify(token):
     """Verify a Google Identity Services ID token with Google's tokeninfo endpoint. Returns (email, name) or None."""
     cid = site_cfg().get('google_client_id')
@@ -313,8 +321,8 @@ class H(BaseHTTPRequestHandler):
             return None
         if n.startswith('u:'):
             u = load_users().get(n[2:])
-            if u and u.get('email') in {e.lower() for e in site_cfg().get('owner_emails', [])}:   # an admin by email (site.json)
-                return {'name': u['name'], 'role': 'owner', 'uid': u['id'], 'toured': bool(u.get('toured'))}
+            if u and owner_for(u.get('email')):                     # the owner's own Google/email account: the same account as ceo
+                return {'name': owner_for(u['email']), 'role': 'owner', 'uid': None, 'toured': True}
             if not u or u.get('status') != 'active':
                 return None
             return {'name': u['name'], 'role': 'community', 'uid': u['id'], 'toured': bool(u.get('toured'))}
@@ -581,7 +589,7 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
             if ok and u.get('status') != 'active':
                 return self.send(403, self.login_page('Ο λογαριασμός είναι απενεργοποιημένος.'))
             if ok:
-                return self.redirect('/review', self.cookie_for('u:' + u['id']))
+                return self.redirect('/review', self.cookie_for(owner_for(name) or 'u:' + u['id']))
         elif check_login(name[:30], pw):                           # the owner
             return self.redirect('/review', self.cookie_for(name[:30]))
         time.sleep(1.5)
@@ -598,6 +606,7 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
             return self.send(429, self.signup_page('Πολλές εγγραφές από εδώ. Δοκίμασε αργότερα.', f))
         email, name, pw = g('email').lower(), clean_name(g('display')), f.get('pw', [''])[0]
         err = 'Γράψε ένα όνομα.' if not name else 'Το email δεν φαίνεται σωστό.' if not EMAIL.match(email) else \
+            'Αυτό το email ανήκει στον δημιουργό: μπες με Google ή ως ceo.' if owner_for(email) else \
             'Ο κωδικός θέλει τουλάχιστον 8 χαρακτήρες.' if len(pw) < 8 else 'Υπάρχει ήδη λογαριασμός με αυτό το email.' if find_user(email) else ''
         if err:
             return self.send(400, self.signup_page(err, f))
@@ -617,8 +626,10 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
         if not got:
             return self.send(403, self.login_page('Η σύνδεση με Google απέτυχε.'))
         email, name = got
+        if owner_for(email):                                       # the owner signing in with Google: the ceo account itself
+            return self.redirect('/review', self.cookie_for(owner_for(email)))
         u = find_user(email) or new_user(email, name, 'google')
-        if u.get('status') != 'active' and email not in {e.lower() for e in site_cfg().get('owner_emails', [])}:
+        if u.get('status') != 'active':
             return self.send(403, self.login_page('Ο λογαριασμός είναι απενεργοποιημένος.'))
         self.redirect('/review', self.cookie_for('u:' + u['id']))
 
@@ -800,13 +811,17 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
         for ep in review_eps():
             for n in notes(ep, True):
                 cnt[n.get('uid')] = cnt.get(n.get('uid'), 0) + 1
-        admins = {e.lower() for e in site_cfg().get('owner_emails', [])}
+        admins = {e for e in us_emails() if owner_for(e)}
         rows = ''.join(f'''<tr class="{esc(u.get('status'))}"><td>{esc(u.get('name'))}{' <b>· admin</b>' if u.get('email') in admins else ''}</td><td>{esc(u.get('email'))}</td><td>{esc(u.get('provider'))}</td><td>{esc(u.get('created', '')[:16].replace('T', ' '))}</td>
 <td>{cnt.get(u['id'], 0)}</td><td>{esc(u.get('status'))} <button class="link" data-u="{esc(u['id'])}" data-a="{'unblock' if u.get('status') == 'blocked' else 'block'}">{'ενεργοποίηση' if u.get('status') == 'blocked' else 'μπλοκ'}</button></td></tr>''' for u in us)
         js = """<script>document.querySelectorAll('button[data-u]').forEach(b=>b.onclick=async()=>{if(!confirm(b.textContent+';'))return;
 await fetch('/api/users/'+b.dataset.u+'/'+b.dataset.a,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});location.reload()})</script>"""
         self.send(200, page('Χρήστες', f'''<main class="wide"><p><a href="/review">← Review</a></p><h1>Συνεργάτες ({len(us)})</h1>
 <table class="log"><tr><th>Όνομα</th><th>Email</th><th>Είσοδος</th><th>Από</th><th>Σχόλια</th><th>Κατάσταση</th></tr>{rows}</table></main>{js}'''))
+
+
+def us_emails():
+    return [u.get('email', '') for u in load_users().values()]
 
 
 def voter(me):

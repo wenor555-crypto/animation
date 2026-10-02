@@ -91,9 +91,9 @@ A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8
   - zoom with the wheel, + −, or the slider, from the whole episode down to 4 s
   - drag at the zoom's scale; Shift+drag is 10× finer; every position snaps to a frame
 - **Collaborators ("Γίνε μέρος της παραγωγής!"):** the public pages show that button (or «Studio» when signed in). Anyone can sign up with Google (`google_client_id` in `site.json`; the token is checked with Google's `tokeninfo`, no client secret is used or stored) or with email + password (pbkdf2; a honeypot and per-IP limits; no email confirmation).
-  - **Admins:** `owner_emails` in `site.json` (now `wenor555@gmail.com`): signing in with that Google account or email gives the same rights as `ceo` (owner log, adopt, users page); it can't be blocked.
+  - **The owner's Gmail:** `owner_emails` in `site.json` maps `wenor555@gmail.com` → `ceo`: signing in with that Google account is the `ceo` account itself (same name, notes, rights). Sign-up with that email is refused.
   - Accounts live in `~/sita-site/users.json`. The owner sees them at `/review/users` and can block or unblock anyone.
-  - Collaborators see every draft and revision, with the same player and quick menu. A 6-step tour opens for every new account (collaborators and admins) until they finish it; skipping is possible but asks first and is marked «δεν προτείνεται»; «?» opens it again.
+  - Collaborators see every draft and revision, with the same player and quick menu. A 6-step tour opens once for every new account; «Παράλειψη» closes it for good, and «?» opens it again.
   - Their notes go to `review/<ep>.community.jsonl`, with their name. They see the notes of all collaborators, never the owner's. They can delete only their own notes and cannot set a status. The owner's log pages and exports are owner-only.
   - The owner sees them as a second, hollow-dot lane on the timeline (toggle «Σχόλια κοινότητας»), and in the list with the author's name.
   - **General discussion:** under the notes, «Γενικά σχόλια για το επεισόδιο» (💡 idea, 💬 comment, ❓ question), not tied to a moment, in `review/<ep>.general.jsonl`. Everyone (collaborators and owner) reads and writes there; each deletes their own, the owner any.

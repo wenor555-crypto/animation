@@ -43,7 +43,7 @@
   },
   "google_client_id": "909893121453-ksi9vtlcsv90hh8msr3ssufag0c4jkpo.apps.googleusercontent.com",
   "contact_email": "wenor555@gmail.com",
-  "owner_emails": [
-    "wenor555@gmail.com"
-  ]
+  "owner_emails": {
+    "wenor555@gmail.com": "ceo"
+  }
 }
