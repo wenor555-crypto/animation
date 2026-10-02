@@ -81,3 +81,24 @@
 .rv-tour-next { background:#ffd23f; color:#231a2e; }
 .rv-tour-prev, .rv-tour-skip { background:none; color:#231a2e; }
 .rv-tour-skip { margin-right:auto; color:#8a7f95; }
+
+/* votes + general discussion */
+.rv-vote { display:inline-flex; flex-direction:column; align-items:center; min-width:34px; }
+.rv-vote button { border:0; background:none; cursor:pointer; color:var(--muted); font-size:14px; line-height:1; padding:4px 6px; min-height:26px; }
+.rv-vote button.on.rv-up { color:#2e9e5b; } .rv-vote button.on.rv-down { color:#e8392b; }
+.rv-vote b { font-size:13px; font-variant-numeric:tabular-nums; }
+.rv-gen { margin-top:16px; border-top:2px solid var(--line, rgba(128,128,128,.3)); padding-top:10px; }
+.rv-gen h3 { margin:0 0 2px; font-size:16px; }
+.rv-gform { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }
+.rv-gform select { font:700 14px "Noto Sans", sans-serif; border-radius:8px; padding:8px; border:2px solid var(--line, #ccc); background:var(--bg); color:var(--ink); }
+.rv-gform textarea { flex:1 1 260px; font:15px "Noto Sans", sans-serif; border-radius:8px; padding:8px; border:2px solid var(--line, #ccc); background:var(--bg); color:var(--ink); resize:vertical; }
+.rv-gform .rv-ok { border:0; border-radius:8px; padding:8px 14px; font:700 14px "Noto Sans", sans-serif; cursor:pointer; min-height:44px; }
+.rv-gsort { font-size:13px; color:var(--muted); display:flex; gap:6px; align-items:center; }
+.rv-gsort button { border:0; background:none; color:var(--muted); font:700 13px "Noto Sans", sans-serif; cursor:pointer; padding:4px 8px; border-radius:6px; }
+.rv-gsort button.on { background:var(--btn); color:var(--btn-ink); }
+.rv-glist { list-style:none; margin:6px 0 0; padding:0; }
+.rv-glist li { display:flex; gap:10px; align-items:flex-start; padding:8px 4px; border-top:1px solid var(--line, rgba(128,128,128,.25)); }
+.rv-gk { font-size:12px; font-weight:700; color:var(--muted); }
+.rv-gt { white-space:pre-wrap; font-size:15px; }
+.rv-own { color:var(--accent); }
+.rv-gdel { border:0; background:none; cursor:pointer; opacity:.6; padding:6px; }

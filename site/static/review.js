@@ -110,7 +110,11 @@
     ${R.role === 'owner' ? `<a href="/review/${R.ep}/log" target="_blank">log</a> <a href="/review/users" target="_blank">χρήστες</a>` : `<span class="rv-me">${esc(R.user)} · συνεργάτης</span>`}</div>
     <label class="rv-allv"><input type="checkbox" class="rv-all"> Σχόλια από όλα τα revision</label>
     ${R.role === 'owner' ? '<label class="rv-allv"><input type="checkbox" class="rv-com-on"> Σχόλια κοινότητας <span class="rv-com-n"></span></label>' : ''}
-    <div class="rv-help"><button class="rv-tour-btn" title="Ξενάγηση">?</button> Πάτα πάνω στο καρέ για γρήγορο μενού · V = σημάδι χωρίς παύση · C = σχόλιο</div><ol class="rv-list"></ol>`;
+    <div class="rv-help"><button class="rv-tour-btn" title="Ξενάγηση">?</button> Πάτα πάνω στο καρέ για γρήγορο μενού · V = σημάδι χωρίς παύση · C = σχόλιο</div><ol class="rv-list"></ol>
+    <section class="rv-gen"><h3>Γενικά σχόλια για το επεισόδιο</h3><p class="rv-meta">Ιδέες, απορίες και σχόλια για όλο το επεισόδιο (όχι για μια συγκεκριμένη στιγμή). Ψήφισε ▲ ▼ ό,τι συμφωνείς ή διαφωνείς.</p>
+    <form class="rv-gform"><select name="kind"><option value="idea">💡 Ιδέα</option><option value="comment" selected>💬 Σχόλιο</option><option value="question">❓ Ερώτηση</option></select>
+    <textarea name="text" maxlength="4000" rows="2" placeholder="Γράψε κάτι για το επεισόδιο…"></textarea><button class="rv-ok">Δημοσίευση</button></form>
+    <div class="rv-gsort">Ταξινόμηση: <button data-s="top" class="on">Κορυφαία</button><button data-s="new">Νεότερα</button></div><ol class="rv-glist"></ol></section>`;
   document.querySelector('.bar').after(panel);
 
   /* ---------- transport + precision timeline (Premiere-style) ----------
@@ -218,7 +222,7 @@
     list.innerHTML = S.map(n => {
       const c = CATS[n.cat] || CATS.comment, old = n.ver !== R.ver;
       const mine = n.community ? n.uid === R.uid : R.role === 'owner';
-      const actions = (R.role === 'owner' && n.community ? `<button class="rv-adopt" data-id="${n.id}" title="Το παίρνω στα δικά μου σχόλια (για διόρθωση)">${n.adopted ? '✓ υιοθετήθηκε' : 'Υιοθέτηση'}</button>` : '')
+      const actions = (n.community ? voteBox(n, 'note') : '') + (R.role === 'owner' && n.community ? `<button class="rv-adopt" data-id="${n.id}" title="Το παίρνω στα δικά μου σχόλια (για διόρθωση)">${n.adopted ? '✓ υιοθετήθηκε' : 'Υιοθέτηση'}</button>` : '')
         + (mine || R.role === 'owner' ? `<button class="rv-del" data-id="${n.id}" title="Διαγραφή">🗑</button>` : '');
       return `<li id="rv-${n.id}" class="${n.status}${n.community ? ' rv-cn' : ''}"><button class="rv-t" data-t="${n.t}" data-v="${n.ver || ''}">${fmt(n.t)}</button><span class="rv-ic" style="--c:${c.col}">${c.icon}</span>
         <div class="rv-body"><div>${n.text ? esc(n.text) : `<i>${esc(c.el)}</i>`}</div><div class="rv-meta">${esc(n.sceneTitle || n.scene)}${n.line?.el ? ` · ${esc(n.line.who)}: «${esc(n.line.el.slice(0, 80))}»` : ''} · ${n.community ? `<b class="rv-who">${esc(n.by)}</b>` : esc(n.by)} · <span class="${old ? 'rv-old' : 'rv-cur'}">v${n.ver || '?'}</span></div>
@@ -229,6 +233,7 @@
     status();
   }
   list.onclick = async e => {
+    if (await voteClick(e)) return;
     const t = e.target.closest('.rv-t');
     if (t && t.dataset.v && +t.dataset.v !== R.ver) { location.href = vurl(+t.dataset.v) + '#t=' + t.dataset.t; return; }   // a note on another revision: open that one
     if (t) { jump(+t.dataset.t); stage.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); return; }
@@ -243,6 +248,7 @@
     ['.rv-tl-wrap', 'Το timeline', 'Σύρε για να πας σε άλλη στιγμή. Ροδέλα ή + − για zoom, μέχρι το καρέ. Με Shift το σύρσιμο γίνεται 10× πιο αργό. Οι κουκκίδες είναι σχόλια: πάτα μία για να πας εκεί.'],
     ['#c', 'Είδες κάτι; Πάτα πάνω του', 'Κλικ στο σημείο του καρέ: το επεισόδιο σταματά και ανοίγει μενού. 🎨 οπτικό, 🔊 φωνή/ήχος, ⏱ timing, 💬 ατάκα, 👍 μ\'αρέσει, ✍️ σχόλιο. Κρατάμε τη στιγμή, το σημείο και μια φωτογραφία του καρέ.'],
     ['.rv-head', 'Revision και γρήγορα σημάδια', 'Από τη λίστα διαλέγεις παλαιότερο revision. 📍 (ή V) = σημάδι χωρίς παύση, ✍️ (ή C) = σχόλιο. Τα σχόλιά σου τα βλέπουν ο δημιουργός και οι άλλοι συνεργάτες, με το όνομά σου.'],
+    ['.rv-gen', 'Γενικά σχόλια και ψήφοι', 'Για ιδέες και σχόλια για όλο το επεισόδιο υπάρχει αυτή η ενότητα. Με ▲ ▼ ψηφίζεις σχόλια και ιδέες, δικά σου και των άλλων: έτσι ο δημιουργός βλέπει τι θέλει η ομάδα.'],
   ];
   function tour(i = 0) {
     document.querySelector('.rv-tour')?.remove();
@@ -262,6 +268,39 @@
   }
   panel.querySelector('.rv-tour-btn').onclick = () => tour(0);
 
+  /* ---------- votes + the general discussion ---------- */
+  const KIND = { idea: '💡 Ιδέα', comment: '💬 Σχόλιο', question: '❓ Ερώτηση' };
+  function voteBox(n, on) {
+    return `<span class="rv-vote" data-id="${n.id}" data-on="${on}"><button class="rv-up${n.mine > 0 ? ' on' : ''}" title="Συμφωνώ" aria-label="Συμφωνώ">▲</button>`
+      + `<b title="${n.up || 0} ▲ · ${n.down || 0} ▼">${n.score || 0}</b><button class="rv-down${n.mine < 0 ? ' on' : ''}" title="Διαφωνώ" aria-label="Διαφωνώ">▼</button></span>`;
+  }
+  async function voteClick(e) {
+    const b = e.target.closest('.rv-up, .rv-down'); if (!b) return false;
+    const box = b.closest('.rv-vote'), up = b.classList.contains('rv-up'), cur = b.classList.contains('on') ? 0 : up ? 1 : -1;
+    try { await post('vote', { id: box.dataset.id, on: box.dataset.on, v: cur }); } catch (err) { }
+    box.dataset.on === 'post' ? loadGen() : load(); return true;
+  }
+  const gen = panel.querySelector('.rv-gen'), glist = gen.querySelector('.rv-glist'), gform = gen.querySelector('.rv-gform');
+  let POSTS = [], gsort = store.get('rv-gsort') || 'top';
+  gen.querySelectorAll('.rv-gsort button').forEach(b => { b.classList.toggle('on', b.dataset.s === gsort); b.onclick = () => { gsort = b.dataset.s; store.set('rv-gsort', gsort); gen.querySelectorAll('.rv-gsort button').forEach(x => x.classList.toggle('on', x === b)); drawGen(); }; });
+  gform.querySelector('textarea').addEventListener('keydown', e => e.stopPropagation());   // typing never drives the player
+  gform.onsubmit = async e => {
+    e.preventDefault(); const ta = gform.querySelector('textarea'), text = ta.value.trim(); if (!text) return ta.focus();
+    try { await post('post', { text, kind: gform.querySelector('select').value, build: R.build }); ta.value = ''; } catch (err) { toast('Δεν στάλθηκε, δοκίμασε ξανά', 2500); }
+    loadGen();
+  };
+  async function loadGen() { try { const r = await fetch(`/api/review/${R.ep}/general`, { credentials: 'same-origin', cache: 'no-store' }); if (r.ok) { POSTS = (await r.json()).posts; drawGen(); } } catch (e) { } }
+  function drawGen() {
+    const S = [...POSTS].sort((a, b) => gsort === 'top' ? (b.score - a.score) || b.ts.localeCompare(a.ts) : b.ts.localeCompare(a.ts));
+    glist.innerHTML = S.map(n => `<li>${voteBox(n, 'post')}<div class="rv-body"><div class="rv-gk">${KIND[n.kind] || KIND.comment}</div><div class="rv-gt">${esc(n.text)}</div>
+      <div class="rv-meta"><b class="${n.owner ? 'rv-own' : 'rv-who'}">${esc(n.by)}${n.owner ? ' · δημιουργός' : ''}</b> · ${esc(n.ts.slice(0, 16).replace('T', ' '))}${n.ver ? ' · v' + n.ver : ''}</div></div>
+      ${R.role === 'owner' || (n.uid && n.uid === R.uid) ? `<button class="rv-gdel" data-id="${n.id}" title="Διαγραφή">🗑</button>` : ''}</li>`).join('') || '<li class="rv-empty">Κανένα γενικό σχόλιο ακόμα. Γράψε πρώτος!</li>';
+  }
+  glist.onclick = async e => {
+    if (await voteClick(e)) return;
+    const d = e.target.closest('.rv-gdel'); if (d && confirm('Διαγραφή;')) { try { await post('unpost', { id: d.dataset.id }); } catch (err) { } loadGen(); }
+  };
+
   /* ---------- toast ---------- */
   let toastEl = null, toastT = 0;
   function toast(html, ms) { toastEl?.remove(); clearTimeout(toastT); toastEl = el('div', 'rv-toast', html); stage.append(toastEl); if (ms) toastT = setTimeout(() => { toastEl?.remove(); toastEl = null; }, ms); }
@@ -269,12 +308,12 @@
   /* ---------- start ---------- */
   const go = () => {
     if (!window.EPISODE) return setTimeout(go, 200);
-    initTL(); load(); flush();
+    initTL(); load(); loadGen(); flush();
     if (R.role === 'community' && !R.toured) setTimeout(() => tour(0), 600);
     if (new URLSearchParams(location.search).get('lang') === 'en' && $('lang').textContent.trim() === 'EN') $('lang').click();   // ?lang=en opens with English subtitles
     const m = location.hash.match(/t=([\d.]+)/); if (m) jump(+m[1]);                // links from the log page: /review/<ep>#t=123.4
     setInterval(flush, 15000); window.addEventListener('online', flush);
-    document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) { load(); loadGen(); } });
   };
   go();
 })();

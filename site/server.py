@@ -190,8 +190,12 @@ def review_eps():
     return sorted(n for n in names if NAME.match(n))
 
 
+def logname(ep, com):
+    return f'{ep}{"" if not com else ".general" if com == "general" else ".community"}.jsonl'
+
+
 def events(ep, com=False):
-    p = SITE / 'review' / f'{ep}{".community" if com else ""}.jsonl'
+    p = SITE / 'review' / logname(ep, com)
     if not p.exists():
         return []
     out = []
@@ -211,6 +215,8 @@ def notes(ep, com=False):
             by.setdefault(e['id'], {**e, 'status': 'open', 'ver': ver.get(e.get('build')), **({'community': True} if com else {})})
         elif e.get('ev') == 'adopted' and e.get('id') in by:
             by[e['id']]['adopted'] = e.get('as')
+        elif e.get('ev') == 'vote' and e.get('id') in by:
+            by[e['id']].setdefault('votes', {})[e['voter']] = e['v']
         elif e.get('ev') == 'status' and e.get('id') in by:
             by[e['id']].update(status=e['status'], rev=e.get('rev', ''), fixnote=e.get('note', ''), fixed_at=e['ts'])
         elif e.get('ev') == 'delete':
@@ -218,9 +224,29 @@ def notes(ep, com=False):
     return sorted(by.values(), key=lambda n: n['t'])
 
 
+def general(ep):
+    """The episode's general discussion (not tied to a moment): posts with their votes, deletions applied."""
+    by, ver = {}, {m['build']: m['n'] for m in drafts(ep)}
+    for e in events(ep, 'general'):
+        if e.get('ev') == 'post':
+            by.setdefault(e['id'], {**e, 'ver': ver.get(e.get('build'))})
+        elif e.get('ev') == 'vote' and e.get('id') in by:
+            by[e['id']].setdefault('votes', {})[e['voter']] = e['v']
+        elif e.get('ev') == 'delete':
+            by.pop(e.get('id'), None)
+    return list(by.values())
+
+
+def scored(n, voter):
+    """a note/post as the API shows it: the score and this viewer's own vote, not who voted"""
+    vs = n.get('votes', {})
+    return {**{k: v for k, v in n.items() if k not in ('ev', 'votes')}, 'score': sum(vs.values()), 'up': sum(v > 0 for v in vs.values()),
+            'down': sum(v < 0 for v in vs.values()), 'mine': vs.get(voter, 0)}
+
+
 def append(ep, ev, com=False):
     d = SITE / 'review'; d.mkdir(parents=True, exist_ok=True)
-    with LOCK, open(d / f'{ep}{".community" if com else ""}.jsonl', 'a', encoding='utf-8') as f:
+    with LOCK, open(d / logname(ep, com), 'a', encoding='utf-8') as f:
         f.write(json.dumps(ev, ensure_ascii=False) + '\n')
 
 
@@ -287,6 +313,8 @@ class H(BaseHTTPRequestHandler):
             return None
         if n.startswith('u:'):
             u = load_users().get(n[2:])
+            if u and u.get('email') in {e.lower() for e in site_cfg().get('owner_emails', [])}:   # an admin by email (site.json)
+                return {'name': u['name'], 'role': 'owner', 'uid': u['id'], 'toured': True}
             if not u or u.get('status') != 'active':
                 return None
             return {'name': u['name'], 'role': 'community', 'uid': u['id'], 'toured': bool(u.get('toured'))}
@@ -414,7 +442,7 @@ class H(BaseHTTPRequestHandler):
                 return self.json({'error': 'owner only'}, 403)
             update_user(m.group(1), status='blocked' if m.group(2) == 'block' else 'active')
             return self.json({'ok': True})
-        m = re.match(r'^/api/review/([a-z0-9_-]+)/(notes|status|delete|adopt)$', p)
+        m = re.match(r'^/api/review/([a-z0-9_-]+)/(notes|status|delete|adopt|post|unpost|vote)$', p)
         if not m:
             return self.json({'error': 'not found'}, 404)
         ep, what = m.groups()
@@ -422,7 +450,8 @@ class H(BaseHTTPRequestHandler):
             return self.json({'error': 'bad ep'}, 400)
         if what in ('status', 'adopt') and me['role'] != 'owner':
             return self.json({'error': 'owner only'}, 403)
-        return {'notes': self.add_note, 'status': self.set_status, 'delete': self.del_note, 'adopt': self.adopt}[what](ep, data, me)
+        return {'notes': self.add_note, 'status': self.set_status, 'delete': self.del_note, 'adopt': self.adopt,
+                'post': self.add_post, 'unpost': self.del_post, 'vote': self.vote}[what](ep, data, me)
 
     # ---------- public ----------
     def studio_link(self, en):
@@ -589,7 +618,7 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
             return self.send(403, self.login_page('Η σύνδεση με Google απέτυχε.'))
         email, name = got
         u = find_user(email) or new_user(email, name, 'google')
-        if u.get('status') != 'active':
+        if u.get('status') != 'active' and email not in {e.lower() for e in site_cfg().get('owner_emails', [])}:
             return self.send(403, self.login_page('Ο λογαριασμός είναι απενεργοποιημένος.'))
         self.redirect('/review', self.cookie_for('u:' + u['id']))
 
@@ -647,8 +676,10 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
         m = re.match(r'^/api/review/([a-z0-9_-]+)/notes$', p)
         if m:
             ns = (notes(m.group(1)) if owner else []) + notes(m.group(1), True)
-            hide = set() if owner else {'ev', 'uid_email'}
-            return self.json({'notes': sorted(({k: v for k, v in n.items() if k != 'ev' and k not in hide} for n in ns), key=lambda n: n['t'])})
+            return self.json({'notes': sorted((scored(n, voter(me)) for n in ns), key=lambda n: n['t'])})
+        m = re.match(r'^/api/review/([a-z0-9_-]+)/general$', p)
+        if m:
+            return self.json({'posts': sorted((scored(n, voter(me)) for n in general(m.group(1))), key=lambda n: n['ts'], reverse=True)})
         m = re.match(r'^/review/shot/([a-z0-9_-]+)/([a-z0-9]+)\.jpg$', p)
         if m and not owner and m.group(2) not in {n['id'] for n in notes(m.group(1), True)}:
             return self.send(404, '', 'text/plain')
@@ -714,6 +745,37 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
         self.json({'ok': True})
 
 
+    def add_post(self, ep, d, who):
+        text = str(d.get('text', '')).strip()[:4000]
+        if not text:
+            return self.json({'error': 'empty'}, 400)
+        if who['role'] != 'owner' and too_many(self.ip(), 'post', 30, 600):
+            return self.json({'error': 'slow down'}, 429)
+        nid = base36(int(time.time() * 1000)) + secrets.token_hex(2)
+        append(ep, {'ev': 'post', 'id': nid, 'by': who['name'], 'uid': who['uid'], 'owner': who['role'] == 'owner', 'ts': time.strftime('%Y-%m-%dT%H:%M:%S'),
+                    'kind': d.get('kind') if d.get('kind') in ('idea', 'comment', 'question') else 'comment', 'text': text, 'build': str(d.get('build', ''))[:16]}, 'general')
+        self.json({'ok': True, 'id': nid})
+
+    def del_post(self, ep, d, who):
+        n = next((n for n in general(ep) if n['id'] == str(d.get('id', ''))), None)
+        if not n:
+            return self.json({'error': 'no such post'}, 404)
+        if who['role'] != 'owner' and n.get('uid') != who['uid']:
+            return self.json({'error': 'not yours'}, 403)
+        append(ep, {'ev': 'delete', 'id': n['id'], 'by': who['name'], 'ts': time.strftime('%Y-%m-%dT%H:%M:%S')}, 'general')
+        self.json({'ok': True})
+
+    def vote(self, ep, d, who):
+        """▲/▼ on a collaborator's note or a general post: one vote per person (the last one counts; 0 takes it back)"""
+        v, nid, on = d.get('v'), str(d.get('id', '')), d.get('on')
+        if v not in (1, -1, 0) or on not in ('note', 'post'):
+            return self.json({'error': 'bad vote'}, 400)
+        log = 'general' if on == 'post' else True
+        if nid not in {n['id'] for n in (general(ep) if on == 'post' else notes(ep, True))}:
+            return self.json({'error': 'no such item'}, 404)
+        append(ep, {'ev': 'vote', 'id': nid, 'voter': voter(who), 'v': v, 'ts': time.strftime('%Y-%m-%dT%H:%M:%S')}, log)
+        self.json({'ok': True})
+
     def adopt(self, ep, d, who):
         """The owner takes a collaborator's note into their own log (Claude's work list), credited to its author."""
         n = next((n for n in notes(ep, True) if n['id'] == str(d.get('id', ''))), None)
@@ -722,7 +784,7 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
         if n.get('adopted'):
             return self.json({'ok': True, 'id': n['adopted']})
         nid = base36(int(time.time() * 1000)) + secrets.token_hex(2)
-        ev = {k: v for k, v in n.items() if k not in ('status', 'ver', 'community', 'uid', 'adopted')}
+        ev = {k: v for k, v in n.items() if k not in ('status', 'ver', 'community', 'uid', 'adopted', 'votes')}
         ev.update(id=nid, by=who['name'], ts=time.strftime('%Y-%m-%dT%H:%M:%S'), **{'from': n.get('by'), 'from_id': n['id']})
         if n.get('shot'):
             sd = SITE / 'review' / 'shots' / ep
@@ -738,12 +800,17 @@ let l=new URLSearchParams(location.search).get('lang');if(!l){try{l=localStorage
         for ep in review_eps():
             for n in notes(ep, True):
                 cnt[n.get('uid')] = cnt.get(n.get('uid'), 0) + 1
-        rows = ''.join(f'''<tr class="{esc(u.get('status'))}"><td>{esc(u.get('name'))}</td><td>{esc(u.get('email'))}</td><td>{esc(u.get('provider'))}</td><td>{esc(u.get('created', '')[:16].replace('T', ' '))}</td>
+        admins = {e.lower() for e in site_cfg().get('owner_emails', [])}
+        rows = ''.join(f'''<tr class="{esc(u.get('status'))}"><td>{esc(u.get('name'))}{' <b>· admin</b>' if u.get('email') in admins else ''}</td><td>{esc(u.get('email'))}</td><td>{esc(u.get('provider'))}</td><td>{esc(u.get('created', '')[:16].replace('T', ' '))}</td>
 <td>{cnt.get(u['id'], 0)}</td><td>{esc(u.get('status'))} <button class="link" data-u="{esc(u['id'])}" data-a="{'unblock' if u.get('status') == 'blocked' else 'block'}">{'ενεργοποίηση' if u.get('status') == 'blocked' else 'μπλοκ'}</button></td></tr>''' for u in us)
         js = """<script>document.querySelectorAll('button[data-u]').forEach(b=>b.onclick=async()=>{if(!confirm(b.textContent+';'))return;
 await fetch('/api/users/'+b.dataset.u+'/'+b.dataset.a,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});location.reload()})</script>"""
         self.send(200, page('Χρήστες', f'''<main class="wide"><p><a href="/review">← Review</a></p><h1>Συνεργάτες ({len(us)})</h1>
 <table class="log"><tr><th>Όνομα</th><th>Email</th><th>Είσοδος</th><th>Από</th><th>Σχόλια</th><th>Κατάσταση</th></tr>{rows}</table></main>{js}'''))
+
+
+def voter(me):
+    return 'u:' + me['uid'] if me.get('uid') else 'o:' + me['name']
 
 
 def base36(n):

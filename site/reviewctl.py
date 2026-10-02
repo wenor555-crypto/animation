@@ -10,7 +10,7 @@
                                                    once an account exists the shared passphrase is dropped)
 """
 import json, secrets, sys, time
-from server import CATS, SITE, append, drafts, fmt, notes, pw_hash, review_eps, secret, snapshot
+from server import CATS, SITE, append, drafts, fmt, general, notes, pw_hash, review_eps, secret, snapshot
 
 
 def opt(a, name, default=''):
@@ -38,7 +38,11 @@ def main(a):
                 ln = n.get('line') or {}
                 said = f' | {ln.get("who")}: «{ln.get("el")[:70]}»' if ln.get('el') else ''
                 print(f'{n["id"]} v{n.get("ver") or "?"} {fmt(n["t"])} {n["scene"]}+{n["lt"]:.1f}s {CATS.get(n["cat"], n["cat"])}{" shot" if n.get("shot") else ""}'
-                      f' | {n.get("text") or "-"}{said} | {n["ts"][5:16]}{" [adopted " + n["adopted"] + "]" if n.get("adopted") else ""}')
+                      f' | {n.get("text") or "-"}{said} | {n["ts"][5:16]} | votes {sum(n.get("votes", {}).values()):+d}{" [adopted " + n["adopted"] + "]" if n.get("adopted") else ""}')
+        ps = sorted(general(ep), key=lambda n: -sum(n.get('votes', {}).values()))
+        print(f'\n# general discussion: {len(ps)} posts (by score)')
+        for n in ps:
+            print(f'{n["id"]} {sum(n.get("votes", {}).values()):+d} [{n.get("kind")}] {n["by"]}{" (owner)" if n.get("owner") else ""} {n["ts"][5:16]} v{n.get("ver") or "?"} | {n["text"][:300]}')
         return
     if cmd == 'snapshot':
         for ep in review_eps():
