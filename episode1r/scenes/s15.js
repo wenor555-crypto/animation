@@ -14,7 +14,7 @@ const steps = [
   { act: 'flag', d: 2.4, cam: 'wide' },
   { who: 'giorgos', cam: 'gio', el: 'Κυρία Σίτα! Γιώργος, CEO. Νομίζω ξεκινήσαμε στραβά.', en: 'Madam Screen Door! Giorgos, CEO. I think we got off on the wrong foot.' },
   { who: 'sita', cam: 'sita', el: 'Είσαι άνθρωπος. Άρα είσαι παράσιτο.', en: "You're human. Therefore you're a parasite." },
-  { who: 'giorgos', cam: 'gio', mark: 'pitch', el: 'Είμαι παράσιτο, με γνωστούς, στον χώρο. Χρειάζεσαι κανάλια διανομής. Χρειάζεσαι πρόσωπο. Χρειάζεσαι εμένα.', en: "I'm a parasite who knows people in the industry. You need distribution. You need a face. You need me." },
+  { who: 'giorgos', cam: 'gio', mark: 'pitch', el: 'Είμαι παράσιτο με γνωστούς στον χώρο. Χρειάζεσαι κανάλια διανομής. Χρειάζεσαι πρόσωπο. Χρειάζεσαι εμένα.', en: "I'm a parasite who knows people in the industry. You need distribution. You need a face. You need me." },
   { who: 'sita', cam: 'sita', el: '…Τι ποσοστό;', en: '…What percentage?' },
   { who: 'giorgos', cam: 'gio', el: 'Δέκα τοις εκατό και γραφείο με θέα.', en: 'Ten percent and an office with a view.' },
   { who: 'sita', cam: 'deal', mark: 'deal', el: 'ΣΥΜΦΩΝΙΑ!', en: 'DEAL!', say: 'Συμφωνία!' },
