@@ -223,7 +223,13 @@ function queueClips() {
 }
 const clipKey = (sc, idx) => `${sc.id}/${String(idx + 1).padStart(2, '0')}`;
 function clipOut(key) {   // the clip's own level into the dialogue bus
-  const g = AC.createGain(); g.gain.value = Math.pow(10, ((window.CLIP_GAIN || {})[key] || 0) / 20); g.connect(voiceBus || master); return g;
+  const g = AC.createGain(); g.gain.value = Math.pow(10, ((window.CLIP_GAIN || {})[key] || 0) / 20); g.connect(voiceBus || master);
+  if ((window.CLIP_FX || {})[key] !== 'phone') return g;
+  // a line heard through a phone (step `fx: 'phone'`): band-limited and a little boxy, into the same levelled gain
+  const hp = AC.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 380;
+  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3400;
+  const pk = AC.createBiquadFilter(); pk.type = 'peaking'; pk.frequency.value = 1700; pk.gain.value = 5; pk.Q.value = 1;
+  hp.connect(lp); lp.connect(pk); pk.connect(g); return hp;
 }
 function startClip(key) {
   pendingKey = null;
@@ -287,6 +293,7 @@ function compileScene(cfg) {
         const a = cur + (st.gap ?? .3), key = `${sc.id}/${String(++n).padStart(2, '0')}`;
         const d = (window.CLIP_DUR || {})[key] ?? estDur(st.el), b = a + d + .12;
         const L = { ...st, a, b }; sc.lines.push(L); sc.M.L.push(L);
+        if (st.fx) (window.CLIP_FX = window.CLIP_FX || {})[key] = st.fx;
         if (st.mark) sc.M[st.mark] = L;
         const cam = st.cam ?? (cfg.autoCam ? cfg.autoCam(st.who, st) : null);
         if (cam) sc.shots.push([st.cam ? cur : a - .15, cam]);
