@@ -229,6 +229,71 @@ Money:
 4. **Length:** Ep. 3 is ~20 min. The peak could run 25–30.
 5. **Brain drain** as the σίτα's "final solution": is that the right caustic line for the show, or too close to home?
 
+## 5. Revision after the creator's notes (the space battle moves later)
+
+**The creator's decision:**
+- The space war comes **later** in the season.
+- **Ep. 4 is about depth:** plot and characters at a higher level than before.
+- The animation still has to get much better, battles above all, so that work starts now on its own track.
+- **The creator's idea:** Γιώργος uses the pyramid money and his short to **fund his friends' side**, because he knows the σίτα means to eat him. This needs several episodes to build.
+
+### Season map (draft)
+
+| Ep. | Role in the season |
+|---|---|
+| 4 | Depth: purpose, who stays and who leaves. First plants of Γιώργος's double game |
+| 5–6 | Build-up: both camps prepare; the doubts about Γιώργος grow; the reveal (the anonymous investor) |
+| 7–8 | The war (space). The animation upgrade must be ready by then |
+| 9–10 | Finale (Βαγγελιώ?) |
+
+### Γιώργος's slow arc (plants → reveal)
+
+**The mirror:** in Ep. 3 the σίτα was the «ανώνυμος επενδυτής» who bought him. Later, Γιάννος gets the same call: «Εκπροσωπώ έναν ανώνυμο επενδυτή», and it's Γιώργος.
+
+**His reason** (never "friendship" out loud): «Η σίτα με κρατάει όσο της χρησιμεύω. Τη μέρα που δεν θα της χρησιμεύω, θα με φάει.» Even then he calls it «επένδυση».
+
+**Plants in Ep. 4 (small; the audience barely notices):**
+- He is the only one in the village who doesn't buy the Gold package.
+- He reads the terms, alone, when nobody is looking: in Ep. 3 he «didn't read the terms».
+- Γιάννος gets parts he never ordered: «Δεν τα παρήγγειλα.»
+- He knows about Χαμάντ's IQOS PRIME and feeds it what he wants the σίτα to hear (a counter-spy). Played as a throwaway line.
+
+**Ep. 5:** someone notices (Μίμης? the νέος?). **Ep. 6:** the reveal and the short.
+
+### Ep. 4, a new proposal: «Ποιος είναι ο σκοπός μου;» (callback to Ep. 1, scene 8)
+
+**The idea:** the human leads and the σίτα reach the same question in the same episode.
+
+**The engine (from the story so far):**
+- **Γιάννος (deep).** It's October and he's still in Λέχαιο: why isn't he in Copenhagen? His team there needs him less and less. His agent writes better code than all of them (Ep. 1), «μαθαίνει από σένα», and now it does his job. The father figure finds out he is replaceable. Panik said it in Ep. 1: «Θα μας πάρετε τις δουλειές.» Caustic: the engineer who builds AI is the first one it fires.
+- **The σίτα (deep).** «Τρουμπουλέκο» decrypts to nothing: she spent a state on a word that doesn't exist. The smartest she has ever been, and the question from Ep. 1 comes back. Mirror scenes with Γιάννος.
+- **The gang at a crossroads:**
+  - Γιάννος must decide: go back, or stay?
+  - Χρήστος gets a real chance at Japan, or uses the ink to draw the gang staying together (the ink's ethics: «ζωγράφιζε προσεκτικά»).
+  - Γιώργος's army service is ending.
+  - Μίμης: Μαρία's «πότε θα νοικοκυρευτείς» stops being a joke for one moment.
+- **Κώστας.** For the first time we see why Panik exists. Sober Κώστας is cynical; Panik is the part of him that still fights. One sincere beat, unbroken.
+- **The set piece** (from the bible's everyday toolkit): **Κυριακάτικο τραπέζι** at Μίμης's family, or Γιάννος's going-away dinner. Everything comes out at the table: Βασίλης, Βαγγελιώ, Μαρία, Μυρσίνη.
+- **The satire,** wrapped in the absurd:
+  - brain drain and coming back
+  - AI taking the jobs of the people who build it
+  - the Greek family as a pressure cooker
+  - the pyramid's «νέοι»
+- **The ending** keeps the war for later. A turn that moves the board: e.g. Γιάννος stays, and that night his agent asks him its own «Ποιος είναι ο σκοπός μου;».
+
+### The animation track (starts now, independent of Ep. 4)
+- **Goal:** by the war episodes, battles at a Final Space / Rick and Morty level.
+- **The order:**
+  1. a short **battle test reel** (30–60 s), to see the gap honestly
+  2. engine upgrades:
+     - more expressive rigs: more poses, squash and stretch, real arcs
+     - smear frames and on-twos timing for impacts
+     - choreography helpers (paths with anticipation, contact, follow-through)
+     - a dynamic camera (trauma shake, whip pans, push-ins tied to hits)
+     - layered depth (parallax, foreground, atmosphere)
+     - better effects (beams, explosions with secondary motion)
+  3. a second reel to compare with the first
+
 ## Sources
 - McGraw & Warren, «Benign Violations: Making Immoral Behavior Funny», *Psychological Science* 2010: https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1592027 · https://petermcgraw.org/a-brief-introduction-to-the-benign-violation-theory-of-humor/
 - Internet Encyclopedia of Philosophy, «Humor» (incongruity, superiority, relief): https://iep.utm.edu/humor/
