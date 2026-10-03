@@ -33,13 +33,22 @@
       "title_en": "Sitadel",
       "desc_el": "Όλοι εξοπλίζονται για τον πόλεμο που έρχεται.",
       "desc_en": "Everyone arms up for the war that's coming."
+    },
+    {
+      "slug": "episode4",
+      "n": 4,
+      "title_el": "Whiskey Sour",
+      "title_en": "Whiskey Sour",
+      "desc_el": "Ο Κώστας παίρνει τηλέφωνο τη σίτα. Εκείνη του στέλνει έναν T-800 από οικιακές συσκευές.",
+      "desc_en": "Κώστας calls the screen door. She sends him a T-800 made of home appliances."
     }
   ],
   "posters": {
     "episode1": 825,
     "episode2": 700,
     "episode2r": 977,
-    "episode3": 1125
+    "episode3": 1125,
+    "episode4": 702
   },
   "google_client_id": "909893121453-ksi9vtlcsv90hh8msr3ssufag0c4jkpo.apps.googleusercontent.com",
   "contact_email": "wenor555@gmail.com",
