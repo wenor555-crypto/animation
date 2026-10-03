@@ -162,6 +162,11 @@ A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8
   - «speaker» EQ for music playing inside the scene, opening to full range for dramatic moments
   - ducking under the voices
   - −20 LUFS when featured, −28 under dialogue
+- **The opening (from Ep. 4 on, the creator's note):** an episode opens on the show's logo over the cold open's music, featured and full range, with no voices. Then the cut into the scene, where the music narrows to the room («speaker») and dips under the lines (duck .2, about −14 dB).
+  - No line plays over a song's vocals: dialogue goes over instrumental passages (Ep. 4's cue repeats the intro for that), and the vocals come back when nobody speaks.
+  - Measured in Ep. 4's export, voices muted: logo ≈ −21 dB, under the recipe lines ≈ −35 dB, chorus ≈ −18 dB.
+- **Ducking:** `SND2.music` merges lines less than 0.7 s apart into one dip. Separate dips used to overlap, and the release of one cancelled the next: the second line of a pair played over undipped music.
+- **Colour changes:** `eqAt: [[t, 'full' | 'speaker'], …]` for several changes in one cue (full under the logo, speaker in the room, full again at the transformation).
 
 ## Pending
 - **Μαρία's voice (Ep. 1–3):** the creator finds it odd in places, with nothing specific to fix. Rework it across all three episodes later: audition voices, regenerate her lines, check every line again by ear. Until then only single lines are fixed (Ep. 2 s06: «…της οικογένειας», with a pause, so it doesn't run into «τησικογένειας»).

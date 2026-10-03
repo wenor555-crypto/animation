@@ -1,5 +1,5 @@
 {
-  "cold_open": { "src": "whiskey_sour_full.mp3", "from": 0.0, "to": 8.2, "join": [[58.6, 81.0]], "fadeIn": 0.05, "fadeOut": 0.4, "lufs": -20 },
+  "cold_open": { "src": "whiskey_sour_full.mp3", "from": 0.0, "to": 8.2, "join": [[0.0, 8.2], [58.6, 81.0]], "fadeIn": 0.05, "fadeOut": 0.4, "lufs": -20 },
   "call": { "src": "whiskey_sour_full.mp3", "from": 145.2, "to": 165.0, "fadeIn": 0.6, "fadeOut": 1.2, "lufs": -20 },
   "call_tail": { "src": "whiskey_sour_full.mp3", "from": 195.3, "to": 204.0, "fadeIn": 0.5, "fadeOut": 2.5, "lufs": -21 }
 }

@@ -5,13 +5,17 @@
    The timing is locked to the cue «cold_open» (music/cues.json): the chorus lands 8.2 s after the music starts. */
 defineScene((() => {
 const PH = ['ΣΙΤΑ (τηλέφωνο)', 'SITA (phone)'];
-const CAMS = { wide: [640, 400, 1.05], hands: [660, 440, 2.2], face: [640, 360, 2.3], glass: [700, 440, 1.8], sms: [0, 0, 1], panik: [640, 350, 2.1], title: [0, 0, 1] };
+const CAMS = { logo: [0, 0, 1], wide: [640, 400, 1.05], hands: [660, 440, 2.2], face: [640, 360, 2.3], glass: [700, 440, 1.8], sms: [0, 0, 1], panik: [640, 350, 2.1], title: [0, 0, 1] };
 const L1 = 'Εξήντα bourbon. Τριάντα λεμόνι. Είκοσι σιρόπι.', L2 = 'Ένα ασπράδι. Dry shake. Χωρίς πάγο. Για τον αφρό.';
-// the shake fills the time until the chorus (cue 8.2 s after the music starts at the scene's .6 s)
+// The cue «cold_open» is the instrumental intro twice, then the chorus at 16.1 s. The show's logo plays over the first pass
+// (full range, no voices); the recipe lines go over the second, from the speaker; the shake fills the time until the chorus.
+const LOGO = 7.6, CHORUS = 16.1;
 const dur = (k, el) => (window.CLIP_DUR || {})[k] ?? estDur(el);
-const SHAKE = Math.max(.4, .6 + 8.2 - (.6 + 1.2 + .3 + dur('scene01/01', L1) + .12 + .3 + dur('scene01/02', L2) + .12));
+const LINES_END = .6 + LOGO + .3 + .3 + dur('scene01/01', L1) + .12 + .3 + dur('scene01/02', L2) + .12;
+const SHAKE = Math.max(.4, .6 + CHORUS - LINES_END);
 const steps = [
-  { act: 'intro', d: 1.2, cam: 'wide' },
+  { act: 'logo', d: LOGO, cam: 'logo' },
+  { act: 'intro', d: .3, cam: 'wide' },
   { who: 'kostas', cam: 'hands', mark: 'pour', el: 'Εξήντα bourbon. Τριάντα λεμόνι. Είκοσι σιρόπι.', en: 'Sixty bourbon. Thirty lemon. Twenty syrup.', say: 'Εξήντα μπέρμπον. Τριάντα λεμόνι. Είκοσι σιρόπι.' },
   { who: 'kostas', cam: 'face', mark: 'egg', el: 'Ένα ασπράδι. Dry shake. Χωρίς πάγο. Για τον αφρό.', en: 'One egg white. Dry shake. No ice. For the foam.', say: 'Ένα ασπράδι. Ντράι σέικ. Χωρίς πάγο. Για τον αφρό.' },
   { act: 'shake', d: SHAKE, cam: 'hands' },
@@ -31,6 +35,14 @@ function render(t, _M, sc) {
     const msgs = TEXTS.map(([s, d]) => ({ me: true, text: s, at: M.thread.a - 30 + d * 3 }));   // sent over the last weeks, all unanswered
     smsScreen(t, msgs, { from: 'Σίτα 💔', sub: 'Τελευταία σύνδεση: ποτέ', typing: 'Γιατί δεν', typingK: prog(t, M.thread.a + 2.5, M.thread.b - .4) });
     return;
+  }
+  if (shot === 'logo') {   // the show's logo over the song's intro (as the end card, scaled in)
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#16111d'; ctx.fillRect(0, 0, W, H);
+    const T0 = M.chorus.a - CHORUS, k = clamp((t - T0 - .1) * 1.6), out = clamp((M.logo.b - t) / .4);   // in on the music's first beat
+    ctx.globalAlpha = Math.min(1, k * 2) * out; ctx.translate(640, 330); ctx.scale(back(k), back(k)); ctx.rotate(-.05);
+    txt('Η ΕΞΥΠΝΗ ΣΙΤΑ', 0, -30, 96, '#e8392b', { font: TVFONT, style: 'italic', weight: 900, stroke: 14, sc: '#fff' });
+    ctx.globalAlpha = clamp((t - T0 - 1.2) * 2) * out; txt(lang === 'el' ? 'ΕΠΕΙΣΟΔΙΟ 4' : 'EPISODE 4', 0, 60, 34, '#ffd23f', { font: TVFONT, style: 'italic', weight: 900 });
+    ctx.restore(); return;
   }
   if (shot === 'title') {
     ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#0c0806'; ctx.fillRect(0, 0, W, H);
@@ -68,9 +80,9 @@ function render(t, _M, sc) {
 return {
   id: 'scene01', title: '1 · Mixology', steps, render, fade: false,
   events: M => {
-    const T0 = M.chorus.a - 8.2, rel = L => [L.a - T0, L.b - T0];   // the cue's chorus starts 8.2 s in
+    const T0 = M.chorus.a - CHORUS, rel = L => [L.a - T0, L.b - T0];   // the cue's chorus starts 16.1 s in
     return [
-      [T0, () => SND2.music('cold_open', { eq: 'speaker', toFull: M.alone.a + 1.2 - T0, lines: [rel(M.pour), rel(M.egg)], vol: 1, duck: .35, fadeOut: [M.call.a - T0, .3] })],
+      [T0, () => SND2.music('cold_open', { eq: 'full', eqAt: [[M.logo.b - T0, 'speaker'], [M.alone.a + 1.2 - T0, 'full']], lines: [rel(M.pour), rel(M.egg)], vol: 1, duck: .2, fadeOut: [M.call.a - T0, .3] })],
       [M.egg.a + .8, SFX.clacks], [M.chorus.a + 2.5, SFX.sip], [M.chorus.a + 8.5, SFX.sip], [M.alone.a + .1, SFX.sip],
       [M.alone.a + 1.2, () => SND2.sfx('whoosh', .8, { rate: .7 })], [M.call.a - .2, SFX.phone], [M.come.b, SFX.clack], [M.title.a, () => SND2.sfx('boom_small', .5, { rate: .6 })],
     ];

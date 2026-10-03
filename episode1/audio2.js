@@ -10,6 +10,7 @@
         lines:  [[a, b], …] seconds from the cue's start when somebody speaks (the music dips there)
         eq:     'speaker' (thin, as if from a phone or a Bluetooth speaker in the room) or 'full'
         toFull: seconds after the start when a 'speaker' cue opens to full range (the dramatic moment)
+        eqAt:   [[t, 'full' | 'speaker'], …] several colour changes (e.g. full under a logo, then the speaker in the room)
         fadeOut: [start, length] seconds from the cue's start
    Load after engine.js.
    ========================================================= */
@@ -47,13 +48,25 @@ const SND2 = (() => {
     dry.connect(out); wet.connect(out);
     const speaker = o.eq === 'speaker';
     dry.gain.setValueAtTime(speaker ? 0 : 1, n); wet.gain.setValueAtTime(speaker ? 1.25 : 0, n);
+    if (o.eqAt) {   // colour changes over time: [[t, 'full' | 'speaker'], …], a 0.25 s cross-ramp each
+      let cur = speaker ? [0, 1.25] : [1, 0];
+      for (const [at, c] of o.eqAt.slice().sort((p, q) => p[0] - q[0])) {
+        const d = c === 'speaker' ? [0, 1.25] : [1, 0];
+        dry.gain.setValueAtTime(cur[0], n + at); wet.gain.setValueAtTime(cur[1], n + at);
+        dry.gain.linearRampToValueAtTime(d[0], n + at + .25); wet.gain.linearRampToValueAtTime(d[1], n + at + .25);
+        cur = d;
+      }
+    }
     if (speaker && o.toFull != null) {
       dry.gain.setValueAtTime(0, n + o.toFull); dry.gain.linearRampToValueAtTime(1, n + o.toFull + .25);
       wet.gain.setValueAtTime(1.25, n + o.toFull); wet.gain.linearRampToValueAtTime(0, n + o.toFull + .25);
     }
     // the level: featured, dipping under each line
     out.gain.setValueAtTime(vol, n);
-    for (const [a, z] of (o.lines || []).slice().sort((p, q) => p[0] - q[0])) {
+    // lines closer than 0.7 s are one dip (separate dips would overlap and the release of one would cancel the next)
+    const dips = [];
+    for (const [a, z] of (o.lines || []).slice().sort((p, q) => p[0] - q[0])) { const last = dips[dips.length - 1]; if (last && a - last[1] < .7) last[1] = Math.max(last[1], z); else dips.push([a, z]); }
+    for (const [a, z] of dips) {
       out.gain.setValueAtTime(vol, n + Math.max(0, a - .25)); out.gain.linearRampToValueAtTime(duck, n + Math.max(0, a - .05));
       out.gain.setValueAtTime(duck, n + z + .1); out.gain.linearRampToValueAtTime(vol, n + z + .45);
     }
