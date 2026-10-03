@@ -1,0 +1,1920 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab · T-800 model sheet · Η Έξυπνη Σίτα</title>
+<style>
+:root { --bg:#f4efe4; --panel:#fffaf0; --ink:#231a2e; --muted:#6b5f76; --accent:#d8453a; --btn:#231a2e; --btn-ink:#fffaf0; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg:#16111d; --panel:#221a2c; --ink:#f4efe4; --muted:#a99cb6; --accent:#ff6a5c; --btn:#f4efe4; --btn-ink:#16111d; }
+}
+:root[data-theme="dark"] { --bg:#16111d; --panel:#221a2c; --ink:#f4efe4; --muted:#a99cb6; --accent:#ff6a5c; --btn:#f4efe4; --btn-ink:#16111d; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font-family:Comfortaa, system-ui, sans-serif; }
+main { max-width:1120px; margin:0 auto; padding:20px 16px 40px; }
+h1 { font:italic 900 clamp(24px,4.5vw,40px) "Noto Sans", sans-serif; margin:0; }
+header p { margin:4px 0 16px; color:var(--muted); font-size:14px; }
+.stage { position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:14px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,.25); }
+canvas { display:block; width:100%; height:100%; }
+#big { position:absolute; inset:0; margin:auto; width:96px; height:96px; border-radius:50%; border:5px solid #231a2e; background:#ffd23f; color:#231a2e; font-size:40px; cursor:pointer; box-shadow:0 6px 0 #231a2e; }
+#big[hidden] { display:none; }
+.bar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:12px; background:var(--panel); padding:10px; border-radius:12px; }
+.bar button { font:inherit; font-size:14px; border:0; border-radius:8px; padding:8px 12px; background:var(--btn); color:var(--btn-ink); cursor:pointer; min-width:44px; }
+.bar input[type=range] { flex:1 1 200px; accent-color:var(--accent); min-width:0; }
+#time { font-variant-numeric:tabular-nums; font-size:13px; color:var(--muted); min-width:84px; text-align:right; }
+#note { font-size:12px; color:var(--muted); margin-top:8px; }
+.stage:fullscreen { border-radius:0; }
+.bar select { font:inherit; font-size:13px; border:0; border-radius:8px; padding:8px; background:var(--btn); color:var(--btn-ink); max-width:180px; }
+
+</style>
+</head>
+<body>
+<main>
+  <header><h1>Lab · T-800</h1><p>Model sheet · turntable · poses · walk · assembly</p></header>
+  <div class="stage" id="stage">
+    <canvas id="c" width="1280" height="720"></canvas>
+    <button id="big" aria-label="Play">▶</button>
+  </div>
+  <div class="bar">
+    <button id="play">▶ Play</button>
+    <button id="restart" title="Restart">⟲</button>
+    <input type="range" id="scrub" min="0" max="1200" step="0.01" value="0" aria-label="Timeline">
+    <span id="time">0:00</span>
+    <select id="chap" aria-label="Scene"></select>
+    <button id="vo" title="Voices">🗣</button>
+    <button id="lang" title="Subtitle language">EN</button>
+    <button id="snd" title="Sound">🔊</button>
+    <button id="fs" title="Fullscreen">⛶</button>
+  </div>
+</main>
+<script>window.CLIP_DUR = {};</script>
+<script>
+/* =========================================================
+   «Η Έξυπνη Σίτα» – shared engine
+   Canvas primitives with line boil, synth audio, placeholder
+   narrator/voices (speechSynthesis), subtitles and the player.
+   ========================================================= */
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const W = 1280, H = 720, TAU = Math.PI * 2, INK = '#241d22';
+const TVFONT = '"Noto Sans", sans-serif';
+/* clean look: the scenes draw in 1280×720 units, the canvas renders them at RES× (1920×1080) for crisp lines,
+   and CLEAN turns off the hand-drawn wobble and the 8 fps line boil (smooth ellipses, straight edges). */
+const RES = 1.5, CLEAN = true, OUTLINE = .8;   // OUTLINE: thinner ink around filled shapes
+cv.width = W * RES; cv.height = H * RES;
+{ const st = ctx.setTransform.bind(ctx); ctx.setTransform = (a, b, c, d, e, f) => st(a * RES, b * RES, c * RES, d * RES, e * RES, f * RES); }
+ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+/* ---------- math ---------- */
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, k) => a + (b - a) * k;
+const ease = k => k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const back = k => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); };
+const bump = (t, a, b) => Math.sin(prog(t, a, b) * Math.PI);          // 0→1→0 over [a,b]
+function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+
+/* ---------- wobbly primitives (line boil at 8fps) ---------- */
+let SEED = 0, BOIL = 0;
+const jit = (sd, i, k) => CLEAN ? 0 : (hash(sd * 12.9898 + i * 78.233 + BOIL * 37.719 + k * 3.3) - .5) * 2;
+/* outlines keep (roughly) the same on-screen weight when the camera pushes in, instead of getting fat in close-ups */
+function zoomComp() { if (!CLEAN) return 1; const m = ctx.getTransform(), z = Math.hypot(m.a, m.b) / RES; return z > 1 ? Math.pow(z, -.6) : 1; }
+function finish(fill, o) {
+  ctx.save();
+  if (o.alpha != null) ctx.globalAlpha *= o.alpha;
+  if (o.glow) { ctx.shadowColor = o.glow; ctx.shadowBlur = (o.gb || 20) * RES; }
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (o.lw !== 0) { ctx.lineWidth = (o.lw || 4) * (CLEAN && fill ? OUTLINE * zoomComp() : 1); ctx.strokeStyle = o.sc || INK; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke(); }
+  ctx.restore();
+}
+function blob(x, y, rx, ry, fill, o = {}) {
+  const sd = ++SEED, n = o.n || 24, w = o.w ?? 1.2, rot = o.rot || 0, cr = Math.cos(rot), sr = Math.sin(rot);
+  ctx.beginPath();
+  if (CLEAN) { ctx.ellipse(x, y, Math.abs(rx), Math.abs(ry), rot, 0, TAU); finish(fill, o); return; }
+  for (let i = 0; i < n; i++) {
+    const a = i / n * TAU, j = jit(sd, i, 0) * w, px = Math.cos(a) * (rx + j), py = Math.sin(a) * (ry + j);
+    const X = x + px * cr - py * sr, Y = y + px * sr + py * cr; i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y);
+  }
+  ctx.closePath(); finish(fill, o);
+}
+const wp = (pts, sd, w) => pts.map((p, i) => [p[0] + jit(sd, i, 1) * w, p[1] + jit(sd, i, 2) * w]);
+function poly(pts, fill, o = {}) {
+  const sd = ++SEED, P = wp(pts, sd, o.w ?? 1), L = P.length;
+  ctx.beginPath();
+  if (o.smooth) {
+    const m = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], s = m(P[L - 1], P[0]); ctx.moveTo(s[0], s[1]);
+    for (let i = 0; i < L; i++) { const mm = m(P[i], P[(i + 1) % L]); ctx.quadraticCurveTo(P[i][0], P[i][1], mm[0], mm[1]); }
+  } else P.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
+  ctx.closePath(); finish(fill, o);
+}
+function curve(pts, lw = 4, col = INK, o = {}) {
+  const sd = ++SEED, P = wp(pts, sd, o.w ?? .9), L = P.length;
+  ctx.beginPath(); ctx.moveTo(P[0][0], P[0][1]);
+  if (L === 2) ctx.lineTo(P[1][0], P[1][1]);
+  else for (let i = 1; i < L - 1; i++) { const e = i === L - 2; ctx.quadraticCurveTo(P[i][0], P[i][1], e ? P[i + 1][0] : (P[i][0] + P[i + 1][0]) / 2, e ? P[i + 1][1] : (P[i][1] + P[i + 1][1]) / 2); }
+  finish(null, { ...o, lw, sc: col });
+}
+function limb(pts, lw, col, o = {}) { curve(pts, lw + 6 * OUTLINE * zoomComp(), INK, o); SEED--; curve(pts, lw, col, o); }
+function rect(x, y, w, h, fill, o = {}) { poly([[x, y], [x + w, y], [x + w, y + h], [x, y + h]], fill, o); }
+function txt(s, x, y, size, col, o = {}) {
+  ctx.font = `${o.style || ''} ${o.weight || 700} ${size}px ${o.font || 'Comfortaa, sans-serif'}`;
+  ctx.textAlign = o.align || 'center'; ctx.textBaseline = 'middle';
+  if (o.stroke) { ctx.lineWidth = o.stroke; ctx.strokeStyle = o.sc || INK; ctx.lineJoin = 'round'; ctx.strokeText(s, x, y); }
+  ctx.fillStyle = col; ctx.fillText(s, x, y);
+}
+function eye(x, y, r, lx, ly, bl, o = {}) {        // big whites, tiny dot pupils
+  if (bl) { curve([[x - r, y + 1], [x, y + r * .35], [x + r, y + 1]], 3); SEED++; return; }
+  blob(x, y, r, r * (o.sq || 1.08), '#fff', { lw: 3, w: .5 });
+  blob(x + lx * r * .45, y + ly * r * .45, o.pr || 2.8, o.pr || 2.8, INK, { lw: 0, w: .15, n: 10 });
+  if (o.lid) curve([[x - r, y - r * .2], [x + r, y - r * .2]], 3);      // half-lidded, bored
+}
+const blinkAt = (t, off) => ((t + off) % 3.7) < .12;
+function mosquito(x, y, s, t) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  ctx.globalAlpha *= .5; blob(0, -4 + Math.sin(t * 90) * 2, 4, 2, '#dfe9f2', { lw: 0 }); ctx.globalAlpha /= .5;
+  blob(0, 0, 4, 1.6, '#3b302c', { lw: 0 }); curve([[-2, 1], [-4, 5]], 1, INK, { w: 0 }); curve([[2, 1], [4, 5]], 1, INK, { w: 0 });
+  ctx.restore();
+}
+
+/* =========================================================
+   AUDIO: synth SFX + ambience
+   ========================================================= */
+let AC = null, master = null, voiceBus = null, amb = null, soundOn = true, voOn = true, playing = false;
+let AT = null;       // when set, sounds are scheduled at this time instead of "now" (offline export)
+const audioNow = () => AT ?? AC.currentTime;
+function ensureAudio() {
+  if (!AC) { AC = new (window.AudioContext || window.webkitAudioContext)(); buildAudio(); }
+  if (AC.state === 'suspended') AC.resume();
+  queueClips();
+}
+function buildAudio() {
+  {
+    master = AC.createGain(); master.connect(AC.destination);
+    // the dialogue bus: every clip is levelled (window.CLIP_GAIN, dB, from tools/level_voices.py) and goes through a
+    // fast peak limiter, so a quiet voice brought up to the others' loudness doesn't clip on its transients
+    voiceBus = AC.createDynamicsCompressor();
+    voiceBus.threshold.value = -3; voiceBus.knee.value = 0; voiceBus.ratio.value = 20; voiceBus.attack.value = .001; voiceBus.release.value = .08;
+    voiceBus.connect(master);
+    const osc = (type, f) => { const o = AC.createOscillator(); o.type = type; o.frequency.value = f; o.start(); return o; };
+    const gain = v => { const g = AC.createGain(); g.gain.value = v; return g; };
+    const nb = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate), d = nb.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const ns = AC.createBufferSource(); ns.buffer = nb; ns.loop = true; ns.start();
+    const cf = AC.createBiquadFilter(); cf.type = 'bandpass'; cf.frequency.value = 5200; cf.Q.value = 6;
+    const cAM = gain(0), lfo = osc('square', 34), lg = gain(.5); lfo.connect(lg); lg.connect(cAM.gain);
+    const cG = gain(0); ns.connect(cf); cf.connect(cAM); cAM.connect(cG); cG.connect(master);
+    const mq = osc('sawtooth', 560), vib = osc('sine', 7), vg = gain(18); vib.connect(vg); vg.connect(mq.frequency);
+    const mf = AC.createBiquadFilter(); mf.type = 'bandpass'; mf.frequency.value = 900; mf.Q.value = 1.2;
+    const mG = gain(0); mq.connect(mf); mf.connect(mG); mG.connect(master);
+    // crickets: band-passed noise with a fast trill, fading in and out smoothly (no pure tones, so it never beeps)
+    const kn = AC.createBufferSource(); kn.buffer = nb; kn.loop = true; kn.start();
+    const kf = AC.createBiquadFilter(); kf.type = 'bandpass'; kf.frequency.value = 4600; kf.Q.value = 14;
+    const kTr = gain(0), tr = osc('sine', 23), trG = gain(.5); tr.connect(trG); trG.connect(kTr.gain);
+    const kGate = gain(.5), gl = osc('sine', .37), glG = gain(.5); gl.connect(glG); glG.connect(kGate.gain);
+    const krG = gain(0); kn.connect(kf); kf.connect(kTr); kTr.connect(kGate); kGate.connect(krG); krG.connect(master);
+    // mains hum (evil devices)
+    const hm = osc('sawtooth', 50), hf = AC.createBiquadFilter(); hf.type = 'lowpass'; hf.frequency.value = 180;
+    const hG = gain(0); hm.connect(hf); hf.connect(hG); hG.connect(master);
+    amb = { cG, mG, krG, hG };
+  }
+}
+/* the ambience levels for scene time lt (same mix as live playback) */
+function setAmbience(a, n, on = true) {
+  amb.cG.gain.setTargetAtTime(on ? a.cicada || 0 : 0, n, .08); amb.mG.gain.setTargetAtTime(on ? (a.mosq || 0) * .5 : 0, n, .08);
+  amb.krG.gain.setTargetAtTime(on ? (a.cricket || 0) * 2.5 : 0, n, .08); amb.hG.gain.setTargetAtTime(on ? (a.hum || 0) * .4 : 0, n, .08);
+}
+function tone(f, dur, type = 'triangle', vol = .06, slide = 0, delay = 0) {
+  if (!soundOn || !AC) return;
+  const o = AC.createOscillator(), g = AC.createGain(), n = audioNow() + delay;
+  o.type = type; o.frequency.setValueAtTime(f, n); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(20, f * slide), n + dur);
+  g.gain.setValueAtTime(0, n); g.gain.linearRampToValueAtTime(vol, n + .008); g.gain.exponentialRampToValueAtTime(.0001, n + dur);
+  o.connect(g); g.connect(master); o.start(n); o.stop(n + dur + .02);
+}
+function noise(dur, vol = .2, freq = 800, q = .7, type = 'lowpass', delay = 0) {
+  if (!soundOn || !AC) return;
+  const n = audioNow() + delay, len = Math.floor(AC.sampleRate * dur), buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  const s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+  s.buffer = buf; f.type = type; f.frequency.value = freq; f.Q.value = q;
+  g.gain.setValueAtTime(vol, n); g.gain.exponentialRampToValueAtTime(.0001, n + dur);
+  s.connect(f); f.connect(g); g.connect(master); s.start(n);
+}
+const SFX = {
+  slap: () => { noise(.09, .5, 2400, .8, 'bandpass'); tone(180, .06, 'sine', .08, .5); },
+  sip: () => noise(.7, .12, 1400, 3, 'bandpass'),
+  creak: () => { tone(320, .5, 'sawtooth', .025, 1.6); tone(410, .4, 'sawtooth', .02, 1.4, .1); },
+  slam: () => { noise(.35, .6, 500); tone(70, .3, 'sine', .25, .5); },
+  crash: () => { noise(.5, .25, 4000, .5, 'highpass', .25); for (let i = 0; i < 6; i++) tone(2000 + Math.random() * 3000, .15, 'sine', .04, 1, .25 + i * .05); },
+  door: () => { noise(.25, .5, 700); tone(90, .25, 'sine', .2, .6); },
+  choir: () => [0, 4, 7, 12].forEach(s => { tone(261.6 * 2 ** (s / 12), 2.2, 'sine', .05); tone(261.6 * 2 ** (s / 12) * 1.005, 2.2, 'triangle', .025); }),
+  flies: () => { tone(200, 1.6, 'sawtooth', .025, 1.1); tone(230, 1.6, 'sawtooth', .02, .95); },
+  clack: () => { tone(2400, .05, 'square', .1, .4); tone(900, .08, 'square', .08, .5); },
+  clacks: (n = 3) => { for (let i = 0; i < n; i++) { tone(2400, .05, 'square', .08, .4, i * .13); tone(900, .07, 'square', .06, .5, i * .13); } },
+  jingle: () => [0, 4, 7, 12, 16].forEach((s, i) => tone(523.25 * 2 ** (s / 12), .25, 'square', .045, 0, i * .09)),
+  jingleMinor: () => [0, 3, 7, 12, 15].forEach((s, i) => tone(261.6 * 2 ** (s / 12), .5, 'square', .04, 0, i * .22)),
+  ding: () => { tone(1568, .5, 'sine', .08); tone(2093, .6, 'sine', .05, 0, .08); },
+  whoosh: () => noise(.5, .35, 900, .6, 'bandpass'),
+  fire: () => { noise(1.2, .4, 600); noise(1.2, .2, 2000, .5, 'bandpass', .1); },
+  spark: () => { noise(.12, .3, 5000, 1, 'highpass'); tone(3000, .08, 'square', .04, .3); },
+  laser: () => { tone(3200, .09, 'square', .035, .35); tone(1600, .14, 'sine', .05, .5, .03); noise(.1, .18, 4500, 1, 'highpass', .06); },   // «τσσπ»
+  zap: () => { for (let i = 0; i < 5; i++) { noise(.05, .3, 6000, 1, 'highpass', i * .06); tone(180, .05, 'sawtooth', .06, 1, i * .06); } },
+  buzz: (d = .8) => { tone(110, d, 'sawtooth', .05, 1.02); tone(113, d, 'square', .03, .98); },
+  boot: () => [0, 7, 12, 16].forEach((s, i) => tone(392 * 2 ** (s / 12), .7, 'sine', .06, 0, i * .18)),
+  drums: () => { for (let i = 0; i < 12; i++) { noise(.12, .3 + i * .03, 300, 1, 'lowpass', i * .08); tone(90, .1, 'sine', .15, .6, i * .08); } },
+  applause: () => { for (let i = 0; i < 40; i++) noise(.05, .12, 2500, .8, 'bandpass', Math.random() * 1.6); },
+  boom: () => { noise(1, .7, 300); tone(55, .9, 'sine', .35, .4); },
+  thud: () => { noise(.2, .5, 250); tone(80, .2, 'sine', .25, .5); },
+  pop: () => tone(600, .08, 'sine', .08, 2),
+  cluck: () => { for (let i = 0; i < 3; i++) tone(700 + Math.random() * 300, .06, 'square', .04, .7, i * .1); },
+  snore: () => { noise(1, .12, 300, 2, 'bandpass'); tone(80, 1, 'sawtooth', .02, 1.2); },
+  engine: () => { tone(60, 1.6, 'sawtooth', .07, 1.8); noise(1.6, .15, 400); },
+  honk: () => { tone(415, .4, 'square', .06); tone(523, .4, 'square', .05); },
+  phone: () => { for (let i = 0; i < 2; i++) { tone(1200, .12, 'square', .04, 1, i * .2); tone(900, .12, 'square', .04, 1, i * .2 + .1); } },
+  splash: () => noise(.5, .35, 1200, .5, 'bandpass'),
+  hiss: () => noise(.9, .3, 3000, .4, 'highpass'),
+  rev: () => { tone(70, 1.2, 'sawtooth', .08, 4); noise(1.2, .2, 800); },
+  swell: () => [0, 7, 12].forEach(s => tone(110 * 2 ** (s / 12), 2.5, 'sawtooth', .03, 1.01)),
+  gong: () => { tone(98, 3, 'sine', .2, .98); tone(147, 3, 'sine', .08, .99); noise(.4, .3, 400) },
+  windows: () => [[622, 0], [932, .15], [831, .3], [1244, .45]].forEach(([f, d]) => tone(f, .9, 'sine', .06, 1, d)),
+  fanfare: () => [0, 4, 7, 12, 7, 12].forEach((s, i) => tone(392 * 2 ** (s / 12), .3, 'sawtooth', .04, 0, i * .14)),
+};
+
+/* =========================================================
+   VOICES: recorded clips (Web Audio) or placeholder TTS/babble
+   ========================================================= */
+let greekVoice = null;
+const loadVoices = () => { greekVoice = speechSynthesis.getVoices().find(v => v.lang && v.lang.toLowerCase().startsWith('el')) || null; };
+if ('speechSynthesis' in window) { loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+/* Clips come from window.CLIPS (embedded by build.py from audio/<scene>/<NN>.mp3) and are decoded
+   into Web Audio buffers: <audio> elements with data: URLs get blocked by autoplay rules and
+   sandboxed previews. Only the scenes around the playhead are kept decoded (memory).
+   While a voice is speaking the timeline HOLDS at the end of that line. */
+const BUFS = {}, DECODED_SCENES = new Set();
+let speaking = false, speakStart = 0, speakMax = 6, curClip = null, pendingKey = null;
+function decodeScene(id) {
+  if (!AC || DECODED_SCENES.has(id)) return;
+  DECODED_SCENES.add(id);
+  for (const [key, src] of Object.entries(window.CLIPS || {})) {
+    if (!key.startsWith(id + '/') || key in BUFS) continue;
+    BUFS[key] = null;
+    const bin = atob(src.slice(src.indexOf(',') + 1)), bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    AC.decodeAudioData(bytes.buffer).then(b => {
+      if (!DECODED_SCENES.has(id)) { delete BUFS[key]; return; }
+      BUFS[key] = b; if (pendingKey === key) startClip(key);
+    }, e => { console.warn('clip decode failed', key, e); delete BUFS[key]; if (pendingKey === key) { pendingKey = null; speaking = false; } });
+  }
+}
+function queueClips() {
+  if (!AC || !EP) return;
+  const i = EP.cur, keep = new Set([i - 1, i, i + 1, i + 2].filter(k => k >= 0 && k < EP.scenes.length).map(k => EP.scenes[k].id));
+  for (const id of [...DECODED_SCENES]) if (!keep.has(id)) { DECODED_SCENES.delete(id); for (const k in BUFS) if (k.startsWith(id + '/')) delete BUFS[k]; }
+  for (const id of keep) decodeScene(id);
+}
+const clipKey = (sc, idx) => `${sc.id}/${String(idx + 1).padStart(2, '0')}`;
+function clipOut(key) {   // the clip's own level into the dialogue bus
+  const g = AC.createGain(); g.gain.value = Math.pow(10, ((window.CLIP_GAIN || {})[key] || 0) / 20); g.connect(voiceBus || master); return g;
+}
+function startClip(key) {
+  pendingKey = null;
+  curClip = AC.createBufferSource(); curClip.buffer = BUFS[key]; curClip.connect(clipOut(key));
+  curClip.onended = () => { speaking = false; };
+  speaking = true; speakStart = performance.now(); speakMax = BUFS[key].duration + 1.5; curClip.start();
+}
+function voiceLine(sc, L, idx) {
+  stopVO();
+  if (!soundOn) return;
+  const key = clipKey(sc, idx);
+  if (AC && BUFS[key]) return startClip(key);
+  if (AC && BUFS[key] === null) { pendingKey = key; speaking = true; speakStart = performance.now(); speakMax = 3; return; }   // still decoding: wait for it
+  if (!voOn || !('speechSynthesis' in window)) return;
+  const v = voiceInfo(sc, L.who), u = new SpeechSynthesisUtterance(L.el.replace(/[«»*]/g, ''));
+  if (greekVoice) u.voice = greekVoice; u.lang = 'el-GR'; u.rate = v.rate || 1; u.pitch = v.pitch || 1;
+  u.onend = u.onerror = () => { speaking = false; };
+  speaking = true; speakStart = performance.now(); speakMax = 8;
+  speechSynthesis.speak(u);
+}
+function stopVO() {
+  if ('speechSynthesis' in window) speechSynthesis.cancel();
+  if (curClip) { curClip.onended = null; try { curClip.stop(); } catch (e) {} curClip = null; }
+  speaking = false; pendingKey = null;
+}
+const hasClip = (sc, idx) => !!(AC && BUFS[clipKey(sc, idx)]);
+
+/* default speaker labels / placeholder voice params (a scene may override with cfg.voices) */
+const VOICE_INFO = {
+  narrator: { el: 'ΑΦΗΓΗΤΗΣ', en: 'NARRATOR', col: '#e8e0c8', pitch: .55, rate: .88, babble: 150 },
+  giannos:  { el: 'ΓΙΑΝΝΟΣ', en: 'GIANNOS', col: '#8cc4ff', pitch: .95, rate: 1.05, babble: 300 },
+  mimis:    { el: 'ΜΙΜΗΣ', en: 'MIMIS', col: '#d0d0d6', pitch: .75, rate: .92, babble: 230 },
+  giorgos:  { el: 'ΓΙΩΡΓΟΣ', en: 'GIORGOS', col: '#9be08a', pitch: 1.1, rate: 1.1, babble: 340 },
+  christos: { el: 'ΧΡΗΣΤΟΣ', en: 'CHRISTOS', col: '#7fa6ff', pitch: .85, rate: .9, babble: 260 },
+  kostas:   { el: 'ΚΩΣΤΑΣ', en: 'KOSTAS', col: '#c8f04a', pitch: .9, rate: 1, babble: 280 },
+  panik:    { el: 'PANIK', en: 'PANIK', col: '#c8f04a', pitch: .5, rate: .85, babble: 190 },
+  maria:    { el: 'ΜΑΡΙΑ', en: 'MARIA', col: '#ff9ac6', pitch: 1.5, rate: 1.12, babble: 480 },
+  myrsini:  { el: 'ΜΥΡΣΙΝΗ', en: 'MYRSINI', col: '#ffc37a', pitch: 1.3, rate: 1, babble: 420 },
+  vangelio: { el: 'ΒΑΓΓΕΛΙΩ', en: 'VANGELIO', col: '#e05a4a', pitch: .9, rate: .9, babble: 360 },
+  vasilis:  { el: 'ΒΑΣΙΛΗΣ', en: 'VASILIS', col: '#ffd23f', pitch: .5, rate: .82, babble: 170 },
+  sita:     { el: 'ΣΙΤΑ', en: 'SITA', col: '#5dff8a', pitch: 1.6, rate: 1.2, babble: 520 },
+};
+const voiceInfo = (sc, who) => (sc.voices && sc.voices[who]) || VOICE_INFO[who] || VOICE_INFO.narrator;
+
+/* =========================================================
+   SCENES
+   A scene is { id, dur, lines:[{a,b,who,el,en}], render(t, M), events, ambience }.
+   Instead of fixed times it can give `steps`: spoken lines { who, el, en, gap, cam, mark }
+   and silent actions { act: 'name', d: seconds, cam }. Timing is then laid out from the
+   real clip durations (window.CLIP_DUR, from build.py) or a reading-speed estimate, and
+   M['name'] = {a, b} (M.L[i] for the i-th line) lets the drawing code key off story beats.
+   ========================================================= */
+const SCENES = [];
+function estDur(el) { return Math.max(.7, el.replace(/[^\p{L}\p{N}]/gu, '').length / 13 + .25 * (el.match(/[.,;!?…]/g) || []).length); }
+function compileScene(cfg) {
+  const sc = { events: [], fade: true, ...cfg, M: { L: [] } };
+  if (cfg.steps) {
+    let cur = cfg.start ?? .6, n = 0; sc.lines = []; sc.shots = [];
+    for (const st of cfg.steps) {
+      if (st.who) {
+        const a = cur + (st.gap ?? .3), key = `${sc.id}/${String(++n).padStart(2, '0')}`;
+        const d = (window.CLIP_DUR || {})[key] ?? estDur(st.el), b = a + d + .12;
+        const L = { ...st, a, b }; sc.lines.push(L); sc.M.L.push(L);
+        if (st.mark) sc.M[st.mark] = L;
+        const cam = st.cam ?? (cfg.autoCam ? cfg.autoCam(st.who, st) : null);
+        if (cam) sc.shots.push([st.cam ? cur : a - .15, cam]);
+        cur = b + (st.after || 0);
+      } else {
+        const a = cur + (st.gap || 0), b = a + st.d;
+        sc.M[st.act] = { a, b };
+        if (st.cam) sc.shots.push([a, st.cam]);
+        cur = b;
+      }
+    }
+    sc.dur = cur + (cfg.tail ?? .8);
+    if (cfg.events) sc.events = cfg.events(sc.M);
+  }
+  return sc;
+}
+function defineScene(cfg) { SCENES.push(cfg); }
+/* current shot for step-based scenes: returns [name, startTime] */
+function shotAt(sc, t) {
+  let s = sc.shots[0] || [0, null];
+  for (const sh of sc.shots) if (sh[0] <= t) s = sh; else break;
+  return s;
+}
+
+/* =========================================================
+   PLAYER (one timeline for all scenes of the episode)
+   ========================================================= */
+let T = 0, started = false, lang = 'el', EP = null, SCENE = null, FLAP = 0;
+function talk(who, t) {
+  for (const L of SCENE.lines) if (L.who === who && t >= L.a && t < L.b) return .3 + .7 * Math.abs(Math.sin(FLAP * 13 + who.length));
+  return 0;
+}
+const speakingNow = (t) => SCENE.lines.find(l => t >= l.a && t < l.b);
+function drawSubs(t) {
+  const L = SCENE.lines.find(l => t >= l.a && t < l.b); if (!L || L.nosub) return;
+  const V = voiceInfo(SCENE, L.who), s = lang === 'el' ? L.el : L.en, name = L.label ? L.label[lang === 'el' ? 0 : 1] : (lang === 'el' ? V.el : V.en);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.font = '700 29px "Noto Sans", sans-serif';
+  const words = s.split(' '), rows = []; let cur = '';
+  for (const w of words) { const c = cur ? cur + ' ' + w : w; if (ctx.measureText(c).width > 1000 && cur) { rows.push(cur); cur = w; } else cur = c; }
+  rows.push(cur);
+  const lh = 38, bw = Math.max(...rows.map(r => ctx.measureText(r).width)) + 56, bh = rows.length * lh + 24, bx = 640 - bw / 2, by = 696 - bh;
+  ctx.fillStyle = 'rgba(18,14,20,.8)'; ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 12); ctx.fill();
+  if (name) {
+    ctx.font = '700 17px "Noto Sans", sans-serif'; const nw = ctx.measureText(name).width + 24;
+    ctx.fillStyle = V.col; ctx.beginPath(); ctx.roundRect(bx + 18, by - 14, nw, 28, 8); ctx.fill();
+    txt(name, bx + 18 + nw / 2, by, 17, INK, { font: TVFONT });
+  }
+  rows.forEach((r, i) => txt(r, 640, by + 12 + lh / 2 + i * lh, 29, '#fffaf0', { font: TVFONT }));
+}
+/* manga post-process: grayscale + contrast + halftone + panel border, k = 0..1 */
+let _buf = null;
+function mangaize(k = 1, border = true) {
+  if (k <= 0) return;
+  if (!_buf) { _buf = document.createElement('canvas'); _buf.width = cv.width; _buf.height = cv.height; }
+  const b = _buf.getContext('2d'); b.setTransform(1, 0, 0, 1, 0, 0); b.clearRect(0, 0, _buf.width, _buf.height); b.drawImage(cv, 0, 0);
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = k;
+  ctx.filter = 'grayscale(1) contrast(2.2) brightness(1.1)'; ctx.drawImage(_buf, 0, 0, W, H); ctx.filter = 'none';
+  ctx.globalAlpha = k * .35; ctx.fillStyle = INK;
+  for (let y = 0; y < H; y += 10) for (let x = (y / 10) % 2 ? 5 : 0; x < W; x += 10) { const r = .6 + Math.hypot(x - 640, y - 360) / 520; ctx.fillRect(x, y, r, r); }
+  ctx.globalAlpha = k;
+  if (border) { ctx.lineWidth = 16; ctx.strokeStyle = '#111'; ctx.strokeRect(8, 8, W - 16, H - 16); }
+  ctx.restore();
+}
+function speedLines(cx = 640, cy = 360, n = 60, r0 = 220, col = '#111', seed = 0) {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.strokeStyle = col;
+  for (let i = 0; i < n; i++) { const a = hash(i + seed + BOIL) * TAU, r = r0 + hash(i + 9 + BOIL) * 120; ctx.lineWidth = 1 + hash(i + 3) * 5; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r); ctx.lineTo(cx + Math.cos(a) * 1500, cy + Math.sin(a) * 1500); ctx.stroke(); }
+  ctx.restore();
+}
+function sfxText(s, x, y, size, rot = -.1, col = '#fff', sc = INK) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); txt(s, 0, 0, size, col, { font: TVFONT, style: 'italic', weight: 900, stroke: size / 6, sc }); ctx.restore();
+}
+function runEpisode(list, opts = {}) {
+  const scenes = list.map(compileScene);
+  let off = 0; for (const sc of scenes) { sc.off = off; off += sc.dur; }
+  EP = { scenes, dur: off, cur: 0 }; SCENE = scenes[0];
+  const $ = id => document.getElementById(id);
+  const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  const idxAt = t => { let i = 0; while (i < scenes.length - 1 && t >= scenes[i + 1].off) i++; return i; };
+  $('scrub').max = EP.dur;
+  const chap = $('chap');
+  if (chap) {
+    chap.innerHTML = scenes.map((s, i) => `<option value="${i}">${s.title || s.id}</option>`).join('');
+    chap.onchange = () => { stopVO(); T = scenes[+chap.value].off + .001; started = true; setScene(); updateUI(); };
+    if (scenes.length < 2) chap.hidden = true;
+  }
+  const setScene = () => { const i = idxAt(T); if (i !== EP.cur || SCENE !== scenes[i]) { EP.cur = i; SCENE = scenes[i]; queueClips(); if (chap) chap.value = i; } };
+  const updateUI = () => {
+    $('play').textContent = playing ? '❚❚ Pause' : '▶ Play';
+    $('big').hidden = playing || started;
+    $('lang').textContent = lang === 'el' ? 'EN' : 'ΕΛ';
+    $('snd').textContent = soundOn ? '🔊' : '🔇';
+    $('vo').style.opacity = voOn ? 1 : .45;
+  };
+  const play = () => { if (T >= EP.dur) T = 0; setScene(); ensureAudio(); playing = true; started = true; updateUI(); };
+  const pause = () => { playing = false; stopVO(); updateUI(); };
+  $('big').onclick = play;
+  $('play').onclick = () => playing ? pause() : play();
+  $('restart').onclick = () => { stopVO(); T = 0; play(); };
+  $('scrub').oninput = e => { stopVO(); T = +e.target.value; started = true; setScene(); updateUI(); };
+  $('lang').onclick = () => { lang = lang === 'el' ? 'en' : 'el'; updateUI(); };
+  $('snd').onclick = () => { soundOn = !soundOn; if (soundOn) ensureAudio(); else stopVO(); updateUI(); };
+  $('vo').onclick = () => { voOn = !voOn; if (!voOn) stopVO(); updateUI(); };
+  $('fs').onclick = () => { document.fullscreenElement ? document.exitFullscreen() : $('stage').requestFullscreen?.(); };
+  window.addEventListener('keydown', e => {
+    if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play(); }
+    if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') { stopVO(); T = clamp(T + (e.code === 'ArrowRight' ? 5 : -5), 0, EP.dur); started = true; setScene(); updateUI(); }
+  });
+  const draw = (t) => {
+    const sc = SCENE, lt = t - sc.off;
+    SEED = 0; BOIL = Math.floor(lt * 8);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.filter = 'none'; ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = window.CLEAR_COL || '#000'; ctx.fillRect(0, 0, W, H);          // every frame starts from a clean canvas: nothing leaks from the previous one
+    sc.render(lt, sc.M, sc);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1;
+    if (sc.fade) {
+      const f = Math.max(sc.fadeIn === false ? 0 : 1 - prog(lt, 0, .35), sc.fadeOut === false ? 0 : prog(lt, sc.dur - .35, sc.dur));
+      if (f > 0) { ctx.fillStyle = `rgba(0,0,0,${f})`; ctx.fillRect(0, 0, W, H); }
+    }
+    drawSubs(lt);
+  };
+  let last = null;
+  const frame = now => {
+    if (last == null) last = now;
+    const dt = Math.min(.05, (now - last) / 1000); last = now; FLAP = now / 1000;
+    if (playing) {
+      const sc = SCENE, prev = T - sc.off;
+      // hold at the end of the current line while its voice is still going
+      const cur = sc.lines.find(l => prev >= l.a && prev < l.b);
+      const hold = speaking && cur && prev + dt >= cur.b - .02 && performance.now() - speakStart < speakMax * 1000;
+      if (!hold) T += dt;
+      if (T >= sc.off + sc.dur && EP.cur < scenes.length - 1) { T = sc.off + sc.dur; }
+      const lt = Math.min(T - sc.off, sc.dur);
+      if (soundOn && AC) for (const [et, fn] of sc.events) if (et > prev && et <= lt) fn();
+      sc.lines.forEach((L, i) => { if (L.a > prev && L.a <= lt) voiceLine(sc, L, i); });
+      if (soundOn && AC && lt > 0) {
+        const i = sc.lines.findIndex(l => lt >= l.a && lt < l.b), L = sc.lines[i];
+        if (L && !hasClip(sc, i) && !pendingKey && (!voOn || !greekVoice) && Math.floor(lt / .085) > Math.floor(prev / .085)) tone(voiceInfo(sc, L.who).babble * (.85 + Math.random() * .35), .07, 'triangle', .04, .9 + Math.random() * .3);
+      }
+      if (T >= EP.dur) { T = EP.dur; pause(); }
+      setScene();
+    }
+    if (AC && !(window.OfflineAudioContext && AC instanceof OfflineAudioContext)) {
+      const lt = T - SCENE.off, a = SCENE.ambience ? SCENE.ambience(lt, SCENE.M) : {}, n = AC.currentTime, on = soundOn && playing;
+      setAmbience(a, n, on);
+    }
+    draw(started ? T : (opts.poster ?? scenes[0].poster ?? 0));
+    $('scrub').value = T; $('time').textContent = `${fmt(T)} / ${fmt(EP.dur)}`;
+    requestAnimationFrame(frame);
+  };
+  window.renderAt = t => { started = true; T = t; setScene(); updateUI(); draw(t); return { scene: SCENE.id, local: t - SCENE.off }; };
+  window.EPISODE = EP;
+  updateUI(); requestAnimationFrame(frame);
+}
+/* Render the whole soundtrack offline (for the MP4 export): same events, clips and ambience as playback. */
+async function exportAudio(sr = 44100) {
+  const ep = EPISODE, len = Math.ceil(sr * (ep.dur + 1));
+  AC = new OfflineAudioContext(1, len, sr); buildAudio(); soundOn = true;
+  const bufs = {};
+  for (const [k, src] of Object.entries(window.CLIPS || {})) {
+    const bin = atob(src.slice(src.indexOf(',') + 1)), bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    bufs[k] = await AC.decodeAudioData(bytes.buffer);
+  }
+  const step = .05; let lastA = '';
+  for (const sc of ep.scenes) {
+    SCENE = sc;
+    for (let lt = 0; lt < sc.dur; lt += step) {
+      const prev = lt - step, t = sc.off + lt;
+      for (const [et, fn] of sc.events) if (et > prev && et <= lt) { AT = sc.off + et; fn(); }
+      sc.lines.forEach((L, i) => { if (L.a > prev && L.a <= lt) { const k = clipKey(sc, i), b = bufs[k]; if (b) { const s = AC.createBufferSource(); s.buffer = b; s.connect(clipOut(k)); s.start(sc.off + L.a); } } });
+      const a = sc.ambience ? sc.ambience(lt, sc.M) : {}, key = JSON.stringify(a);
+      if (key !== lastA) { setAmbience(a, t); lastA = key; }
+    }
+  }
+  AT = null;
+  const out = (await AC.startRendering()).getChannelData(0);
+  const wav = new DataView(new ArrayBuffer(44 + out.length * 2)), str = (o, s) => { for (let i = 0; i < s.length; i++) wav.setUint8(o + i, s.charCodeAt(i)); };
+  str(0, 'RIFF'); wav.setUint32(4, 36 + out.length * 2, true); str(8, 'WAVEfmt '); wav.setUint32(16, 16, true); wav.setUint16(20, 1, true); wav.setUint16(22, 1, true);
+  wav.setUint32(24, sr, true); wav.setUint32(28, sr * 2, true); wav.setUint16(32, 2, true); wav.setUint16(34, 16, true); str(36, 'data'); wav.setUint32(40, out.length * 2, true);
+  let peak = 0; for (let i = 0; i < out.length; i++) peak = Math.max(peak, Math.abs(out[i]));
+  const gainK = peak > .98 ? .98 / peak : 1;
+  for (let i = 0; i < out.length; i++) wav.setInt16(44 + i * 2, Math.max(-1, Math.min(1, out[i] * gainK)) * 32767, true);
+  return new Blob([wav], { type: 'audio/wav' });
+}
+function runScene(cfg) { runEpisode([cfg], { poster: cfg.poster }); }
+
+</script>
+<script>
+/* =========================================================
+   «Η Έξυπνη Σίτα» – character rig
+   Local coords: hips at (0,0), up is -y. Shoulders ≈ -120, head ≈ -200.
+   person(x, y, scale, design, state)
+   state.part: 'legs' | 'body' | 'arms' | 'all' (lets a table sit between body and arms)
+   ========================================================= */
+const CAST = {
+  mimis:   { skin: '#efc9a6', hair: 'bald', beard: 'goatee', beardCol: '#4a3a30', top: 'hoodie', topCol: '#29272d', print: true, lipRing: true, earRing: true, brow: '#4a3a30', rx: 50, ry: 58, legs: '#2c2c33', shoes: '#f2f2f2' },
+  giorgos: { skin: '#d8a47c', hair: 'swoop', hairCol: '#211a17', beard: 'trim', beardCol: '#231a16', top: 'tee', topCol: '#f4f3ee', shades: true, brow: '#1b1411', browW: 6, rx: 46, ry: 55, legs: '#6b7048', shoes: '#2d2a26' },
+  giannos: { skin: '#dcaa84', hair: 'quiff', hairCol: '#1d1613', beard: 'full', beardCol: '#221914', top: 'tee', topCol: '#34425c', brow: '#1d1613', browW: 6, rx: 46, ry: 55, legs: '#3e4a5e', shoes: '#9aa0a8' },
+  vasilis: { skin: '#d39a70', hair: 'old', hairCol: '#ebe7df', beard: 'stubble', mustache: '#e8e4dc', top: 'tank', topCol: '#f6f4ee', belly: true, brow: '#d9d4c8', rx: 48, ry: 54, legs: '#3d5f8f', shoes: '#2b6fb3' },
+  maria:   { skin: '#e7b994', hair: 'bun', hairCol: '#3b2a22', top: 'tank', topCol: '#b9477a', earrings: true, lips: '#b5475a', brow: '#3b2a22', rx: 44, ry: 52, legs: '#333', shoes: '#333' },
+  christos: { skin: '#e2b590', hair: 'short', hairCol: '#1e1714', beard: 'chin', beardCol: '#211813', mustache: '#211813', top: 'hoodie', topCol: '#3f5f9e', knit: true, aviators: true, brow: '#1e1714', browW: 5, rx: 44, ry: 58, legs: '#2e3440', shoes: '#e9e6df' },
+  kostas:  { skin: '#e4b48e', hair: 'short', hairCol: '#2a1f19', beard: 'none', mustache: '#3a2a20', thinMus: true, top: 'hoodie', topCol: '#b8e02c', brow: '#2a1f19', rx: 46, ry: 55, legs: '#33363d', shoes: '#1e1e22', rings: true },
+  myrsini: { skin: '#ecc19c', hair: 'long', hairCol: '#5a3a26', top: 'tank', topCol: '#7fc4b8', earrings: true, lips: '#c0606a', brow: '#5a3a26', rx: 44, ry: 52, legs: '#f2efe6', shoes: '#c98a5a' },
+  vangelio: { skin: '#d9a47e', hair: 'scarf', hairCol: '#2c2a33', scarfCol: '#2c2a33', top: 'apron', topCol: '#5a4a6a', apronCol: '#f1ead8', brow: '#bdb4a6', browW: 6, rx: 48, ry: 52, legs: '#2c2a33', shoes: '#2c2a33', lines: true },
+};
+/* a person lying / tilted: pivot at the hips */
+function personRot(x, y, s, c, st, rot) { ctx.save(); ctx.translate(x, y); ctx.rotate(rot); person(0, 0, s, c, st); ctx.restore(); }
+function tsipouro(x, y, s = 1, fill = .5) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  poly([[-9, -40], [9, -40], [9, -24], [14, -14], [14, 18], [-14, 18], [-14, -14], [-9, -24]], 'rgba(220,235,240,.8)', { lw: 3, w: .3 });
+  poly([[-13, 18 - 32 * fill], [13, 18 - 32 * fill], [13, 17], [-13, 17]], 'rgba(250,250,245,.9)', { lw: 0 });
+  rect(-8, -46, 16, 7, '#2a6fb3', { lw: 2.5, w: .2 });
+  rect(-12, -8, 24, 16, '#f2e6c8', { lw: 2, w: .2 }); txt('ΤΣΙΠΟΥΡΟ', 0, 0, 5, '#8a2a2a', { font: TVFONT, weight: 900 });
+  ctx.restore();
+}
+function sketchbook(x, y, rot = 0, open = false) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  if (open) { rect(-44, -30, 44, 60, '#fbf8ef', { lw: 3, w: .3 }); rect(0, -30, 44, 60, '#fbf8ef', { lw: 3, w: .3 }); for (let i = 0; i < 4; i++) curve([[6, -18 + i * 12], [36, -20 + i * 12]], 1.5, '#8a8a8a', { w: .8 }); rect(-38, -24, 32, 22, null, { lw: 1.5 }); rect(-38, 2, 32, 22, null, { lw: 1.5 }); }
+  else { rect(-24, -32, 48, 64, '#2b2b30', { lw: 3, w: .3 }); rect(-24, -32, 8, 64, '#c0392b', { lw: 0 }); }
+  ctx.restore();
+}
+function slipper(x, y, rot = 0, s = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s, s);
+  blob(0, 0, 30, 12, '#6a3a5a', { lw: 3.5, w: .5 });
+  poly([[-4, -10], [22, -12], [26, 4], [-2, 6]], '#8a4a7a', { lw: 3, w: .4 });
+  for (let i = 0; i < 3; i++) blob(6 + i * 6, -4, 2, 2, '#e8c8e0', { lw: 0 });
+  ctx.restore();
+}
+function laptop(x, y, s = 1, screen = '#1d2a36', open = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  poly([[-60, 0], [60, 0], [70, 10], [-70, 10]], '#b8bcc4', { lw: 3, w: .3 });
+  poly([[-56, 0], [56, 0], [56 - 4, -76 * open], [-56 + 4, -76 * open]], '#9aa0aa', { lw: 3, w: .3 });
+  if (open > .5) poly([[-50, -6], [50, -6], [48, -70], [-48, -70]], screen, { lw: 0, w: .2 });
+  ctx.restore();
+}
+/* Κώστας's beer: a plain can (no brand), silver with an amber band */
+function beerCan(x, y, s = 1, rot = 0) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s, s);
+  rect(-11, -34, 22, 44, '#c9ced6', { lw: 3, w: .3 });
+  rect(-11, -24, 22, 22, '#d9a62b', { lw: 2, w: .2 });
+  txt('ΜΠΥΡΑ', 0, -13, 5.5, '#fff', { font: TVFONT, weight: 900 });
+  blob(0, -34, 11, 3, '#e6e9ee', { lw: 2.5, w: .2 }); blob(3, -35, 3, 1.4, '#555', { lw: 0 });
+  ctx.restore();
+}
+/* IQOS ILUMA: the slim holder with a TEREA stick in it, LED ring near the top.
+   led: 'white' (on), 'blink' (battery empty), 'red' (hacked by the σίτα), 'off' */
+function iqos(x, y, s = 1, rot = 0, led = 'white', t = 0) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s, s);
+  rect(-3.5, -46, 7, 14, '#efe6cf', { lw: 2, w: .1 });                 // TEREA stick
+  rect(-3.5, -40, 7, 3, '#c8a24a', { lw: 0 });                           // its coloured band
+  poly([[-6, -32], [6, -32], [6, 14], [-6, 14]], '#4a5058', { lw: 2.5, w: .2 });   // holder
+  blob(0, 14, 6, 2, '#3a3f46', { lw: 2, w: .1 });
+  const on = led === 'red' || led === 'white' || (led === 'blink' && Math.sin(t * 9) > 0);
+  const col = led === 'red' ? '#ff2a2a' : '#f4f6ff';
+  if (led !== 'off') curve([[-5, -26], [5, -26]], 2.5, on ? col : '#2a2e34', { w: 0 });
+  if (on && led !== 'off') blob(0, -26, 3, 2, col, { lw: 0, glow: col, gb: led === 'red' ? 18 : 8 });
+  ctx.restore();
+}
+/* IQOS ILUMA pocket charger (the holder slides into it) */
+function iqosCharger(x, y, s = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  rect(-15, -30, 30, 56, '#4a5058', { lw: 3, w: .3 }); curve([[-9, -24], [9, -24]], 2, '#8a9098', { w: 0 });
+  ctx.restore();
+}
+function pencil(x, y, rot = -2.3) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  rect(0, -3, 30, 6, '#f2c230', { lw: 2, w: .1 }); poly([[30, -3], [38, 0], [30, 3]], '#e8c89a', { lw: 1.8 }); blob(38, 0, 1.4, 1.4, '#222', { lw: 0 });
+  rect(-4, -3, 4, 6, '#e8878a', { lw: 1.5 });
+  ctx.restore();
+}
+function lighter(x, y, lit = 0) { rect(x - 5, y - 12, 10, 18, '#d8392b', { lw: 2, w: .2 }); if (lit) blob(x, y - 20, 4, 9 * lit, '#ffb23a', { lw: 0, glow: '#ff8a2a', gb: 16 }); }
+
+function freddo(x, y, s = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s);
+  curve([[4, -34], [10, -58], [16, -62]], 3.5, '#d8392b', { w: .3 });
+  poly([[-12, -36], [12, -36], [9, 10], [-9, 10]], 'rgba(226,238,242,.75)', { lw: 3, w: .4 });
+  poly([[-10.5, -18], [10.5, -18], [9, 9], [-9, 9]], '#6b3e1f', { lw: 0, w: .3 });
+  poly([[-11, -26], [11, -26], [10.5, -18], [-10.5, -18]], '#d9b48a', { lw: 0, w: .3 });
+  for (const [a, b] of [[-4, -8], [3, 0], [-2, 4]]) rect(a - 3, b - 3, 6, 6, 'rgba(255,255,255,.7)', { lw: 0 });
+  ctx.restore();
+}
+function cigarette(x, y, rot, t, seed = 0) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+  rect(0, -2.5, 22, 5, '#f7f5ef', { lw: 2, w: .2 }); rect(0, -2.5, 6, 5, '#d9914a', { lw: 0 });
+  blob(23, 0, 2.5, 2.5, '#ff6a2a', { lw: 0, glow: '#ff6a2a', gb: 8 });
+  ctx.restore();
+  for (let i = 0; i < 3; i++) { const p = (t * .45 + i / 3 + seed) % 1; blob(x + Math.cos(rot) * 24 + Math.sin(p * 6 + seed) * 6, y + Math.sin(rot) * 24 - p * 70, 3 + p * 9, 3 + p * 9, `rgba(215,215,215,${.45 * (1 - p)})`, { lw: 0 }); }
+}
+function phone(x, y) { ctx.save(); ctx.translate(x, y); ctx.rotate(-.2); rect(-9, -16, 18, 32, '#1b1b1f', { lw: 2.5, w: .2 }); rect(-7, -13, 14, 24, '#5b87c4', { lw: 0 }); ctx.restore(); }
+
+/* hand-held props registered by later episodes: ITEM_HOOK[name] = (hand, side, state, t) => draw */
+const ITEM_HOOK = {};
+function person(x, y, s, c, st = {}) {
+  const t = st.t || 0, tk = st.talk || 0, part = st.part || 'all', has = p => part === 'all' || part === p;
+  ctx.save(); ctx.translate(x, y); ctx.scale(s * (st.dir || 1), s);
+  if (has('legs') && CLEAN && (st.legs === 'stand' || st.legs === 'walk') && !st.noShadow) blob(0, 150, 64, 10, 'rgba(20,10,20,.16)', { lw: 0, noqa: 1 });   // contact shadow
+  if (has('legs')) personLegs(c, st);
+  if (has('body')) { personBody(c, st); personHead(c, st); }
+  if (has('arms')) personArms(c, st);
+  ctx.restore();
+}
+function personLegs(c, st) {
+  const t = st.t || 0;
+  if (st.legs === 'stand' || st.legs === 'walk') {
+    const sw = st.legs === 'walk' ? Math.sin(t * 9) * 16 : 0;
+    const kk = st.kick || 0;                // 0..1: the right leg swings forward (kick)
+    for (const [side, ph] of [[-1, 1], [1, -1]]) {
+      const k = side > 0 ? kk : 0;
+      const fx = side * 22 + sw * ph + k * 80, fy = 146 - k * 70;
+      limb([[side * 24, 40], [side * 24 + sw * ph * .5 + k * 40, 90 - k * 16], [fx, fy]], 13, c.skin, { w: .4 });
+      blob(fx + 8, fy + 4, 20, 6, c.shoes, { lw: 3, w: .4 });
+      curve([[fx - 4, fy], [fx + 6, fy - 6], [fx + 14, fy + 1]], 3, c.shoes, { w: .2 });
+    }
+    poly([[-54, -6], [54, -6], [58, 60], [4, 60], [0, 30], [-4, 60], [-58, 60]], c.legs, { lw: 4, w: .6 });
+  } else {                                  // seated: only the shins show under a table
+    for (const side of [-1, 1]) {
+      limb([[side * 30, 60], [side * 34, 128]], 16, c.legs, { w: .4 });
+      blob(side * 36 + 8, 132, 20, 8, c.shoes, { lw: 3, w: .4 });
+    }
+  }
+}
+function personBody(c, st) {
+  if (c.hair === 'bun') blob(0, -262, 20, 16, c.hairCol, { lw: 3.5 });
+  const torso = [[-40, -134], [40, -134], [58, -116], [54, 0], [-54, 0], [-58, -116]];
+  if (c.top === 'tank') {
+    poly(torso, c.skin, { smooth: true, lw: 4, w: .6 });
+    poly([[-32, -132], [-20, -132], [-14, -102], [14, -102], [20, -132], [32, -132], [50, -98], [52, 0], [-52, 0], [-50, -98]], c.topCol, { lw: 3.5, w: .6 });
+    if (c.belly) { blob(0, -34, 62, 50, c.topCol, { lw: 3.5, w: .8 }); curve([[-6, -20], [0, -16], [6, -20]], 2, '#c9c3b6'); }
+  } else {
+    poly(torso, c.topCol, { smooth: true, lw: 4, w: .6 });
+    if (c.top === 'hoodie') {
+      poly([[-34, -134], [34, -134], [22, -116], [0, -110], [-22, -116]], '#1f1e22', { lw: 3, w: .4 });
+      curve([[-10, -118], [-12, -86]], 2.5, '#cfcfd4'); curve([[10, -118], [12, -86]], 2.5, '#cfcfd4');
+      if (c.print) {
+        ctx.save(); ctx.globalAlpha = .75;
+        curve([[-34, -70], [-20, -86], [-6, -72], [8, -88], [24, -72], [36, -82]], 3, '#8e8d96', { w: .6 });
+        curve([[-30, -52], [-14, -62], [0, -50], [16, -62], [32, -50]], 3, '#8e8d96', { w: .6 });
+        curve([[-22, -40], [0, -34], [22, -40]], 2.5, '#8e8d96', { w: .6 });
+        ctx.restore();
+      }
+    } else curve([[-16, -132], [0, -120], [16, -132]], 3);
+  }
+  if (c.top === 'apron') poly([[-36, -96], [36, -96], [46, 0], [-46, 0]], c.apronCol, { lw: 3, w: .5 });
+  if (c.knit) for (let i = 0; i < 5; i++) curve([[-44, -110 + i * 22], [0, -106 + i * 22], [44, -110 + i * 22]], 1.6, 'rgba(255,255,255,.25)', { w: .4 });
+  if (c.hair === 'long') { poly([[-48, -150], [-58, -60], [-40, -70], [-36, -150]], c.hairCol, { lw: 3, w: .5 }); poly([[48, -150], [58, -60], [40, -70], [36, -150]], c.hairCol, { lw: 3, w: .5 }); }
+  blob(0, -142, 15, 12, c.skin, { lw: 3.5, w: .4 });
+}
+function personHead(c, st) {
+  const t = st.t || 0, tk = st.talk || 0, rx = c.rx, ry = c.ry, lk = st.look || [0, 0];
+  ctx.save(); ctx.translate(0, -202 + (st.bob || 0)); ctx.rotate(st.tilt || 0);
+  const hood = st.hood ?? c.hood, scarf = c.hair === 'scarf';
+  if (hood) blob(0, -2, rx + 16, ry + 16, c.topCol, { lw: 4, w: .7 });
+  if (scarf) poly([[-rx - 8, -10], [-rx - 4, -ry], [0, -ry - 12], [rx + 4, -ry], [rx + 8, -10], [rx + 2, 30], [0, ry + 14], [-rx - 2, 30]], c.scarfCol, { lw: 4, w: .6 });
+  if (c.hair === 'long') blob(0, -8, rx + 8, ry + 6, c.hairCol, { lw: 3.5, w: .6 });
+  blob(-rx + 1, 4, 9, 13, c.skin, { lw: 3.5, w: .4 }); blob(rx - 1, 4, 9, 13, c.skin, { lw: 3.5, w: .4 });
+  blob(0, 0, rx, ry, c.skin, { lw: 4, w: .7 });
+  if (CLEAN) { ctx.save(); ctx.beginPath(); ctx.ellipse(0, 0, rx - 2, ry - 2, 0, 0, TAU); ctx.clip();       // soft shade on the far side of the face
+    ctx.fillStyle = 'rgba(90,30,40,.09)'; ctx.beginPath(); ctx.ellipse(rx * .75, ry * .25, rx * .8, ry * 1.1, 0, 0, TAU); ctx.fill(); ctx.restore(); }
+  // hair
+  if (c.hair === 'bald') blob(-16, -36, 13, 6, 'rgba(255,255,255,.5)', { lw: 0, rot: -.3 });
+  if (c.hair === 'swoop') {   // styled, side part, volume swept to one side
+    poly([[-rx + 1, -2], [-rx - 3, -30], [-32, -ry - 5], [-6, -ry - 13], [22, -ry - 11], [rx + 3, -ry + 12], [rx + 4, -30], [rx, -6], [rx - 7, -24], [26, -36], [-2, -33], [-24, -25], [-rx + 8, -10]], c.hairCol, { lw: 3.5, w: .5 });
+    curve([[-18, -ry - 4], [-10, -ry + 12]], 2.5, '#4a3a33', { w: .3 });
+  }
+  if (c.hair === 'quiff') {   // messy, pushed up, spiky top
+    poly([[-rx + 1, -4], [-rx, -30], [-rx + 10, -48], [-26, -ry - 7], [-14, -ry - 2], [-5, -ry - 18], [7, -ry - 6], [19, -ry - 16], [28, -ry - 2], [40, -ry + 2], [rx - 2, -32], [rx, -4], [rx - 8, -22], [rx - 16, -30], [8, -36], [-16, -34], [-rx + 14, -28], [-rx + 8, -12]], c.hairCol, { lw: 3.5, w: .5 });
+  }
+  if (c.hair === 'old') { for (const sd of [-1, 1]) poly([[sd * (rx - 2), -24], [sd * (rx + 5), -16], [sd * (rx - 1), -10], [sd * (rx + 4), -2], [sd * (rx - 3), 2], [sd * (rx - 9), -14]], c.hairCol, { lw: 2.5, w: .4 }); blob(-14, -34, 12, 5, 'rgba(255,255,255,.35)', { lw: 0, rot: -.3 }); }
+  if (c.hair === 'short' && !hood) poly([[-rx + 1, -6], [-rx + 2, -32], [-26, -ry - 2], [0, -ry - 6], [26, -ry - 2], [rx - 2, -32], [rx - 1, -6], [rx - 8, -26], [0, -32], [-rx + 8, -26]], c.hairCol, { lw: 3.5, w: .5 });
+  if (c.hair === 'long') poly([[-rx + 1, 0], [-rx + 2, -32], [-22, -ry - 2], [22, -ry - 2], [rx - 2, -32], [rx - 1, 0], [rx - 10, -26], [6, -34], [-20, -22], [-rx + 10, -14]], c.hairCol, { lw: 3.5, w: .5 });
+  if (c.hair === 'bun') poly([[-rx + 1, -2], [-rx + 3, -30], [-20, -ry], [20, -ry], [rx - 3, -30], [rx - 1, -2], [rx - 9, -24], [0, -34], [-rx + 9, -24]], c.hairCol, { lw: 3.5, w: .6 });
+  if (c.shades) { for (const sx of [-16, 16]) { blob(sx, -ry + 4, 11, 7, '#1c1c22', { lw: 2.5, w: .3 }); blob(sx - 4, -ry + 2, 3, 1.5, 'rgba(255,255,255,.6)', { lw: 0 }); } curve([[-5, -ry + 4], [5, -ry + 4]], 2.5); }
+  // beard
+  if (c.beard === 'full') poly([[-rx, -4], [-rx + 3, 24], [-26, ry - 6], [0, ry + 4], [26, ry - 6], [rx - 3, 24], [rx, -4], [rx - 10, 20], [16, 24], [0, 23], [-16, 24], [-rx + 10, 20]], c.beardCol, { lw: 3, w: .6 });
+  if (c.beard === 'trim') poly([[-rx + 1, 4], [-rx + 5, 28], [-24, ry - 4], [0, ry + 1], [24, ry - 4], [rx - 5, 28], [rx - 1, 4], [rx - 7, 24], [18, 40], [0, 43], [-18, 40], [-rx + 7, 24]], c.beardCol, { lw: 2.5, w: .5 });
+  if (c.beard === 'chin') poly([[-9, 40], [9, 40], [6, ry + 4], [-6, ry + 4]], c.beardCol, { lw: 3, w: .5 });
+  if (c.beard === 'goatee') poly([[-11, 38], [11, 38], [8, ry + 2], [-8, ry + 2]], c.beardCol, { lw: 3, w: .5 });
+  if (c.beard === 'stubble') for (let i = 0; i < 26; i++) { const a = Math.PI * (.1 + hash(i) * .8), r = .75 + hash(i + 7) * .2; blob(Math.cos(a) * rx * r, Math.sin(a) * ry * r, 1.3, 1.3, '#b7aea2', { lw: 0, n: 6 }); }
+  // eyes & brows
+  const bl = st.blink ?? blinkAt(t, (c.rx * 7) % 3);
+  eye(-17, -6, 12, lk[0], lk[1], bl, { lid: st.lid }); eye(17, -6, 12, lk[0], lk[1], bl, { lid: st.lid });
+  if (c.lines) { curve([[-34, -2], [-30, 4]], 2, '#a87a5a'); curve([[34, -2], [30, 4]], 2, '#a87a5a'); curve([[-22, 20], [-26, 34]], 2, '#a87a5a'); curve([[22, 20], [26, 34]], 2, '#a87a5a'); }
+  const wearShades = st.shades ?? c.shadesOn, avi = st.aviators ?? c.aviators;
+  if (wearShades) { for (const sx of [-17, 17]) poly([[sx - 15, -16], [sx + 15, -16], [sx + 13, 2], [sx - 13, 4]], '#141418', { lw: 3, w: .3 }); curve([[-2, -12], [2, -12]], 3); blob(-24, -10, 4, 2, 'rgba(255,255,255,.5)', { lw: 0 }); }
+  else if (avi) { for (const sx of [-17, 17]) blob(sx, -5, 14, 12, 'rgba(90,70,40,.72)', { lw: 2.5, sc: '#c9a64a', w: .3 }); curve([[-4, -10], [4, -10]], 2.5, '#c9a64a'); blob(-22, -9, 4, 2, 'rgba(255,255,255,.55)', { lw: 0 }); }
+  const m = { worry: [5, -5], frown: [-5, 6], up: [-5, -5], flat: [0, 0] }[st.brow || 'flat'] || [0, 0];
+  const bw = c.browW || 4.5;
+  curve([[-29, -25 + m[0]], [-7, -25 + m[1]]], bw, c.brow); curve([[7, -25 + m[1]], [29, -25 + m[0]]], bw, c.brow);
+  // nose
+  curve([[2, -3], [9, 13], [0, 16]], 3);
+  // mouth
+  if (tk > .05) blob(0, 31, 11, 2 + tk * 9, c.lips || '#5a1f2b', { lw: 3 });
+  else {
+    const mm = { smirk: [[-9, 30], [2, 32], [11, 27]], smile: [[-11, 28], [0, 35], [11, 28]], frown: [[-9, 33], [0, 29], [9, 33]], open: null }[st.mouth || 'flat'] || [[-9, 31], [0, 32], [9, 31]];
+    if (mm) curve(mm, 3.2, c.lips ? '#8a3140' : INK);
+    else blob(0, 31, 9, 8, '#5a1f2b', { lw: 3 });
+  }
+  if (c.beard === 'full' || c.beard === 'trim' || c.beard === 'goatee') poly([[-18, 23], [0, 18], [18, 23], [12, 27], [0, 24], [-12, 27]], c.beardCol, { lw: 2, w: .3 });
+  if (c.mustache && c.thinMus) curve([[-15, 22], [0, 18], [15, 22]], 3, c.mustache);
+  else if (c.mustache) poly([[-20, 22], [0, 16], [20, 22], [14, 28], [0, 24], [-14, 28]], c.mustache, { lw: 2.5, w: .4 });
+  if (hood) poly([[-rx - 12, 20], [-rx - 10, -30], [-30, -ry - 10], [0, -ry - 14], [30, -ry - 10], [rx + 10, -30], [rx + 12, 20], [rx - 2, 10], [rx - 4, -30], [24, -ry + 4], [0, -ry], [-24, -ry + 4], [-rx + 4, -30], [-rx + 2, 10]], c.topCol, { lw: 3.5, w: .5 });
+  if (c.lipRing) blob(7, 37, 3.5, 3.5, null, { lw: 2.2, sc: '#cfd3d8', w: .1 });
+  if (c.earRing) blob(-rx - 1, 15, 3.5, 3.5, null, { lw: 2.2, sc: '#cfd3d8', w: .1 });
+  if (c.earrings) for (const ex of [-rx - 1, rx + 1]) blob(ex, 18, 4, 6, null, { lw: 2.2, sc: '#e2b43c', w: .1 });
+  ctx.restore();
+}
+function personArms(c, st) {
+  const t = st.t || 0, sleeve = c.top === 'hoodie' ? c.topCol : c.skin;
+  const L = st.L || [-44, -24], R = st.R || [44, -24];
+  const arm = (sh, h, side, item) => {
+    { const dx = h[0] - sh[0], dy = h[1] - sh[1], d = Math.hypot(dx, dy), max = 190; if (d > max) h = [sh[0] + dx * max / d, sh[1] + dy * max / d]; }
+    const mid = [(sh[0] + h[0]) / 2 + side * 20, (sh[1] + h[1]) / 2 + 16];
+    if (item === 'cup') freddo(h[0], h[1] - 4);
+    limb([sh, mid, h], 12, sleeve, { w: .5 });
+    if (c.top === 'tee') { const e = lerp2(sh, mid, .5); limb([[sh[0] + side * 2, sh[1] + 4], e], 20, c.topCol, { w: .3 }); }   // short sleeve down the upper arm
+    if (c.top === 'hoodie') blob(h[0], h[1] + 2, 10, 7, c.topCol, { lw: 3, w: .3 });
+    blob(h[0], h[1], 9, 8, c.skin, { lw: 3, w: .4 });
+    if (c.rings) { blob(h[0] - 3, h[1] - 5, 3, 3, '#d8dbe0', { lw: 1.5 }); blob(h[0] + 4, h[1] - 4, 3, 3, '#d8dbe0', { lw: 1.5 }); }
+    if (st.bandage && side < 0) blob(h[0] + 6, h[1] - 4, 6, 5, '#f7f4ec', { lw: 2 });
+    if (item === 'cig') cigarette(h[0] + side * 4, h[1] - 4, side > 0 ? -.4 : Math.PI + .4, t, side);
+    if (item === 'phone') phone(h[0], h[1] - 10);
+    if (item === 'bottle') tsipouro(h[0], h[1] - 6, .9, st.bottleFill ?? .5);
+    if (item === 'beer') beerCan(h[0], h[1] - 4, .95);
+    if (item === 'iqos') iqos(h[0] + side * 2, h[1] - 10, 1, side * .15, st.iqosLed || 'white', t);
+    if (item === 'pencil') pencil(h[0] - 2, h[1] - 6);
+    if (item === 'sketch') sketchbook(h[0] + side * 6, h[1] - 18, side * .2);
+    if (item === 'slipper') slipper(h[0], h[1] - 14, -1.2 * side, 1);
+    if (item === 'lighter') lighter(h[0], h[1] - 8, st.lit || 0);
+    if (item === 'souvlaki') { limb([[h[0], h[1]], [h[0] + side * 4, h[1] - 50]], 2, '#d9b889', { w: .2 }); for (let i = 0; i < 4; i++) blob(h[0] + side * 3, h[1] - 16 - i * 10, 8, 6, i % 2 ? '#8a4a2a' : '#a55a30', { lw: 2 }); }
+    if (item === 'shirt') poly([[h[0] - 4, h[1] - 10], [h[0] + 60, h[1] - 30 + Math.sin(t * 8) * 8], [h[0] + 64, h[1] + 20 + Math.sin(t * 8 + 1) * 8], [h[0], h[1] + 10]], '#f6f5f0', { lw: 3, w: .6 });
+    if (item === 'cup2') freddo(h[0], h[1] - 4);
+    if (item && ITEM_HOOK[item]) ITEM_HOOK[item](h, side, st, t);   // props added by later episodes (episode2/props2.js)
+    if (item === 'weedbag') {        // a small clear zip bag, pinched at the top, green buds inside
+      const bx = h[0] + side * 2, by = h[1] - 12;
+      poly([[bx - 17, by - 6], [bx + 17, by - 6], [bx + 19, by + 34], [bx - 19, by + 34]], 'rgba(235,245,240,.55)', { lw: 2.5, w: .4 });
+      curve([[bx - 17, by - 1], [bx + 17, by - 1]], 2.5, '#c0392b', { w: .2 });
+      for (let i = 0; i < 6; i++) blob(bx - 10 + (i % 3) * 10 + hash(i) * 3, by + 14 + Math.floor(i / 3) * 10, 6, 5, i % 2 ? '#5f8a3a' : '#7aa84a', { lw: 1.8 });
+    }
+  };
+  arm([-52, -118], L, -1, st.itemL); arm([52, -118], R, 1, st.itemR ?? (st.itemL === 'sketch' ? 'pencil' : null));   // a sketchbook comes with a pencil
+}
+/* world point on a character drawn with person(x, y, s, …): 'forehead' 'face' 'cheek' 'chest' 'belly' 'hand' (right hand at st.R) */
+function anchor(x, y, s, where, st = {}) {
+  const d = st.dir || 1, P = { forehead: [0, -240], face: [0, -205], cheek: [-22, -190], chest: [10, -90], belly: [0, -40], hand: st.R || [44, -24] }[where] || [0, -120];
+  return [x + P[0] * s * d, y + P[1] * s];
+}
+// hand motion helpers
+const slapK = (t, times) => { for (const s of times) if (t >= s && t < s + .35) return Math.sin(prog(t, s, s + .35) * Math.PI); return 0; };
+const lerp2 = (a, b, k) => [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
+
+</script>
+<script>
+/* =========================================================
+   «Η Έξυπνη Σίτα» – shared sets
+   The yard (Μίμης's house) in any light, the plastic table set,
+   the door where the σίτα hangs, and simple interior helpers.
+   World space is 1280×720; scenes move a camera over it.
+   ========================================================= */
+const GROUND = 690, SEAT = 560;
+const POS = { giannos: 460, mimis: 640, giorgos: 820 };
+const DOOR = { x: 1060, top: 482, w: 96, h: 210 };            // the σίτα hangs here
+
+/* ---------- camera helpers ---------- */
+function applyCam(c) { ctx.translate(W / 2, H / 2); ctx.scale(c[2], c[2]); ctx.translate(-c[0], -c[1]); }
+/* cut-based camera: CAMS name → [x,y,zoom]; slow push-in inside each shot */
+function shotCam(sc, t, CAMS, push = .008) {
+  const [st, name] = shotAt(sc, t), c = CAMS[name] || CAMS.wide;
+  return [c[0], c[1], c[2] * (1 + (t - st) * push)];
+}
+const camLerp = (a, b, k) => [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)];
+
+/* ---------- lighting (screen space, after the world is drawn) ---------- */
+const LIGHT = {
+  day: null,
+  dusk: { col: '#ff9a5c', a: .35, dark: 'rgba(60,20,60,.18)' },
+  night: { col: '#3a4a8a', a: .72, dark: 'rgba(5,8,25,.35)' },
+  dawn: { col: '#ffc2a0', a: .25, dark: 'rgba(40,40,80,.1)' },
+  red: { col: '#c02a2a', a: .55, dark: 'rgba(30,0,0,.35)' },
+  blue: { col: '#7080c8', a: .5, dark: 'rgba(20,20,60,.18)' },
+};
+function applyLight(name, k = 1) {
+  const L = LIGHT[name]; if (!L || k <= 0) return;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = L.a * k; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = L.col; ctx.fillRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = k; ctx.fillStyle = L.dark; ctx.fillRect(0, 0, W, H);
+  ctx.restore();
+}
+/* soft additive glow in world space (lamps, LEDs, fire) */
+function glow(x, y, r, col, a = .6) {
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = a;
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, col); g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2); ctx.restore();
+}
+function vignette(a = .5) {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const g = ctx.createRadialGradient(640, 360, 250, 640, 360, 800); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${a})`);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); ctx.restore();
+}
+
+/* ---------- yard pieces ---------- */
+function acroSmall() {
+  poly([[-100, 430], [0, 360], [60, 320], [130, 300], [200, 318], [290, 380], [380, 430]], '#b9a78e', { lw: 3.5, w: .5 });
+  for (const [x, y] of [[60, 314], [130, 294], [200, 312]]) rect(x - 5, y - 12, 10, 12, '#a39179', { lw: 2 });
+}
+function figTree(x, y, t) {
+  limb([[x, y], [x + 10, y - 120], [x - 20, y - 220]], 26, '#9a948a', { w: .6 });
+  limb([[x + 8, y - 130], [x + 90, y - 210]], 14, '#9a948a', { w: .6 });
+  for (const [bx, by, r] of [[-90, -240, 70], [0, -290, 90], [100, -250, 80], [-40, -200, 60], [60, -200, 64], [150, -200, 52]]) blob(x + bx + Math.sin(t + bx) * 2, y + by, r, r * .75, '#4f7a37', { lw: 4, w: 1.5 });
+  for (let i = 0; i < 14; i++) blob(x - 120 + hash(i) * 280, y - 320 + hash(i + 3) * 160, 12, 8, '#6a9848', { lw: 0, rot: hash(i) * 3 });
+  for (let i = 0; i < 5; i++) blob(x - 60 + hash(i + 11) * 180, y - 220 + hash(i + 13) * 60, 7, 8, '#6b3d5e', { lw: 2 });
+}
+function coop(x, y, doorOpen = 0, shake = 0) {
+  ctx.save(); if (shake) ctx.translate(Math.sin(shake * 60) * 4 * (shake > 0), 0);
+  poly([[x, y], [x + 190, y], [x + 190, y - 120], [x, y - 120]], '#b58a5a', { lw: 4 });
+  poly([[x - 12, y - 120], [x + 202, y - 120], [x + 95, y - 170]], '#8f5e3c', { lw: 4 });
+  ctx.save(); ctx.strokeStyle = 'rgba(40,40,40,.45)'; ctx.lineWidth = 1.2;
+  for (let i = 0; i < 18; i++) { ctx.beginPath(); ctx.moveTo(x + 14 + i * 9, y - 104); ctx.lineTo(x + 14 + i * 9 + 30, y - 14); ctx.moveTo(x + 44 + i * 9, y - 104); ctx.lineTo(x + 14 + i * 9, y - 14); ctx.stroke(); }
+  ctx.restore();
+  rect(x + 14, y - 104, 162, 90, null, { lw: 3 });
+  // little door on the right side
+  rect(x + 150, y - 70, 34 * (1 - doorOpen) + 4, 70, doorOpen > .5 ? '#2a2018' : '#a07a4a', { lw: 3, w: .3 });
+  if (doorOpen > 0) rect(x + 150 + 38 * (1 - doorOpen), y - 70, 30 * doorOpen, 70, '#a07a4a', { lw: 3, w: .3 });
+  ctx.restore();
+}
+function chicken(x, y, t, seed, col = '#f3efe6', o = {}) {
+  const peck = o.still ? 0 : Math.max(0, Math.sin(t * 2 + seed * 4)) > .8 ? 10 : 0, d = o.dir || 1;
+  ctx.save(); ctx.translate(x, y); ctx.scale(d * (o.s || 1), o.s || 1);
+  blob(0, -18, 20, 15, col, { lw: 3, w: .5 });
+  poly([[-18, -24], [-30, -38], [-24, -14]], col, { lw: 3, w: .4 });
+  blob(16, -34 + peck, 9, 9, col, { lw: 3, w: .4 });
+  blob(16, -45 + peck, 4, 4, '#d8392b', { lw: 0 });
+  poly([[24, -34 + peck], [31, -31 + peck], [24, -29 + peck]], '#f2a33a', { lw: 2 });
+  blob(18, -36 + peck, 1.6, 1.6, INK, { lw: 0 });
+  if (o.goggles) { blob(18, -37 + peck, 5, 4, '#9ad0ff', { lw: 2 }); curve([[8, -38 + peck], [24, -38 + peck]], 2); }
+  if (!o.noLegs) { curve([[-4, -4], [-4, 4]], 2.5); curve([[4, -4], [4, 4]], 2.5); }
+  ctx.restore();
+}
+function feathers(x, y, t, n = 16, k = 1) {
+  for (let i = 0; i < n; i++) { const a = hash(i) * TAU, r = 30 + hash(i + 4) * 160 * k; blob(x + Math.cos(a) * r + Math.sin(t * 3 + i) * 6, y + Math.sin(a) * r * .6 + k * 40 * hash(i + 2), 6, 3, '#f7f4ee', { lw: 1.5, rot: t * 2 + i }); }
+}
+function house(t, o = {}) {
+  rect(760, 60, 800, 640, '#f3eee2', { lw: 4, w: .6 });
+  rect(740, 42, 840, 22, '#c4643c', { lw: 4, w: .5 });
+  for (let i = 0; i < 26; i++) curve([[748 + i * 32, 44], [748 + i * 32, 62]], 2, '#9c4a2a', { w: .3 });
+  poly([[760, 640], [1560, 640], [1560, 700], [760, 700]], '#cfc4ae', { lw: 3.5, w: .5 });
+  for (let i = 0; i < 12; i++) blob(790 + i * 66, 668, 26, 14, '#bfb39b', { lw: 2.5, w: .8 });
+  // door (Greek blue frame, dark interior; lit at night)
+  rect(1000, 470, 120, 222, '#3f74a6', { lw: 4, w: .4 });
+  rect(1012, 482, 96, 210, o.doorLit ? '#e8c77a' : '#2a2420', { lw: 3, w: .4 });
+  // bougainvillea
+  for (let i = 0; i < 16; i++) blob(960 + hash(i) * 110 + Math.sin(t + i) * 1.5, 420 + hash(i + 4) * 70 - (i % 4) * 10, 20, 15, i % 3 ? '#d63f86' : '#b8306f', { lw: 2.5, w: 1 });
+  for (let i = 0; i < 6; i++) blob(960 + hash(i + 20) * 110, 440 + hash(i + 24) * 60, 12, 8, '#4f7a37', { lw: 0 });
+  // AC unit dripping
+  rect(1200, 330, 130, 80, '#e9e9e4', { lw: 3.5, w: .4 }); blob(1250, 370, 28, 28, '#d2d2cc', { lw: 3 });
+  for (let i = 0; i < 5; i++) curve([[1228 + i * 11, 346], [1228 + i * 11, 394]], 2, '#b8b8b2', { w: .2 });
+  const dp = (t * .8) % 1; blob(1310, 412 + dp * 270, 3, 4, '#8fc5e0', { lw: 0 });
+  blob(1310, 684, 20, 5, 'rgba(90,120,140,.3)', { lw: 0 });
+  // lower window (living room), right of the door
+  rect(1380, 470, 110, 120, o.winLit ? (o.winLit === 'red' ? '#d8403a' : '#e8c77a') : '#2a2420', { lw: 4, w: .4 });
+  curve([[1435, 470], [1435, 590]], 3); curve([[1380, 530], [1490, 530]], 3);
+  // pots (τενεκέδες) with basil & geranium
+  for (const [px, col] of [[1140, '#d8392b'], [1190, '#4f7a37'], [950, '#e0527a']]) { rect(px - 20, 646, 40, 44, '#c8ccd0', { lw: 3, w: .4 }); for (let i = 0; i < 6; i++) blob(px - 16 + hash(i + px) * 32, 632 - hash(i + px + 1) * 24, 10, 8, i % 2 ? col : '#4f7a37', { lw: 2, w: .6 }); }
+}
+function windowFrame(t, shutK, lit) {
+  rect(830, 170, 120, 130, lit ? (lit === 'red' ? '#d8403a' : '#e8c77a') : '#2a2420', { lw: 4, w: .4 });
+  rect(820, 300, 140, 12, '#e3dccb', { lw: 3.5, w: .3 });
+  for (const side of [-1, 1]) {
+    const openX = side < 0 ? 830 - 62 : 950 + 2, closedX = side < 0 ? 830 : 890;
+    const x0 = lerp(openX, closedX, shutK);
+    rect(x0, 168, 60, 134, '#3d8a5a', { lw: 3.5, w: .4 });
+    for (let i = 0; i < 9; i++) curve([[x0 + 6, 180 + i * 13], [x0 + 54, 180 + i * 13]], 2, '#2c6a44', { w: .2 });
+  }
+}
+function clothesline(t) {
+  curve([[240, 190], [500, 214], [760, 196]], 2.5, '#6a6a6a', { w: .3 });
+  for (const [x, w, h, col] of [[300, 60, 80, '#e05a4a'], [380, 70, 60, '#f2d34a'], [470, 50, 90, '#6fa7d8'], [560, 80, 70, '#f4f3ee'], [660, 40, 50, '#b9477a']]) {
+    const y = 200 + (x - 240) * .03 - Math.max(0, x - 500) * .06, sway = Math.sin(t * 1.5 + x) * 3;
+    poly([[x, y], [x + w, y], [x + w + sway, y + h], [x + sway, y + h]], col, { lw: 3, w: .6 });
+    for (const px of [x + 6, x + w - 6]) rect(px - 2, y - 6, 4, 10, '#a37a4a', { lw: 1.5, w: 0 });
+  }
+}
+const SKY = {
+  day: ['#9fd3ea', '#f1ecd6'], blue: ['#2a3470', '#c08aa0'], dusk: ['#5a4a8a', '#ffb070'], night: ['#0b1030', '#26305a'], dawn: ['#8aa6d6', '#ffd9b8'],
+};
+function sky(light, t) {
+  const s = SKY[light] || SKY.day, g = ctx.createLinearGradient(0, -200, 0, 420); g.addColorStop(0, s[0]); g.addColorStop(1, s[1]);
+  ctx.fillStyle = g; ctx.fillRect(-1200, -900, 4000, 2200);
+  if (light === 'night' || light === 'blue') {
+    for (let i = 0; i < 70; i++) { const tw = .5 + .5 * Math.sin(t * 2 + i * 7); blob(-300 + hash(i) * 1900, -200 + hash(i + 50) * 480, 1.6 + tw, 1.6 + tw, '#fff8d8', { lw: 0, n: 6 }); }
+    blob(1180, 20, 34, 34, '#fff6d6', { lw: 0, glow: '#fff6d6', gb: 40 });
+  }
+  if (light === 'dusk') blob(300, 380, 60, 60, '#ffcf6a', { lw: 0, glow: '#ff9a4a', gb: 80 });
+}
+/* the whole yard; o: { light, shut, winLit, doorLit, maria, noChickens, coopDoor, coopShake, fig } */
+function yard(t, o = {}) {
+  const light = o.light || 'day';
+  sky(light, t);
+  acroSmall();
+  for (let i = 0; i < 9; i++) { limb([[-40 + i * 60, 440], [-40 + i * 60, 350]], 3, '#6a8a3a', { w: .5 }); blob(-40 + i * 60, 370, 22, 30, '#5f8a3a', { lw: 3, w: 1 }); blob(-30 + i * 60, 392, 7, 7, '#d8392b', { lw: 2 }); }
+  rect(-400, 430, 1160, 270, '#ebe2cd', { lw: 4, w: .6 });
+  rect(-410, 420, 1180, 16, '#d9ceb4', { lw: 3.5, w: .5 });
+  clothesline(t);
+  figTree(170, 690, t);
+  coop(-80, 690, o.coopDoor || 0, o.coopShake || 0);
+  house(t, o);
+  windowFrame(t, o.shut ?? 0, o.winTop);
+  poly([[-400, 690], [1600, 690], [1600, 800], [-400, 800]], '#d9d0bd', { lw: 0 });
+  curve([[-400, 690], [1600, 690]], 4);
+  curve([[300, 720], [360, 706], [420, 716]], 2, '#b8ad96');
+  if (!o.noChickens) { chicken(40 + Math.sin(t * .3) * 30, 700, t, 1); chicken(250, 712, t, 2, '#b97a4a'); chicken(1340, 706, t, 3); }
+}
+
+/* ---------- the table set ---------- */
+function chair(x, o = {}) {
+  ctx.save(); if (o.fallen) { ctx.translate(x, GROUND); ctx.rotate(o.fallen * 1.3); ctx.translate(-x, -GROUND); }
+  poly([[x - 62, SEAT - 158], [x + 62, SEAT - 158], [x + 56, SEAT - 40], [x - 56, SEAT - 40]], '#efeadb', { lw: 4, w: .5 });
+  for (let i = 0; i < 4; i++) curve([[x - 36 + i * 24, SEAT - 140], [x - 36 + i * 24, SEAT - 60]], 3, '#d7d0bb', { w: .3 });
+  for (const side of [-1, 1]) limb([[x + side * 50, SEAT + 10], [x + side * 62, GROUND]], 8, '#efeadb', { w: .3 });
+  ctx.restore();
+}
+function table(t, o = {}) {
+  if (o.flipped) {        // on its side: a barricade
+    poly([[340, GROUND], [940, GROUND], [940, GROUND - 130], [340, GROUND - 130]], '#f1ede2', { lw: 4, w: .6 });
+    curve([[360, GROUND - 110], [920, GROUND - 110]], 2.5, '#d6d0c0'); curve([[360, GROUND - 20], [920, GROUND - 20]], 2.5, '#d6d0c0');
+    for (const lx of [420, 860]) limb([[lx, GROUND - 130], [lx + 10, GROUND - 250]], 12, '#ece7da', { w: .3 });
+    return;
+  }
+  for (const lx of [400, 880]) limb([[lx, 560], [lx - (lx < 640 ? 10 : -10), GROUND]], 12, '#ece7da', { w: .3 });
+  poly([[370, 538], [910, 538], [928, 556], [352, 556]], '#f1ede2', { lw: 4, w: .5 });
+  rect(352, 556, 576, 12, '#ddd7c7', { lw: 3.5, w: .4 });
+  rect(610, 516, 30, 30, '#c9ced4', { lw: 3, w: .3 }); blob(625, 516, 15, 4, '#8a8f96', { lw: 2.5 });
+  for (let i = 0; i < 3; i++) rect(616 + i * 6, 506 - i * 2, 3, 12, '#f2efe6', { lw: 1.2, w: 0 });
+  rect(540, 526, 34, 20, '#e8e4dc', { lw: 2.5, w: .3 }); rect(540, 526, 34, 7, '#c0392b', { lw: 0 });
+  rect(730, 528, 26, 18, '#1f3a5a', { lw: 2.5, w: .3 });
+  rect(700, 534, 10, 12, '#e2b43c', { lw: 2, w: .2 });
+  if (o.watermelon) { poly([[440, 530], [520, 530], [480, 500]], '#e8404a', { lw: 3 }); curve([[440, 530], [520, 530]], 5, '#4f8a3a'); for (let i = 0; i < 3; i++) blob(470 + i * 10, 518, 2, 3, INK, { lw: 0 }); }
+}
+/* seated trio around the table; S = { giannos:{...state}, mimis:{...}, giorgos:{...} } (missing = empty chair) */
+function tableScene(t, S, o = {}) {
+  for (const k in POS) chair(POS[k], { fallen: o.fallen && o.fallen[k] });
+  for (const k in POS) if (S[k] && !(o.fallen && o.fallen[k])) person(POS[k], SEAT, 1, CAST[k], { ...S[k], part: 'legs' });
+  for (const k in POS) if (S[k] && !(o.fallen && o.fallen[k])) person(POS[k], SEAT, 1, CAST[k], { ...S[k], part: 'body' });
+  table(t, o);
+  if (!o.noCups) { freddo(470, 540); freddo(836, 540); }
+  for (const k in POS) if (S[k] && !(o.fallen && o.fallen[k])) person(POS[k], SEAT, 1, CAST[k], { ...S[k], part: 'arms' });
+}
+/* standing person with feet on the ground */
+const standY = (s = 1) => GROUND - 150 * s;
+function stand(x, who, s, st) { person(x, standY(s), s, CAST[who], { legs: 'stand', ...st }); }
+
+/* ---------- interiors ---------- */
+function room(o = {}) {
+  const wall = o.wall || '#e9dcc4', floor = o.floor || '#b88a5a', fy = o.floorY ?? 560;
+  ctx.fillStyle = wall; ctx.fillRect(-600, -400, 2600, fy + 400);
+  if (o.stripe) { ctx.fillStyle = o.stripe; ctx.fillRect(-600, fy - 150, 2600, 150); curve([[-600, fy - 150], [2000, fy - 150]], 3, 'rgba(0,0,0,.3)'); }
+  ctx.fillStyle = floor; ctx.fillRect(-600, fy, 2600, 800);
+  if (o.tiles) { ctx.strokeStyle = 'rgba(0,0,0,.18)'; ctx.lineWidth = 2; for (let i = -10; i < 40; i++) { ctx.beginPath(); ctx.moveTo(i * 70, fy); ctx.lineTo(i * 70 - 200, fy + 300); ctx.stroke(); } for (let j = 1; j < 6; j++) { ctx.beginPath(); ctx.moveTo(-600, fy + j * j * 12); ctx.lineTo(2000, fy + j * j * 12); ctx.stroke(); } }
+  curve([[-600, fy], [2000, fy]], 4);
+}
+function doorway(x, y, w = 140, h = 300, inside = '#2a2420', open = 1) {
+  rect(x - w / 2 - 10, y - h - 10, w + 20, h + 10, '#f4f1ea', { lw: 4, w: .4 });
+  rect(x - w / 2, y - h, w, h, inside, { lw: 3, w: .4 });
+  if (open < 1) rect(x - w / 2, y - h, w * (1 - open), h, '#c9a57a', { lw: 3, w: .4 });
+}
+function frameText(s, x, y, size = 22, col = '#fff') { txt(s, x, y, size, col, { font: TVFONT, style: 'italic', weight: 900, stroke: size / 4 }); }
+/* on-screen caption for montages (screen space) */
+function caption(s, a = 1, y = 70) {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = a;
+  ctx.font = `italic 900 34px ${TVFONT}`; const w = ctx.measureText(s).width + 50;
+  ctx.fillStyle = '#ffd23f'; ctx.beginPath(); ctx.moveTo(640 - w / 2 + 12, y - 26); ctx.lineTo(640 + w / 2 + 12, y - 26); ctx.lineTo(640 + w / 2 - 12, y + 26); ctx.lineTo(640 - w / 2 - 12, y + 26); ctx.closePath(); ctx.fill();
+  ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.stroke();
+  txt(s, 640, y + 1, 34, '#e8392b', { font: TVFONT, style: 'italic', weight: 900 });
+  ctx.restore();
+}
+
+/* ---------- blocking helpers ---------- */
+const ph = (t, m, a = 0, b = 0) => m ? prog(t, m.a + a, m.b + b) : 0;          // progress through a mark
+const inM = (t, m, a = 0, b = 0) => !!m && t >= m.a + a && t < m.b + b;
+function speaker(t) { const L = SCENE.lines.find(l => t >= l.a - .2 && t < l.b + .3); return L ? L.who : null; }
+/* look from x toward whoever is speaking (X = { who: x }), else `rest` */
+function lookAtSpeaker(t, me, X, rest = [0, .1]) {
+  const s = speaker(t); if (!s || s === me || X[s] == null) return rest;
+  return [clamp((X[s] - X[me]) / 150, -1, 1), .1];
+}
+/* piecewise position over time: keys [[t, x], ...] → [x, moving] */
+function path(t, keys) {
+  if (t <= keys[0][0]) return [keys[0][1], false];
+  for (let i = 0; i < keys.length - 1; i++) { const [t0, x0] = keys[i], [t1, x1] = keys[i + 1]; if (t < t1) return [lerp(x0, x1, ease(prog(t, t0, t1))), x0 !== x1]; }
+  return [keys[keys.length - 1][1], false];
+}
+/* arm positions (relative to hips) */
+const ARM = {
+  rest: [[-44, -24], [44, -24]], hips: [[-58, -40], [58, -40]], up: [[-60, -300], [60, -300]], shrug: [[-80, -130], [80, -130]],
+  chest: [[-40, -90], [40, -90]], point: [[-44, -24], [110, -150]], wave: [[-44, -24], [90, -230]], face: [[-20, -170], [20, -170]],
+};
+/* a talking gesture for the right hand */
+const gesture = (t, tk, base = [44, -24]) => tk > 0 ? [70 + Math.sin(t * 5) * 14, -90 + Math.sin(t * 7) * 16] : base;
+/* act title card (screen space), k = 0..1 through its duration */
+function actCard(k, num, title, sub) {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = '#16111d'; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(255,255,255,.08)'; ctx.lineWidth = 2;
+  for (let x = 10; x < W; x += 14) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  const p = back(clamp(k * 3)), a = 1 - prog(k, .85, 1);
+  ctx.globalAlpha = a; ctx.translate(640, 330); ctx.scale(p, p); ctx.rotate(-.04);
+  txt(num, 0, -90, 40, '#ffd23f', { font: TVFONT, style: 'italic', weight: 900 });
+  txt(title, 0, 10, 120, '#e8392b', { font: TVFONT, style: 'italic', weight: 900, stroke: 14, sc: '#fff' });
+  if (sub) txt(sub, 0, 110, 30, '#fffaf0', { font: TVFONT, style: 'italic', weight: 700 });
+  ctx.restore();
+}
+/* a little synth band: klarino phrase in Hijaz, off-key drunk singing */
+function klarino(vol = .03, delay = 0) {
+  const sc = [0, 1, 4, 5, 7, 8, 11, 12], seq = [4, 5, 4, 3, 2, 1, 2, 3, 4, 3, 1, 0];
+  seq.forEach((n, i) => { tone(392 * 2 ** (sc[n] / 12), .32, 'sawtooth', vol, 1.003, delay + i * .26); tone(392 * 2 ** (sc[n] / 12) * 2, .3, 'sine', vol * .4, 1, delay + i * .26); });
+}
+function drunkSing(vol = .04, delay = 0) {
+  for (let i = 0; i < 10; i++) tone(220 * 2 ** ((Math.floor(Math.random() * 7) + (Math.random() < .3 ? .5 : 0)) / 12), .34, 'triangle', vol, .97 + Math.random() * .06, delay + i * .3);
+}
+
+</script>
+<script>
+/* =========================================================
+   «Η Έξυπνη Σίτα» – the effects layer (from the Episode 2 remake on)
+   Everything here is a pure function of time: a particle's position is computed from its spawn time,
+   never simulated frame by frame, so any frame can be rendered alone (the QA's NONDET check stays clean).
+   Load after engine.js / characters.js / sets.js.
+   World-space helpers draw with the current camera; screen-space ones (flash, impact, foreground) reset it.
+   ========================================================= */
+
+const fxr = (i, s = 0) => hash(i * 12.9898 + s * 78.233 + 1.7);
+
+/* ---------- particles ----------
+   fxBurst(t, t0, x, y, o): n particles thrown from (x, y) at t0.
+   o: n, speed, dir (radians, default up), spread (radians), grav (px/s²), drag, life (s), size, col, seed,
+      kind: 'spark' | 'ember' | 'debris' | 'smoke' | 'chip' | 'feather' | 'dust' | 'glass' | 'drop' | 'tile' */
+function fxBurst(t, t0, x, y, o = {}) {
+  const dt = t - t0, life = o.life || 1;
+  if (dt < 0 || dt > life * 1.05) return;
+  const n = o.n || 24, sp = o.speed ?? 420, grav = o.grav ?? 900, dir = o.dir ?? -Math.PI / 2, spread = o.spread ?? Math.PI * 2;
+  const seed = (o.seed || 0) + Math.floor(t0 * 97), kind = o.kind || 'spark', drag = o.drag ?? 2.2, size = o.size || 1;
+  ctx.save();
+  if (kind === 'spark' || kind === 'ember') ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < n; i++) {
+    const li = life * (.45 + .55 * fxr(i, seed + 2));
+    if (dt > li) continue;
+    const k = dt / li, a = dir + (fxr(i, seed) - .5) * spread, v = sp * (.3 + .7 * fxr(i, seed + 1));
+    const d = (1 - Math.exp(-drag * dt)) / drag;                      // distance with air drag
+    const g = kind === 'smoke' ? -grav * .08 : kind === 'feather' ? grav * .05 : grav;
+    const px = x + Math.cos(a) * v * d, py = y + Math.sin(a) * v * d + .5 * g * dt * dt;
+    const vx = Math.cos(a) * v * Math.exp(-drag * dt), vy = Math.sin(a) * v * Math.exp(-drag * dt) + g * dt;
+    const r = fxr(i, seed + 3);
+    if (kind === 'spark') {
+      const L = .035, w = (2.8 * (1 - k) + .6) * size;
+      ctx.strokeStyle = o.col || `rgba(255,${Math.round(230 - 150 * k)},${Math.round(120 - 110 * k)},${1 - k * .6})`;
+      ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - vx * L, py - vy * L); ctx.stroke();
+    } else if (kind === 'ember') {
+      ctx.fillStyle = `rgba(255,${Math.round(180 - 120 * k)},60,${1 - k})`;
+      ctx.beginPath(); ctx.arc(px + Math.sin(t * 9 + i) * 4, py, (2.4 - k * 1.6) * size, 0, TAU); ctx.fill();
+    } else if (kind === 'smoke') {
+      const rr = (18 + 70 * k) * size * (.6 + .8 * r);
+      ctx.globalAlpha = (o.alpha ?? .55) * (1 - k) * Math.min(1, dt * 8);
+      ctx.fillStyle = o.col || (r > .5 ? '#5a5652' : '#77726c');
+      ctx.beginPath(); ctx.arc(px, py, rr, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+    } else if (kind === 'dust') {
+      ctx.globalAlpha = .6 * (1 - k); ctx.fillStyle = o.col || '#cbb896';
+      ctx.beginPath(); ctx.ellipse(px, py, (14 + 50 * k) * size, (8 + 22 * k) * size, 0, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+    } else {
+      // solid bits that tumble: debris, chips, feathers, glass, drops, tiles
+      ctx.save(); ctx.translate(px, py); ctx.rotate((r - .5) * 20 * dt + r * 6);
+      const s = size * (.6 + .8 * r);
+      if (kind === 'feather') { ctx.rotate(Math.sin(t * 5 + i) * .8); blob(0, 0, 9 * s, 3.5 * s, '#f6f2e8', { lw: 1.4 }); }
+      else if (kind === 'chip') { blob(0, 0, 7 * s, 5 * s, '#f2c230', { lw: 1.4 }); }
+      else if (kind === 'glass') { ctx.globalAlpha = 1 - k * .5; poly([[-6 * s, 0], [0, -8 * s], [5 * s, 3 * s]], 'rgba(200,235,255,.85)', { lw: 1 }); }
+      else if (kind === 'drop') { ctx.globalAlpha = 1 - k; blob(0, 0, 3.5 * s, 5 * s, o.col || '#e8b43a', { lw: 0 }); }
+      else if (kind === 'tile') { poly([[-9 * s, -5 * s], [9 * s, -5 * s], [7 * s, 5 * s], [-7 * s, 5 * s]], '#c4643c', { lw: 1.6 }); }
+      else { const c = o.cols ? o.cols[i % o.cols.length] : o.col || '#4a4a52'; poly([[-7 * s, -4 * s], [6 * s, -6 * s], [8 * s, 5 * s], [-5 * s, 6 * s]], c, { lw: 1.6 }); }
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+}
+/* a steady stream: a small burst every `every` seconds between t0 and t1 */
+function fxEmit(t, t0, t1, every, x, y, o = {}) {
+  const life = o.life || 1;
+  const first = Math.max(0, Math.floor((t - life - t0) / every)), last = Math.floor((Math.min(t, t1) - t0) / every);
+  for (let j = first; j <= last; j++) {
+    const ts = t0 + j * every;
+    const px = typeof x === 'function' ? x(ts) : x, py = typeof y === 'function' ? y(ts) : y;
+    fxBurst(t, ts, px, py, { ...o, seed: (o.seed || 0) + j * 7 });
+  }
+}
+
+/* ---------- explosion: flash, fireball, shock ring, sparks, debris, smoke column. s = size ---------- */
+function fxExplosion(t, t0, x, y, s = 1, o = {}) {
+  const dt = t - t0; if (dt < 0 || dt > 3.2) return;
+  fxBurst(t, t0 + .05, x, y - 20 * s, { kind: 'smoke', n: 16, speed: 160 * s, grav: 400, life: 3, size: 1.4 * s, seed: 3 });
+  fxBurst(t, t0, x, y, { kind: 'debris', n: o.debrisN ?? 18, speed: 700 * s, spread: Math.PI * 1.1, grav: 1400, life: 1.6, size: 1.2 * s, cols: o.cols, seed: 5 });
+  // fireball
+  if (dt < 1.1) {
+    // the fireball: dark smoky rim, orange body, a hot yellow-white core that shrinks (normal blending, so it keeps its colour on light sets)
+    const k = dt / 1.1;
+    ctx.save();
+    for (const [layer, col, rs, al] of [[0, '#3a2a24', 1.15, .8], [1, '#e8502a', 1, .95], [2, '#ffa23a', .75, 1], [3, '#fff0a0', .45, 1]]) {
+      if (layer === 3 && k > .35) continue;
+      if (layer === 2 && k > .7) continue;
+      ctx.globalAlpha = al * (1 - k * (layer ? 1 : .6));
+      ctx.fillStyle = col; ctx.beginPath();
+      for (let i = 0; i < 9; i++) {
+        const a = i / 9 * TAU + fxr(i, 9), r = (38 + 34 * fxr(i, 4)) * s * (.35 + k * 1.1) * rs, d = 44 * s * Math.sqrt(k) * rs;
+        const cx = x + Math.cos(a) * d, cy = y - 20 * s + Math.sin(a) * d * .7 - k * 50 * s;
+        ctx.moveTo(cx + r, cy); ctx.arc(cx, cy, r, 0, TAU);
+      }
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+  fxRing(t, t0, x, y, 260 * s, .45);
+  fxBurst(t, t0, x, y, { kind: 'spark', n: 40, speed: 1100 * s, grav: 1200, life: .9, size: 1.2, seed: 7 });
+  fxBurst(t, t0 + .1, x, y - 30 * s, { kind: 'ember', n: 26, speed: 300 * s, grav: -80, life: 2.2, seed: 8 });
+  if (dt < .06) glow(x, y, 220 * s, 'rgba(255,240,200,1)', .8 * (1 - dt / .06));
+  glow(x, y - 20 * s, 260 * s, 'rgba(255,140,40,1)', .7 * Math.max(0, 1 - dt / 1.2));
+}
+/* the expanding shock ring */
+function fxRing(t, t0, x, y, R = 240, dur = .45, col = '255,255,255') {
+  const k = (t - t0) / dur; if (k < 0 || k > 1) return;
+  const e = 1 - (1 - k) * (1 - k);
+  ctx.save(); ctx.strokeStyle = `rgba(${col},${(1 - k) * .8})`; ctx.lineWidth = 14 * (1 - k) + 1;
+  ctx.beginPath(); ctx.ellipse(x, y, R * e, R * e * .55, 0, 0, TAU); ctx.stroke(); ctx.restore();
+}
+/* how bright the frame should flash for a list of hits [[t0, strength]] (use with fxFlash) */
+function fxHitLight(t, hits) { let a = 0; for (const [t0, s] of hits) { const d = t - t0; if (d >= 0 && d < .35) a = Math.max(a, s * (1 - d / .35) ** 2); } return a; }
+function fxFlash(a, col = '255,244,220') {
+  if (a <= 0) return;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = `rgba(${col},${Math.min(1, a) * .55})`; ctx.fillRect(0, 0, W, H); ctx.restore();
+}
+
+/* ---------- laser: glow layers, white core, flicker; sparks and smoke where it lands ---------- */
+function fxBeam(x1, y1, x2, y2, t, o = {}) {
+  const w = o.width || 1, fl = .85 + .15 * Math.sin(t * 90) * Math.sin(t * 37);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
+  for (const [lw, a, col] of [[44, .12, '255,40,40'], [22, .28, '255,60,50'], [9, .7, '255,90,80'], [3.5, 1, '255,245,240']]) {
+    ctx.strokeStyle = `rgba(${col},${a * fl})`; ctx.lineWidth = lw * w; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  }
+  ctx.restore();
+  glow(x1, y1, 60 * w, 'rgba(255,60,60,1)', .8);
+  if (o.hit !== false) {
+    glow(x2, y2, 90 * w, 'rgba(255,120,60,1)', .8);
+    const tt = Math.floor(t * 30) / 30;
+    fxBurst(t, tt, x2, y2, { kind: 'spark', n: 10, speed: 520, spread: Math.PI * 1.2, grav: 1400, life: .4, seed: 31 });
+    fxBurst(t, tt - 1 / 30, x2, y2, { kind: 'spark', n: 10, speed: 520, spread: Math.PI * 1.2, grav: 1400, life: .4, seed: 32 });
+  }
+}
+/* the charge-up before a shot: particles converging on (x, y), a growing core, a lens flare. k 0..1 */
+function fxCharge(t, x, y, k, col = '255,60,60') {
+  if (k <= 0) return;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 40; i++) {
+    const p = (t * 1.6 + fxr(i, 2)) % 1, a = fxr(i, 1) * TAU, r = (1 - p) * 220 * (.5 + fxr(i, 3));
+    ctx.strokeStyle = `rgba(${col},${p * k})`; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * r, y + Math.sin(a) * r); ctx.lineTo(x + Math.cos(a) * (r + 22), y + Math.sin(a) * (r + 22)); ctx.stroke();
+  }
+  ctx.restore();
+  glow(x, y, 30 + 120 * k, `rgba(${col},1)`, .5 + .5 * k);
+  fxFlare(x, y, k);
+}
+/* anamorphic lens flare: a horizontal streak and a few ghosts */
+function fxFlare(x, y, a = 1, col = '255,120,110') {
+  if (a <= 0) return;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  const g = ctx.createLinearGradient(x - 500, y, x + 500, y); g.addColorStop(0, `rgba(${col},0)`); g.addColorStop(.5, `rgba(255,230,230,${.7 * a})`); g.addColorStop(1, `rgba(${col},0)`);
+  ctx.fillStyle = g; ctx.fillRect(x - 500, y - 3 * a, 1000, 6 * a);
+  for (const [d, r, al] of [[-.6, 30, .15], [-1.1, 14, .2], [.5, 22, .12]]) { ctx.fillStyle = `rgba(${col},${al * a})`; ctx.beginPath(); ctx.arc(x + d * (x - 640), y + d * (y - 360), r, 0, TAU); ctx.fill(); }
+  ctx.restore();
+}
+/* a burn mark that stays: pts along the path the beam swept, up to fraction k */
+function fxScorch(pts, k = 1, o = {}) {
+  const n = Math.floor(pts.length * clamp(k)); if (n < 2) return;
+  ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (const [lw, col] of [[o.w || 26, 'rgba(30,20,15,.35)'], [(o.w || 26) * .45, 'rgba(20,12,8,.7)']]) {
+    ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath(); pts.slice(0, n).forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+  }
+  // the freshest part still glows
+  const [hx, hy] = pts[n - 1]; if (o.hot !== false && k < 1) glow(hx, hy, 50, 'rgba(255,120,40,1)', .6);
+  ctx.restore();
+}
+
+/* ---------- electricity and magnetism ---------- */
+function fxArc(x1, y1, x2, y2, t, o = {}) {
+  const seg = 10, j = o.jag || 26, tick = Math.floor(t * 24);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineJoin = 'round';
+  for (const [lw, a] of [[10, .25], [4, .6], [1.6, 1]]) {
+    ctx.strokeStyle = `rgba(${o.col || '140,200,255'},${a})`; ctx.lineWidth = lw; ctx.beginPath();
+    for (let i = 0; i <= seg; i++) {
+      const k = i / seg, off = (i === 0 || i === seg) ? 0 : (fxr(i, tick + (o.seed || 0)) - .5) * j * 2;
+      const px = lerp(x1, x2, k) + off * (y2 - y1) / Math.hypot(x2 - x1, y2 - y1 || 1), py = lerp(y1, y2, k) - off * (x2 - x1) / Math.hypot(x2 - x1, y2 - y1 || 1);
+      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+    }
+    ctx.stroke();
+  }
+  ctx.restore();
+  glow(x2, y2, 50, `rgba(${o.col || '140,200,255'},1)`, .7);
+}
+/* magnetic field: arcs rippling from (x, y) toward angle `dir` */
+function fxMagField(x, y, t, dir = 0, k = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(dir); ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 5; i++) {
+    const p = (t * 1.8 + i / 5) % 1, r = 30 + p * 320;
+    ctx.strokeStyle = `rgba(150,110,255,${(1 - p) * .7 * k})`; ctx.lineWidth = 5 * (1 - p) + 1;
+    ctx.beginPath(); ctx.arc(0, 0, r, -.5, .5); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+/* ---------- fire (better than the old flame): tongues, embers, smoke ---------- */
+function fxFire(x, y, s, t, a = 1) {
+  if (a <= 0) return;
+  fxEmit(t, 0, 1e9, .12, x, y - 30 * s, { kind: 'smoke', n: 2, speed: 40, grav: 500, life: 2.2, size: .8 * s, alpha: .35 * a, spread: .6 });
+  ctx.save(); ctx.globalAlpha *= a;
+  for (let i = 0; i < 6; i++) {
+    const ph = t * (6 + i) + i * 1.7, h = (60 + 30 * Math.sin(ph)) * s * (1 - i * .1), dx = (i - 2.5) * 10 * s;
+    const cols = ['#e8392b', '#ff6a2a', '#ffa23a', '#ffd06a', '#fff2b0', '#ff8a3a'];
+    poly([[x + dx - 16 * s, y], [x + dx - 6 * s + Math.sin(ph) * 6, y - h * .5], [x + dx + Math.sin(ph * 1.3) * 10 * s, y - h], [x + dx + 8 * s, y - h * .45], [x + dx + 16 * s, y]], cols[i], { lw: 0 });
+  }
+  ctx.restore();
+  fxEmit(t, 0, 1e9, .2, x, y - 40 * s, { kind: 'ember', n: 2, speed: 90, grav: -160, life: 1.4, spread: 1 });
+  glow(x, y - 40 * s, 160 * s, 'rgba(255,140,40,1)', .55 * a);
+}
+
+/* ---------- camera ----------
+   fxShake(t, hits): hits = [[t0, amplitude px, duration s], ...] → [dx, dy, rot] (a smooth, decaying wobble; trauma²) */
+function fxShake(t, hits) {
+  let tr = 0;
+  for (const [t0, amp, dur = .5] of hits) { const d = t - t0; if (d >= 0 && d < dur) tr = Math.max(tr, amp * (1 - d / dur) ** 2); }
+  if (!tr) return [0, 0, 0];
+  const n = (f, p) => Math.sin(t * f + p) * .6 + Math.sin(t * f * 2.3 + p * 2) * .4;
+  return [tr * n(53, 1), tr * n(47, 4), tr * .0015 * n(31, 7)];
+}
+/* the camera with the shake applied: c = [x, y, zoom] */
+function fxCam(c, t, hits) { const [dx, dy, r] = fxShake(t, hits); return [c[0] - dx / c[2], c[1] - dy / c[2], c[2], r]; }
+function applyCamFx(c) { ctx.translate(W / 2, H / 2); if (c[3]) ctx.rotate(c[3]); ctx.scale(c[2], c[2]); ctx.translate(-c[0], -c[1]); }
+/* a crash zoom between two cameras over [a, b] (fast in, slow out) */
+function fxCrash(t, a, b, c1, c2) { const k = clamp((t - a) / (b - a)); const e = 1 - Math.pow(1 - k, 4); return [lerp(c1[0], c2[0], e), lerp(c1[1], c2[1], e), lerp(c1[2], c2[2], e)]; }
+
+/* ---------- time: hit-stop and slow motion (animation time only; the sound keeps real time) ----------
+   ops: [{ a, b, rate }]: between a and b the picture runs at `rate` (0 = freeze), then catches up over `catch` s */
+function fxTime(t, ops) {
+  let off = 0;
+  for (const o of ops) {
+    const c = o.catch ?? .25, lost = (o.b - o.a) * (1 - o.rate);
+    if (t <= o.a) continue;
+    if (t < o.b) { off += (t - o.a) * (1 - o.rate); continue; }
+    if (t < o.b + c) { off += lost * (1 - (t - o.b) / c); continue; }
+  }
+  return t - off;
+}
+
+/* ---------- manga beats ---------- */
+/* impact frame: 2–3 frames of inverted ink with radial lines, at t0 */
+function fxImpact(t, t0, x = 640, y = 360, dur = .1) {
+  const d = t - t0; if (d < 0 || d > dur) return;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = 'difference'; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.strokeStyle = d < dur / 2 ? '#000' : '#fff';
+  for (let i = 0; i < 70; i++) { const a = fxr(i, 5) * TAU, r0 = 60 + fxr(i, 6) * 160; ctx.lineWidth = 1 + fxr(i, 7) * 7; ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * r0, y + Math.sin(a) * r0); ctx.lineTo(x + Math.cos(a) * 1600, y + Math.sin(a) * 1600); ctx.stroke(); }
+  ctx.restore();
+}
+/* motion smear behind something fast (world space) */
+function fxSmear(x, y, vx, vy, w = 30, col = '255,255,255') {
+  const g = ctx.createLinearGradient(x, y, x - vx, y - vy); g.addColorStop(0, `rgba(${col},.55)`); g.addColorStop(1, `rgba(${col},0)`);
+  ctx.save(); ctx.strokeStyle = g; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - vx, y - vy); ctx.stroke(); ctx.restore();
+}
+/* letterbox bars for the big moments (k 0..1) */
+function fxLetterbox(k) { if (k <= 0) return; ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = '#000'; const h = 72 * k; ctx.fillRect(0, 0, W, h); ctx.fillRect(0, H - h, W, h); ctx.restore(); }
+
+/* ---------- depth ---------- */
+/* out-of-focus foreground (screen space): fig leaves or grass across a corner. side: 'left' | 'right' | 'bottom' */
+function fxForeground(t, side = 'left', o = {}) {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.filter = `blur(${o.blur ?? 7}px)`;
+  const sway = Math.sin(t * 1.3) * 8;
+  if (o.kind === 'grass') {
+    for (let i = 0; i < 26; i++) { const x = (side === 'right' ? 900 : 0) + i * 15 + fxr(i) * 10, h = 90 + fxr(i, 2) * 110; ctx.strokeStyle = i % 3 ? '#3e5a26' : '#56742e'; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(x, H + 10); ctx.quadraticCurveTo(x + sway, H - h * .6, x + sway * 2 + 10, H - h); ctx.stroke(); }
+  } else {
+    const bx = side === 'right' ? W + 40 : -40, by = side === 'bottom' ? H + 40 : -30, dir = side === 'right' ? -1 : 1;
+    for (let i = 0; i < 9; i++) {
+      const lx = bx + dir * (40 + fxr(i) * 240) + sway, ly = by + (side === 'bottom' ? -1 : 1) * (30 + fxr(i, 3) * 200);
+      ctx.save(); ctx.translate(lx, ly); ctx.rotate(fxr(i, 4) * 3); ctx.fillStyle = i % 2 ? '#2f4a22' : '#3d5e2a';
+      ctx.beginPath(); ctx.ellipse(0, 0, 70, 38, 0, 0, TAU); ctx.fill(); ctx.restore();
+    }
+  }
+  ctx.filter = 'none'; ctx.restore();
+}
+/* god rays from a light source (screen space) */
+function fxRays(x, y, t, a = .25, col = '255,230,170') {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 9; i++) {
+    const ang = .3 + i * .18 + Math.sin(t * .4 + i) * .03, L = 1400, w = .05 + fxr(i) * .05;
+    const g = ctx.createLinearGradient(x, y, x + Math.cos(ang) * L, y + Math.sin(ang) * L); g.addColorStop(0, `rgba(${col},${a})`); g.addColorStop(1, `rgba(${col},0)`);
+    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(ang - w) * L, y + Math.sin(ang - w) * L); ctx.lineTo(x + Math.cos(ang + w) * L, y + Math.sin(ang + w) * L); ctx.fill();
+  }
+  ctx.restore();
+}
+/* heat haze / atmosphere: a warm gradient wash (screen space) */
+function fxGrade(top, bottom, a = .25, mode = 'soft-light') {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = mode; ctx.globalAlpha = a;
+  const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, top); g.addColorStop(1, bottom); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); ctx.restore();
+}
+
+/* ---------- sound design ---------- */
+const FXS = {
+  boom: (s = 1) => { tone(70, .9 * s, 'sine', .22, .35); noise(.8 * s, .5, 600, .7, 'lowpass'); noise(.25, .3, 3000, .6, 'highpass'); },
+  hit: () => { tone(140, .18, 'square', .1, .4); noise(.12, .35, 1800, 1, 'bandpass'); },
+  clang: () => { for (const f of [620, 930, 1370, 2010]) tone(f, 1.1, 'triangle', .05, .98); noise(.08, .35, 4000, 1, 'highpass'); },
+  zap: () => { for (let i = 0; i < 5; i++) tone(900 + i * 300, .06, 'sawtooth', .05, 1.6, i * .03); noise(.25, .15, 5000, 2, 'bandpass'); },
+  laser: (d = 1) => { tone(420, d, 'sawtooth', .05, 1.02); tone(843, d, 'square', .025, .99); noise(d, .06, 2500, 3, 'bandpass'); },
+  charge: (d = 1) => { tone(200, d, 'sawtooth', .05, 6); tone(400, d, 'sine', .04, 5); },
+  whoosh: () => noise(.45, .35, 1200, .8, 'bandpass'),
+  arrow: () => { noise(.25, .25, 3500, 4, 'bandpass'); tone(1800, .12, 'sine', .03, .5); },
+  thud: () => { tone(90, .3, 'sine', .2, .5); noise(.15, .25, 400, .7, 'lowpass'); },
+  crash: () => { noise(.7, .45, 1500, .5, 'lowpass'); for (let i = 0; i < 6; i++) tone(300 + i * 170, .15, 'square', .03, .6, i * .05); },
+  riser: (d = 2) => { tone(110, d, 'sawtooth', .04, 4); noise(d, .08, 800, .7, 'bandpass'); },
+};
+/* the battle score: taiko-ish drums + a bass ostinato + hats, scheduled from one event. bpm, bars (4/4), intensity 0..1 */
+function fxScore(bars = 8, bpm = 132, k = 1, delay = 0) {
+  const b = 60 / bpm, bass = [55, 55, 65.4, 55, 73.4, 65.4, 55, 49];
+  for (let i = 0; i < bars * 4; i++) {
+    const at = delay + i * b;
+    tone(60, .35, 'sine', .22 * k, .45, at);                          // kick on every beat
+    if (i % 2) noise(.18, .22 * k, 1600, .8, 'bandpass', at);           // snare-ish on 2 and 4
+    noise(.05, .06 * k, 8000, .7, 'highpass', at + b / 2);              // hats on the off-beats
+    if (i % 4 === 3) tone(90, .5, 'triangle', .12 * k, .5, at + b * .75);  // a taiko flam into the bar
+    tone(bass[(i >> 1) % bass.length], b * .9, 'sawtooth', .045 * k, 1, at);
+  }
+}
+
+</script>
+<script>
+/* =========================================================
+   «Η Έξυπνη Σίτα» – structured robots (from Episode 4 on)
+   A small pseudo-3D renderer for machines: a real skeleton (bones with local rotations), and parts bound to the
+   bones (boxes, cylinders, spheres, pistons, cables) drawn with cel shading and ink. The same code draws every view
+   (front, 3/4, profile, back) and every pose, so a model sheet and the animation can never disagree.
+   Orthographic projection, painter's sort by depth. Everything is a pure function of its inputs (no state): the
+   frame QA's NONDET check stays clean.
+   Model space: x right, y UP, z towards the camera (a robot at yaw 0 faces the viewer). Units ≈ px at scale 1.
+   Load after engine.js.
+   ========================================================= */
+const R3 = (() => {
+  /* ---------- 3×3 matrices (row-major) ---------- */
+  const I = [1, 0, 0, 0, 1, 0, 0, 0, 1];
+  const rx = a => { const c = Math.cos(a), s = Math.sin(a); return [1, 0, 0, 0, c, -s, 0, s, c]; };
+  const ry = a => { const c = Math.cos(a), s = Math.sin(a); return [c, 0, s, 0, 1, 0, -s, 0, c]; };
+  const rz = a => { const c = Math.cos(a), s = Math.sin(a); return [c, -s, 0, s, c, 0, 0, 0, 1]; };
+  const mm = (A, B) => [
+    A[0] * B[0] + A[1] * B[3] + A[2] * B[6], A[0] * B[1] + A[1] * B[4] + A[2] * B[7], A[0] * B[2] + A[1] * B[5] + A[2] * B[8],
+    A[3] * B[0] + A[4] * B[3] + A[5] * B[6], A[3] * B[1] + A[4] * B[4] + A[5] * B[7], A[3] * B[2] + A[4] * B[5] + A[5] * B[8],
+    A[6] * B[0] + A[7] * B[3] + A[8] * B[6], A[6] * B[1] + A[7] * B[4] + A[8] * B[7], A[6] * B[2] + A[7] * B[5] + A[8] * B[8]];
+  const mv = (A, v) => [A[0] * v[0] + A[1] * v[1] + A[2] * v[2], A[3] * v[0] + A[4] * v[1] + A[5] * v[2], A[6] * v[0] + A[7] * v[1] + A[8] * v[2]];
+  const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const scl = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const norm = a => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+  /* local joint rotation from a pose entry [x, y, z] (radians): R = Rz · Rx · Ry
+     (x = swing forward/back, z = raise sideways, y = twist) */
+  const euler = e => e ? mm(rz(e[2] || 0), mm(rx(e[0] || 0), ry(e[1] || 0))) : I;
+
+  /* ---------- colour ---------- */
+  const hex = c => { const n = parseInt(c.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+  const mix = (a, b, k) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * k)).join(',')})`; };
+  const shadeCache = {};
+  function tones(base) {             // [light, mid, dark, deep]
+    return shadeCache[base] || (shadeCache[base] = [mix(base, '#ffffff', .22), base, mix(base, '#1a1420', .32), mix(base, '#1a1420', .55)]);
+  }
+  const LIGHT = norm([-.45, .7, .55]);
+
+  /* ---------- skeleton ---------- */
+  /* model.bones: [{ name, parent, at: [x,y,z] (joint position in the parent's frame at rest) }], parents first */
+  function solve(model, pose = {}, opt = {}) {
+    const W = {};
+    for (const b of model.bones) {
+      const P = b.parent ? W[b.parent] : { R: opt.rootR || I, p: opt.rootP || [0, 0, 0] };
+      const R = mm(P.R, euler(pose[b.name]));
+      W[b.name] = { R, p: b.parent ? add(P.p, mv(P.R, b.at)) : add(P.p, b.at || [0, 0, 0]) };
+    }
+    return W;
+  }
+
+  /* ---------- the view: model space → screen ---------- */
+  function viewOf(o) {
+    const V = mm(rx(o.pitch || 0), ry(o.yaw || 0)), s = o.s ?? 1, X = o.x ?? 640, Y = o.y ?? 400;
+    return {
+      V, s,
+      proj: p => { const q = mv(V, p); return [X + q[0] * s, Y - q[1] * s, q[2]]; },
+      dir: v => mv(V, v),
+    };
+  }
+
+  /* ---------- geometry of the parts ---------- */
+  const BOX_FACES = [   // [normal, U axis, V axis (V points DOWN on the face as drawn), name]
+    [[0, 0, 1], [1, 0, 0], [0, -1, 0], 'front'], [[0, 0, -1], [-1, 0, 0], [0, -1, 0], 'back'],
+    [[1, 0, 0], [0, 0, -1], [0, -1, 0], 'right'], [[-1, 0, 0], [0, 0, 1], [0, -1, 0], 'left'],
+    [[0, 1, 0], [1, 0, 0], [0, 0, 1], 'top'], [[0, -1, 0], [1, 0, 0], [0, 0, -1], 'bottom']];
+
+  /* world placement of a part: bone frame · part offset · part rotation (+ assembly fly-in) */
+  function place(W, part, asm) {
+    const B = W[part.bone];
+    let R = part.rot ? mm(B.R, euler(part.rot)) : B.R, c = add(B.p, mv(B.R, part.at || [0, 0, 0]));
+    if (asm) {
+      const k = asm.k;
+      if (k < 1) {   // fly in from `from` (relative to the final place) along an arc of height `arc`, spinning, and snap
+        const e = 1 - k;
+        c = add(add(c, scl(asm.from || [0, 400, 0], e)), [0, Math.sin(Math.PI * k) * (asm.arc ?? 0), 0]);
+        R = mm(R, euler([asm.spin ? asm.spin[0] * e : 0, asm.spin ? asm.spin[1] * e : 0, asm.spin ? asm.spin[2] * e : 0]));
+      }
+    }
+    return { R, c };
+  }
+
+  function faceShade(nv, mat, o) {
+    const d = dot(norm(nv), LIGHT), T = tones(mat.col);
+    let col = d > .55 ? T[0] : d > .12 ? T[1] : d > -.25 ? T[2] : T[3];
+    return col;
+  }
+
+  /* rim light: o.rim = { dir: [x, y, z] (view space, pointing FROM the light), col, k } */
+  function rimK(nv, o) {
+    if (!o.rim) return 0;
+    const d = dot(norm(nv), norm(scl(o.rim.dir, -1)));
+    return d > .35 ? (o.rim.k ?? .55) * clamp((d - .35) / .4) : 0;
+  }
+
+  function quadPath(pts) { ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.closePath(); }
+
+  function fillFace(pts, col, o, ink = true, lw = 2.4) {
+    quadPath(pts); ctx.fillStyle = col; ctx.fill();
+    if (ink) { ctx.lineJoin = 'round'; ctx.lineWidth = lw * (o.inkScale ?? 1); ctx.strokeStyle = o.ink || INK; ctx.stroke(); }
+    else { ctx.lineWidth = .8; ctx.strokeStyle = col; ctx.stroke(); }   // hide seams between facets
+  }
+
+  /* a decal or detail drawn in the plane of a face: (u, v) in part units from the face centre, v down */
+  function onFace(view, c, U, Vd, draw) {
+    const o = view.proj(c), pu = view.proj(add(c, U)), pv = view.proj(add(c, Vd));
+    ctx.save(); ctx.transform(pu[0] - o[0], pu[1] - o[1], pv[0] - o[0], pv[1] - o[1], o[0], o[1]); draw(); ctx.restore();
+  }
+
+  function emitBox(list, view, part, pl, o) {
+    const [w, h, d] = part.size, hw = w / 2, hh = h / 2, hd = d / 2, mat = part.mat;
+    for (const [n, u, v, name] of BOX_FACES) {
+      const nw = mv(pl.R, n), nv = view.dir(nw);
+      if (nv[2] <= 1e-3) continue;
+      const half = name === 'front' || name === 'back' ? [hw, hh, hd] : name === 'right' || name === 'left' ? [hd, hh, hw] : [hw, hd, hh];
+      const cw = add(pl.c, mv(pl.R, [n[0] * hw, n[1] * hh, n[2] * hd]));
+      const Uw = mv(pl.R, scl(u, half[0])), Vw = mv(pl.R, scl(v, half[1]));
+      const corners = [add(add(cw, scl(Uw, -1)), scl(Vw, -1)), add(add(cw, Uw), scl(Vw, -1)), add(add(cw, Uw), Vw), add(add(cw, scl(Uw, -1)), Vw)].map(view.proj);
+      const z = view.proj(cw)[2] + (part.zBias || 0);
+      list.push({ z, draw: () => {
+        fillFace(corners, faceShade(nv, mat, o), o, true, part.lw || 2.4);
+        const rk = rimK(nv, o); if (rk) { ctx.save(); ctx.globalAlpha = rk; ctx.globalCompositeOperation = 'screen'; quadPath(corners); ctx.fillStyle = o.rim.col; ctx.fill(); ctx.restore(); }
+        if (mat.spec && nv[2] > .3) {   // a chrome glint: a soft diagonal band across the face
+          ctx.save(); quadPath(corners); ctx.clip(); onFace(view, cw, mv(pl.R, u), mv(pl.R, v), () => {
+            ctx.globalAlpha = .28 * mat.spec; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.moveTo(-half[0] * .2, -half[1] * 1.2); ctx.lineTo(half[0] * .25, -half[1] * 1.2); ctx.lineTo(-half[0] * .25, half[1] * 1.2); ctx.lineTo(-half[0] * .7, half[1] * 1.2); ctx.closePath(); ctx.fill(); }); ctx.restore();
+        }
+        const dec = part.decals && part.decals[name];
+        if (dec) onFace(view, cw, mv(pl.R, u), mv(pl.R, v), () => dec(o.t || 0, half, o));
+      } });
+    }
+  }
+
+  /* a cylinder along its local y axis: faceted sides without inner ink, ink on the caps and on the silhouette edges */
+  function emitCyl(list, view, part, pl, o) {
+    const r = part.r, h = part.h, n = part.n || 18, mat = part.mat;
+    const ax = mv(pl.R, [0, 1, 0]), top = add(pl.c, scl(ax, h / 2)), bot = add(pl.c, scl(ax, -h / 2));
+    const ring = [];
+    for (let i = 0; i < n; i++) { const a = i / n * TAU; ring.push(mv(pl.R, [Math.cos(a) * r, 0, Math.sin(a) * r])); }
+    const vis = [], sides = [];
+    for (let i = 0; i < n; i++) {
+      const a = (i + .5) / n * TAU, nw = mv(pl.R, [Math.cos(a), 0, Math.sin(a)]), nv = view.dir(nw);
+      vis.push(nv[2] > 0);
+      if (nv[2] <= 0) continue;
+      const j = (i + 1) % n, q = [add(top, ring[i]), add(top, ring[j]), add(bot, ring[j]), add(bot, ring[i])].map(view.proj);
+      sides.push({ q, col: faceShade(nv, mat, o), rk: rimK(nv, o) });
+    }
+    const zc = view.proj(pl.c)[2] + (part.zBias || 0);
+    const edges = [];
+    for (let i = 0; i < n; i++) { const j = (i + 1) % n; if (vis[i] !== vis[j]) edges.push([view.proj(add(top, ring[j])), view.proj(add(bot, ring[j]))]); }
+    list.push({ z: zc, draw: () => {
+      for (const s of sides) { fillFace(s.q, s.col, o, false); if (s.rk) { ctx.save(); ctx.globalAlpha = s.rk; ctx.globalCompositeOperation = 'screen'; quadPath(s.q); ctx.fillStyle = o.rim.col; ctx.fill(); ctx.restore(); } }
+      if (part.bands) for (const [y0, col] of part.bands) {   // painted rings around the cylinder (labels, hose ribs)
+        ctx.save(); ctx.lineWidth = (part.bandW || 6) * view.s; ctx.strokeStyle = col; ctx.beginPath();
+        let started = false;
+        for (let i = 0; i <= n; i++) { const k = i % n; if (!vis[k] && !vis[(k + n - 1) % n]) { started = false; continue; } const p = view.proj(add(add(pl.c, scl(ax, y0)), ring[k])); started ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); started = true; }
+        ctx.stroke(); ctx.restore();
+      }
+      ctx.lineWidth = (part.lw || 2.4) * (o.inkScale ?? 1); ctx.strokeStyle = o.ink || INK; ctx.lineCap = 'round';
+      for (const [a, b] of edges) { ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+    } });
+    for (const [cc, sgn, name] of [[top, 1, 'top'], [bot, -1, 'bottom']]) {
+      const nv = view.dir(scl(ax, sgn));
+      if (nv[2] <= 1e-3) continue;
+      const pts = ring.map(v => view.proj(add(cc, v)));
+      list.push({ z: view.proj(cc)[2] + (part.zBias || 0) + .01, draw: () => {
+        fillFace(pts, faceShade(nv, mat, o), o, true, part.lw || 2.4);
+        const dec = part.decals && part.decals[name];
+        if (dec) onFace(view, cc, mv(pl.R, [1, 0, 0]), mv(pl.R, [0, 0, sgn]), () => dec(o.t || 0, [r, r], o));
+      } });
+    }
+  }
+
+  function emitSphere(list, view, part, pl, o) {
+    const p = view.proj(pl.c), r = part.r * view.s, T = tones(part.mat.col);
+    list.push({ z: p[2] + (part.zBias || 0), draw: () => {
+      ctx.save();
+      ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, TAU); ctx.fillStyle = T[1]; ctx.fill();
+      ctx.clip();
+      ctx.beginPath(); ctx.arc(p[0] + r * .45, p[1] + r * .5, r * 1.05, 0, TAU); ctx.fillStyle = T[2]; ctx.fill();
+      ctx.beginPath(); ctx.arc(p[0] - r * .32, p[1] - r * .36, r * .42, 0, TAU); ctx.fillStyle = T[0]; ctx.fill();
+      if (part.mat.spec) { ctx.beginPath(); ctx.arc(p[0] - r * .35, p[1] - r * .4, r * .16, 0, TAU); ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.fill(); }
+      ctx.restore();
+      ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, TAU); ctx.lineWidth = (part.lw || 2.4) * (o.inkScale ?? 1); ctx.strokeStyle = o.ink || INK; ctx.stroke();
+    } });
+  }
+
+  /* a hydraulic piston between two bone-space points: dark sleeve + chrome rod */
+  function emitPiston(list, view, part, W, o) {
+    const A = add(W[part.a[0]].p, mv(W[part.a[0]].R, part.a[1])), B = add(W[part.b[0]].p, mv(W[part.b[0]].R, part.b[1]));
+    const pa = view.proj(A), pb = view.proj(B), m = [lerp(pa[0], pb[0], .55), lerp(pa[1], pb[1], .55)];
+    const w = (part.w || 9) * view.s;
+    list.push({ z: (pa[2] + pb[2]) / 2 + (part.zBias || 0), draw: () => {
+      ctx.save(); ctx.lineCap = 'round';
+      const seg = (p, q, wd, col) => { ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.lineWidth = wd + 4.4; ctx.strokeStyle = INK; ctx.stroke(); ctx.lineWidth = wd; ctx.strokeStyle = col; ctx.stroke(); };
+      seg(m, pb, w * .55, '#d7dde6'); seg(pa, m, w, '#3a3f49');
+      ctx.restore();
+    } });
+  }
+
+  /* a cable: a sagging curve between two bone-space points */
+  function emitCable(list, view, part, W, o) {
+    const A = add(W[part.a[0]].p, mv(W[part.a[0]].R, part.a[1])), B = add(W[part.b[0]].p, mv(W[part.b[0]].R, part.b[1]));
+    const pa = view.proj(A), pb = view.proj(B), sag = (part.sag ?? 20) * view.s;
+    const sway = part.sway ? Math.sin((o.t || 0) * 3 + (part.seed || 0)) * part.sway * view.s : 0;
+    list.push({ z: (pa[2] + pb[2]) / 2 + (part.zBias || -2), draw: () => {
+      ctx.save(); ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(pa[0], pa[1]);
+      ctx.quadraticCurveTo((pa[0] + pb[0]) / 2 + sway, (pa[1] + pb[1]) / 2 + sag, pb[0], pb[1]);
+      ctx.lineWidth = (part.w || 5) * view.s + 3.6; ctx.strokeStyle = INK; ctx.stroke();
+      ctx.lineWidth = (part.w || 5) * view.s; ctx.strokeStyle = part.col || '#2d2f36'; ctx.stroke(); ctx.restore();
+    } });
+  }
+
+  /* ---------- draw a model ----------
+     o: { x, y, s, yaw, pitch, t, pose, asm: { partId: { k, from, spin } }, hide: Set, rim, ink, ground (screen y) } */
+  function draw(model, o = {}) {
+    const W = solve(model, o.pose || {}, o), view = viewOf(o), list = [];
+    for (const part of model.parts) {
+      if (o.hide && o.hide.has(part.id)) continue;
+      const asm = o.asm && part.id in o.asm ? o.asm[part.id] : null;
+      if (asm && asm.k <= 0) continue;
+      if (part.kind === 'piston') { emitPiston(list, view, part, W, o); continue; }
+      if (part.kind === 'cable') { emitCable(list, view, part, W, o); continue; }
+      const pl = place(W, part, asm);
+      if (part.kind === 'box') emitBox(list, view, part, pl, o);
+      else if (part.kind === 'cyl') emitCyl(list, view, part, pl, o);
+      else if (part.kind === 'sphere') emitSphere(list, view, part, pl, o);
+    }
+    if (o.ground != null) {   // a soft contact shadow under the lowest point
+      const pts = model.feet ? model.feet.map(f => view.proj(add(W[f[0]].p, mv(W[f[0]].R, f[1])))) : [];
+      const xs = pts.map(p => p[0]); const cx = xs.length ? (Math.min(...xs) + Math.max(...xs)) / 2 : o.x;
+      const wd = xs.length ? Math.max(...xs) - Math.min(...xs) + 90 * view.s : 120;
+      ctx.save(); ctx.globalAlpha = .28; ctx.fillStyle = '#140f18'; ctx.beginPath(); ctx.ellipse(cx, o.ground, wd / 2, 14 * view.s, 0, 0, TAU); ctx.fill(); ctx.restore();
+    }
+    list.sort((a, b) => a.z - b.z);
+    ctx.save(); for (const it of list) it.draw(); ctx.restore();
+    return { W, view };
+  }
+
+  /* screen position of a bone-space point (for effects anchored to the robot: the eye glow, muzzle flashes, sparks) */
+  function point(model, o, bone, local = [0, 0, 0]) {
+    const W = solve(model, o.pose || {}, o), view = viewOf(o);
+    return view.proj(add(W[bone].p, mv(W[bone].R, local)));
+  }
+
+  /* the screen y of the lowest foot point for a pose (so a walk can plant its feet on the ground) */
+  function lowestY(model, o) {
+    const W = solve(model, o.pose || {}, o), view = viewOf(o);
+    let m = -1e9; for (const f of model.feet || []) m = Math.max(m, view.proj(add(W[f[0]].p, mv(W[f[0]].R, f[1])))[1]);
+    return m;
+  }
+
+  /* blend two poses */
+  function blend(a, b, k) {
+    const out = {}, keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+    for (const n of keys) { const A = a[n] || [0, 0, 0], B = b[n] || [0, 0, 0]; out[n] = [lerp(A[0] || 0, B[0] || 0, k), lerp(A[1] || 0, B[1] || 0, k), lerp(A[2] || 0, B[2] || 0, k)]; }
+    return out;
+  }
+
+  return { draw, point, lowestY, blend, solve, tones, mix, rx, ry, rz, mm, mv, euler };
+})();
+
+</script>
+<script>
+/* =========================================================
+   «Η Έξυπνη Σίτα» – robot models (structured, see robot3d.js and docs/production-guide.md «Graphics v2»)
+   Every machine: a skeleton first, then the appliances bound to the bones as armour, visible joints, pistons and
+   cables. Poses are data (joint rotations); the same model draws the model sheet and the animation.
+   Load after robot3d.js.
+   ========================================================= */
+
+/* ---------- materials ---------- */
+const RMAT = {
+  joint: { col: '#4a515c', spec: .5 },
+  steel: { col: '#aeb8c4', spec: .9 },
+  chrome: { col: '#c9d1db', spec: 1 },
+  white: { col: '#eef0f2' },
+  cream: { col: '#dcd8cc' },
+  boiler: { col: '#f1f1ee' },
+  grey: { col: '#5d6470' },
+  hose: { col: '#6a7280' },
+  dehum: { col: '#c9cfd6' },
+  black: { col: '#2a2c33', spec: .35 },
+  vac: { col: '#1f2126', spec: .3 },
+};
+
+/* the red faction glow (the σίτα's machines): a soft additive disc */
+function redGlow(x, y, r, k = 1) {
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, `rgba(255,70,50,${.85 * k})`); g.addColorStop(.35, `rgba(255,40,30,${.35 * k})`); g.addColorStop(1, 'rgba(255,0,0,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.restore();
+}
+
+/* ---------- decals (drawn in the plane of a face; units = model units, v points down) ---------- */
+const T8D = {
+  fridgeFront(t, [hw, hh]) {
+    curve([[-hw, -hh + 46], [hw, -hh + 46]], 2.4, INK, { w: 0 });                       // freezer line
+    rect(hw - 22, -hh + 10, 9, 30, '#dfe5ec', { lw: 2 }); rect(hw - 22, -hh + 56, 9, 56, '#dfe5ec', { lw: 2 });   // handles
+    rect(-hw + 16, -hh + 8, 40, 30, '#1d2a36', { lw: 2.2 });                              // ice dispenser
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; rect(-hw + 20, -hh + 12, 32, 22, 'rgba(90,170,255,.35)', { lw: 0 }); ctx.restore();
+    txt('SITA', -hw + 36, -hh + 23, 9, '#9fd0ff', { font: TVFONT, weight: 900 });
+    // souvenir fridge magnets (nine pairs of strong magnets, of course)
+    const M = [['#e8392b', 'ΤΗΝΟΣ'], ['#ffd23f', 'ΠΙΤΣΑ'], ['#3a7bd5', 'ΛΕΧΑΙΟ'], ['#5fbf6a', '9,90€']];
+    M.forEach(([c, s], i) => { const x = -hw + 30 + (i % 2) * 52, y = -hh + 66 + Math.floor(i / 2) * 26; ctx.save(); ctx.translate(x, y); ctx.rotate((i % 3 - 1) * .12); rect(-22, -9, 44, 18, c, { lw: 1.8 }); txt(s, 0, 0, 7, '#fff', { font: TVFONT, weight: 900 }); ctx.restore(); });
+  },
+  fridgeSide(t, [hw, hh]) { for (let i = 0; i < 5; i++) curve([[-hw + 10, -hh + 14 + i * 8], [-hw + 34, -hh + 14 + i * 8]], 2, '#7c8794', { w: 0 }); },
+  washerFront(t, [hw, hh], o) {
+    rect(-hw, -hh, hw * 2, 16, '#d9dde2', { lw: 2 });                                     // control strip
+    blob(hw - 16, -hh + 8, 6, 6, '#9aa3ae', { lw: 1.6 }); rect(-hw + 8, -hh + 4, 22, 8, '#18222c', { lw: 1.4 });
+    txt('1400', -hw + 19, -hh + 8, 5, '#7cf0a0', { font: TVFONT, weight: 900 });
+    blob(-4, 8, 28, 28, '#c9d1db', { lw: 2.6 });                                          // the door ring
+    blob(-4, 8, 21, 21, '#16202e', { lw: 2 });
+    const sp = (o.t || 0) * 5;                                                            // the drum turns: a reactor
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 3; i++) { const a = sp + i * TAU / 3; ctx.beginPath(); ctx.arc(-4, 8, 14, a, a + 1.4); ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(255,80,60,.75)'; ctx.stroke(); }
+    ctx.restore(); redGlow(-4, 8, 22, .6);
+  },
+  fryerFront(t, [hw, hh], o) {
+    rect(-hw + 6, hh - 18, hw * 2 - 12, 9, '#3b3e47', { lw: 2 });                          // the basket handle
+    blob(0, -6, 17, 17, '#0e0f13', { lw: 2.4 });                                            // the eye socket
+    const blink = o.eye ?? 1;
+    blob(0, -6, 10, 10 * blink + .5, '#ff3b2f', { lw: 0 }); redGlow(0, -6, 30, blink);
+    rect(-hw + 6, -hh + 6, 18, 8, '#18222c', { lw: 1.2 }); txt('200°', -hw + 15, -hh + 10, 5, '#ff8a6a', { font: TVFONT, weight: 900 });
+  },
+  fryerTop(t, [hw, hh]) { blob(0, 0, 13, 13, '#4a4e58', { lw: 2 }); curve([[0, 0], [0, -10]], 2.4, '#d0d4da', { w: 0 }); },
+  fryerSide(t, [hw, hh]) { for (let i = 0; i < 4; i++) rect(-14, -hh + 12 + i * 10, 28, 4, '#15161a', { lw: 0 }); },
+  acFan(t, [hw, hh], o) {                                                                   // the air-conditioner unit on the shoulder
+    blob(0, 2, hw * .8, hh * .8, '#2c3038', { lw: 2.2 });
+    const a0 = (o.t || 0) * 9;
+    for (let i = 0; i < 4; i++) { const a = a0 + i * TAU / 4; poly([[0, 2], [Math.cos(a) * hw * .7, 2 + Math.sin(a) * hh * .7], [Math.cos(a + .5) * hw * .55, 2 + Math.sin(a + .5) * hh * .55]], '#9aa3ae', { lw: 1.4 }); }
+    for (let i = -2; i <= 2; i++) curve([[-hw * .78, 2 + i * hh * .3], [hw * .78, 2 + i * hh * .3]], 1.2, '#5a606b', { w: 0 });
+  },
+  acFront(t, [hw, hh]) { txt('INVERTER', 0, -hh + 9, 6, '#6b6f78', { font: TVFONT, weight: 900 }); },
+  fridgeBack(t, [hw, hh]) {            // the condenser coil and the compressor
+    rect(-hw + 14, -hh + 12, hw * 2 - 28, hh * 1.25, '#3b414c', { lw: 2 });
+    for (let i = 0; i < 9; i++) curve([[-hw + 18, -hh + 18 + i * 9], [hw - 18, -hh + 18 + i * 9]], 2, '#8d96a3', { w: 0 });
+    for (let i = 0; i < 7; i++) curve([[-hw + 24 + i * 18, -hh + 14], [-hw + 24 + i * 18, -hh + 14 + hh * 1.2]], 1.4, '#5a606b', { w: 0 });
+    blob(0, hh - 22, 26, 16, '#22252c', { lw: 2.2 }); txt('R600a', 0, hh - 22, 6, '#9aa3ae', { font: TVFONT, weight: 900 });
+  },
+  washerBack(t, [hw, hh]) { rect(-hw + 10, -hh + 8, 30, 20, '#c9cfd6', { lw: 2 }); curve([[hw - 20, -hh + 14], [hw - 10, 0], [hw - 24, hh - 4]], 6, '#7d8693', { w: 0 }); },
+  fryerBack(t, [hw, hh]) { for (let i = 0; i < 3; i++) rect(-18, -hh + 12 + i * 10, 36, 5, '#15161a', { lw: 0 }); curve([[0, hh - 10], [8, hh + 6]], 5, '#111', { w: 0 }); },
+  vents(t, [hw, hh]) { for (let i = 0; i < 5; i++) curve([[-hw + 8, -hh + 12 + i * 9], [hw - 8, -hh + 12 + i * 9]], 2, '#3b414c', { w: 0 }); },
+  dehumFront(t, [hw, hh]) {
+    for (let i = 0; i < 6; i++) curve([[-hw + 8, -hh + 10 + i * 7], [hw - 8, -hh + 10 + i * 7]], 2, '#8d96a3', { w: 0 });
+    rect(-hw + 10, hh - 34, hw * 2 - 20, 24, 'rgba(120,180,240,.55)', { lw: 2 });           // the water tank
+    rect(-hw + 12, hh - 22, hw * 2 - 24, 10, 'rgba(70,140,230,.75)', { lw: 0 });
+  },
+  vacTop(t, [r]) {
+    blob(0, 0, r * .62, r * .62, '#2c3038', { lw: 1.8 }); blob(0, -r * .3, 6, 6, '#ff3b2f', { lw: 0 }); redGlow(0, -r * .3, 12, .6);
+    txt('HOME', 0, r * .25, 5, '#8a929e', { font: TVFONT, weight: 900 });
+  },
+  pressBottom(t, [hw, hh]) { rect(-hw + 4, -hh + 4, hw * 2 - 8, hh * 2 - 8, '#c9d1db', { lw: 1.6 }); for (let i = -2; i <= 2; i++) curve([[-hw + 8, i * 7], [hw - 8, i * 7]], 1.4, '#8d96a3', { w: 0 }); },
+};
+
+/* ---------- the T-800 (Ep. 4): built from Βασίλης-grade appliances ----------
+   height ≈ 540 units (≈ 1.7× a person at the same scale); head ≈ 1/8 of the height (heroic) */
+const T800 = (() => {
+  const bones = [
+    { name: 'pelvis', at: [0, 0, 0] },
+    { name: 'waist', parent: 'pelvis', at: [0, 20, 0] },
+    { name: 'chest', parent: 'waist', at: [0, 62, 0] },
+    { name: 'neck', parent: 'chest', at: [0, 128, 0] },
+    { name: 'head', parent: 'neck', at: [0, 18, 0] },
+  ];
+  for (const [s, x] of [['l', -1], ['r', 1]]) {
+    bones.push(
+      { name: s + 'Sh', parent: 'chest', at: [x * 96, 108, 0] },
+      { name: s + 'Elb', parent: s + 'Sh', at: [0, -104, 0] },
+      { name: s + 'Wr', parent: s + 'Elb', at: [0, -92, 0] },
+      { name: s + 'Jaw', parent: s + 'Wr', at: [0, -14, -24] },
+      { name: s + 'Hip', parent: 'pelvis', at: [x * 36, -12, 0] },
+      { name: s + 'Knee', parent: s + 'Hip', at: [0, -122, 0] },
+      { name: s + 'Ank', parent: s + 'Knee', at: [0, -114, 0] });
+  }
+  const parts = [
+    { id: 'pelvis', bone: 'pelvis', kind: 'box', size: [86, 36, 52], at: [0, -4, 0], mat: RMAT.joint, decals: { front: T8D.vents } },
+    { id: 'washer', bone: 'waist', kind: 'box', size: [100, 66, 80], at: [0, 31, 0], mat: RMAT.white, decals: { front: T8D.washerFront, back: T8D.washerBack } },
+    { id: 'fridge', bone: 'chest', kind: 'box', size: [158, 128, 92], at: [0, 64, 0], mat: RMAT.steel, decals: { front: T8D.fridgeFront, left: T8D.fridgeSide, right: T8D.fridgeSide, back: T8D.fridgeBack } },
+    { id: 'neck', bone: 'neck', kind: 'cyl', r: 14, h: 28, at: [0, 6, 0], mat: RMAT.chrome, bands: [[-6, '#8d96a3'], [4, '#8d96a3']], bandW: 3 },
+    { id: 'head', bone: 'head', kind: 'box', size: [72, 68, 66], at: [0, 36, 2], mat: RMAT.black, decals: { front: T8D.fryerFront, top: T8D.fryerTop, left: T8D.fryerSide, right: T8D.fryerSide, back: T8D.fryerBack } },
+    { id: 'cableA', kind: 'cable', a: ['chest', [-30, 124, -30]], b: ['head', [-22, 10, -26]], sag: 10, w: 5 },
+    { id: 'cableB', kind: 'cable', a: ['chest', [34, 124, -34]], b: ['head', [24, 8, -28]], sag: 14, w: 4, col: '#7a2a24' },
+  ];
+  for (const [s, x] of [['l', -1], ['r', 1]]) {
+    const out = x < 0 ? 'left' : 'right';
+    parts.push(
+      { id: s + 'ShBall', bone: s + 'Sh', kind: 'sphere', r: 26, mat: RMAT.joint },
+      { id: s + 'Pauldron', bone: s + 'Sh', kind: 'box', size: [78, 58, 84], at: [x * 18, 6, 0], rot: [0, 0, x * -.24], mat: RMAT.cream, decals: { [out]: T8D.acFan, front: T8D.acFront }, zBias: 4 },
+      { id: s + 'Upper', bone: s + 'Sh', kind: 'cyl', r: 18, h: 94, at: [0, -52, 0], mat: RMAT.hose, bands: [[-30, '#4f5662'], [-18, '#4f5662'], [-6, '#4f5662'], [6, '#4f5662'], [18, '#4f5662'], [30, '#4f5662']], bandW: 3 },
+      { id: s + 'ElbBall', bone: s + 'Elb', kind: 'sphere', r: 19, mat: RMAT.joint },
+      { id: s + 'Fore', bone: s + 'Elb', kind: 'box', size: [48, 84, 50], at: [0, -46, 0], mat: RMAT.grey, decals: { front: T8D.vents } },
+      { id: s + 'WrBall', bone: s + 'Wr', kind: 'sphere', r: 13, mat: RMAT.joint },
+      { id: s + 'Palm', bone: s + 'Wr', kind: 'box', size: [56, 16, 52], at: [0, -22, 0], mat: RMAT.black, decals: { bottom: T8D.pressBottom } },
+      { id: s + 'Jaw', bone: s + 'Jaw', kind: 'box', size: [56, 14, 52], at: [0, -24, 24], mat: RMAT.black, decals: { top: T8D.pressBottom } },
+      { id: s + 'HipBall', bone: s + 'Hip', kind: 'sphere', r: 21, mat: RMAT.joint },
+      { id: s + 'Thigh', bone: s + 'Hip', kind: 'cyl', r: 31, h: 112, at: [0, -60, 0], mat: RMAT.boiler, bands: [[38, '#3a7bd5'], [-38, '#3a7bd5']], bandW: 5 },
+      { id: s + 'KneeBall', bone: s + 'Knee', kind: 'sphere', r: 22, mat: RMAT.joint },
+      { id: s + 'KneeGuard', bone: s + 'Knee', kind: 'box', size: [46, 40, 18], at: [0, -4, 26], mat: RMAT.steel, zBias: 3 },
+      { id: s + 'Shin', bone: s + 'Knee', kind: 'box', size: [60, 104, 62], at: [0, -58, 0], mat: RMAT.dehum, decals: { front: T8D.dehumFront } },
+      { id: s + 'AnkBall', bone: s + 'Ank', kind: 'sphere', r: 15, mat: RMAT.joint },
+      { id: s + 'Foot', bone: s + 'Ank', kind: 'cyl', r: 44, h: 16, at: [0, -20, 10], mat: RMAT.vac, bands: [[0, '#8a929e']], bandW: 4, n: 22, decals: { top: T8D.vacTop } },
+      { id: s + 'PistonLeg', kind: 'piston', a: [s + 'Hip', [x * 10, -24, -32]], b: [s + 'Knee', [x * 10, 30, -32]], w: 9 },
+      { id: s + 'PistonArm', kind: 'piston', a: [s + 'Sh', [x * 6, -20, -18]], b: [s + 'Elb', [x * 6, 22, -22]], w: 7 },
+    );
+  }
+  const feet = [['lAnk', [0, -28, 10]], ['rAnk', [0, -28, 10]]];  // the bottoms of the vacuum discs
+
+  /* ---------- poses (radians; see robot3d.js: x = swing (− = forward for limbs hanging down), z = raise sideways) ---------- */
+  const P = {
+    idle: { lSh: [0, 0, -.14], rSh: [0, 0, .14], lElb: [-.25, 0, 0], rElb: [-.25, 0, 0], lHip: [0, 0, -.05], rHip: [0, 0, .05] },
+    crouch: {   // the arrival: one knee and one fist on the ground, head down
+      chest: [.42, 0, 0], head: [.35, 0, 0], lSh: [-.55, 0, -.25], lElb: [-.4, 0, 0], rSh: [.15, 0, .3], rElb: [-.6, 0, 0],
+      lHip: [-1.35, 0, -.08], lKnee: [1.9, 0, 0], lAnk: [-.55, 0, 0], rHip: [.1, 0, .12], rKnee: [2.25, 0, 0], rAnk: [-.9, 0, 0] },
+    guard: { chest: [.1, 0, 0], lSh: [-.9, 0, -.3], lElb: [-1.5, 0, 0], rSh: [-.6, 0, .3], rElb: [-1.7, 0, 0], lHip: [-.25, 0, -.1], lKnee: [.45, 0, 0], lAnk: [-.2, 0, 0], rHip: [.2, 0, .1], rKnee: [.3, 0, 0], rAnk: [-.1, 0, 0] },
+    punch: { chest: [.18, -.35, 0], head: [0, .2, 0], lSh: [-.5, 0, -.3], lElb: [-1.6, 0, 0], rSh: [-1.55, 0, .05], rElb: [-.05, 0, 0], lHip: [-.35, 0, -.1], lKnee: [.5, 0, 0], lAnk: [-.15, 0, 0], rHip: [.3, 0, .1], rKnee: [.15, 0, 0] },
+    hit: { chest: [-.32, .25, .1], head: [-.35, -.3, .1], lSh: [.5, 0, -.7], lElb: [-.5, 0, 0], rSh: [.6, 0, .8], rElb: [-.6, 0, 0], lHip: [.15, 0, -.12], lKnee: [.2, 0, 0], rHip: [-.2, 0, .15], rKnee: [.4, 0, 0] },
+    scan: { head: [.05, .5, 0], chest: [0, .15, 0], lSh: [0, 0, -.2], rSh: [-.3, 0, .2], rElb: [-1.1, 0, 0] },
+  };
+  /* ---------- walk cycle by inverse kinematics ----------
+     The feet are placed, not swung: in stance the planted ankle slides back at a constant speed relative to the pelvis
+     (so with the root moving forward at WALK_SPEED the foot stays still on the ground: no skating), in swing it arcs
+     forward. Two-bone IK in the leg's swing plane gives the hip and knee; the ankle keeps the foot level.
+     WALK_SPEED: model units per radian of phase (multiply by the scale and the phase rate in the scene). */
+  const THIGH = 122, SHIN = 114, STRIDE = 58, LIFT = 34, HIP_DROP = 222;
+  function legIK(z, y) {   // ankle target (z forward, y up) relative to the hip → [hip rx, knee rx, ankle rx]
+    let D = Math.hypot(z, y); D = Math.min(D, THIGH + SHIN - .5);
+    const phi = Math.atan2(-z, -y);
+    const al = Math.acos(clamp((THIGH * THIGH + D * D - SHIN * SHIN) / (2 * THIGH * D), -1, 1));
+    const be = Math.acos(clamp((THIGH * THIGH + SHIN * SHIN - D * D) / (2 * THIGH * SHIN), -1, 1));
+    const hip = phi - al, knee = Math.PI - be;
+    return [hip, knee, -(hip + knee)];
+  }
+  function footAt(u, k) {   // u in [0,1): 0–.5 stance (front → back), .5–1 swing (back → front)
+    if (u < .5) { const v = u / .5; return [STRIDE * k * (1 - 2 * v), -HIP_DROP]; }
+    const v = (u - .5) / .5, e = ease(v);
+    return [STRIDE * k * (2 * e - 1), -HIP_DROP + Math.sin(v * Math.PI) * LIFT * k];
+  }
+  function walk(ph, amt = 1) {
+    const k = amt, u = ((ph / TAU) % 1 + 1) % 1, s = Math.sin(ph);
+    const [lz, ly] = footAt(u, k), [rz, ry] = footAt((u + .5) % 1, k);
+    const L = legIK(lz, ly), Rr = legIK(rz, ry);
+    return {
+      chest: [.06 * k, .08 * s * k, 0], head: [0, -.06 * s * k, 0],
+      lHip: [L[0], 0, -.05], lKnee: [L[1], 0, 0], lAnk: [L[2], 0, 0],
+      rHip: [Rr[0], 0, .05], rKnee: [Rr[1], 0, 0], rAnk: [Rr[2], 0, 0],
+      lSh: [.32 * s * k, 0, -.14], rSh: [-.32 * s * k, 0, .14], lElb: [-.3 - .15 * Math.max(0, -s) * k, 0, 0], rElb: [-.3 - .15 * Math.max(0, s) * k, 0, 0],
+    };
+  }
+  const WALK_SPEED = 2 * STRIDE / Math.PI;   // the stance foot travels 2·STRIDE in half a cycle (π radians)
+  /* the hands are sandwich presses: open (0..1) adds to any pose */
+  const open = (pose, l, r) => Object.assign({}, pose, { lJaw: [-1.1 * l, 0, 0], rJaw: [-1.1 * r, 0, 0] });
+
+  /* assembly order (sc. 13): feet up to the head, each part locks onto the skeleton on a beat */
+  const order = ['lFoot', 'rFoot', 'lAnkBall', 'rAnkBall', 'lShin', 'rShin', 'lKneeBall', 'rKneeBall', 'lKneeGuard', 'rKneeGuard', 'lThigh', 'rThigh', 'lHipBall', 'rHipBall', 'lPistonLeg', 'rPistonLeg',
+    'pelvis', 'washer', 'fridge', 'lShBall', 'rShBall', 'lPauldron', 'rPauldron', 'lUpper', 'rUpper', 'lPistonArm', 'rPistonArm', 'lElbBall', 'rElbBall', 'lFore', 'rFore', 'lWrBall', 'rWrBall', 'lPalm', 'rPalm', 'lJaw', 'rJaw',
+    'neck', 'cableA', 'cableB', 'head'];
+  /* the assembly state at progress k (0..1): each part flies in from the container (off to one side) and snaps */
+  /* from: where the container is, relative to the robot's pelvis, in model units; each part rises out of it on an arc */
+  function assembly(k, from = [-760, -200, -120]) {
+    const out = {}, n = order.length;
+    order.forEach((id, i) => {
+      const a = i / n * .85, kk = clamp((k - a) / .15);
+      out[id] = { k: kk < 1 ? ease(kk) * .999 : 1, from: [from[0] + (i % 3 - 1) * 40, from[1] - (i % 4) * 20, from[2]], arc: 260 + (i % 5) * 40, spin: [(i % 2 ? 1 : -1) * 2.4, (i % 3) * 1.6, (i % 4 - 1.5) * 1.2] };
+    });
+    return out;
+  }
+  /* the time at which part i of the assembly snaps (for the click / spark sound and effect) */
+  const snapTimes = (t0, dur) => order.map((id, i) => ({ id, t: t0 + (i / order.length * .85 + .15) * dur }));
+  return { bones, parts, feet, P, walk, WALK_SPEED, legIK, open, order, assembly, snapTimes };
+})();
+
+</script>
+<script>
+/* Lab: the T-800 model sheet (for the creator's approval before any animation), then a turntable, the pose library,
+   a walk cycle and the assembly sequence. Everything is drawn by the same robot3d.js code the episode will use. */
+defineScene((() => {
+const steps = [
+  { act: 'sheet', d: 4, cam: 'all' },
+  { act: 'turn', d: 6, cam: 'all' },
+  { act: 'poses', d: 9, cam: 'all' },
+  { act: 'walk', d: 4, cam: 'all' },
+  { act: 'asm', d: 6, cam: 'all' },
+];
+const S = .62, GROUND = 650;
+function grid() {
+  ctx.fillStyle = '#16324f'; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(160,200,255,.12)'; ctx.lineWidth = 1;
+  for (let x = 0; x <= W; x += 32) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y <= H; y += 32) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  ctx.strokeStyle = 'rgba(160,200,255,.35)'; ctx.beginPath(); ctx.moveTo(0, GROUND); ctx.lineTo(W, GROUND); ctx.stroke();
+}
+/* place the robot so its lowest foot point sits on the ground line */
+function robot(x, o) {
+  const base = { x, y: 0, s: o.s ?? S, pitch: .14, ...o };
+  const low = R3.lowestY(T800, base);
+  return R3.draw(T800, { ...base, y: (o.ground ?? GROUND) - low, ground: o.ground ?? GROUND });
+}
+const label = (s, x, y) => txt(s, x, y, 15, '#cfe3ff', { font: TVFONT, weight: 900 });
+function render(t, M) {
+  grid();
+  txt('T-800 · ΜΟΝΤΕΛΟ (model sheet v1)', 640, 34, 22, '#ffffff', { font: TVFONT, weight: 900 });
+  if (t < M.sheet.b) {
+    robot(300, { yaw: -.6, t, pose: T800.open(T800.P.guard, 0, .6), s: 1.0 }); label('3/4 · ΜΑΧΗ', 300, 690);
+    const views = [[0, 'ΜΠΡΟΣΤΑ'], [-Math.PI / 2, 'ΠΡΟΦΙΛ'], [Math.PI, 'ΠΙΣΩ']];
+    views.forEach(([yaw, name], i) => { const x = 700 + i * 220; robot(x, { yaw, t, pose: T800.P.idle, s: .5 }); label(name, x, 690); });
+    // the parts list
+    const L = ['κράνος: air fryer (μάτι LED)', 'θώρακας: ψυγείο + μαγνητάκια', 'κοιλιά: πλυντήριο (τύμπανο-αντιδραστήρας)', 'επωμίδες: κλιματιστικά inverter', 'μηροί: θερμοσίφωνες 80L', 'κνήμες: αφυγραντήρες', 'πέλματα: σκούπες ρομπότ', 'παλάμες: τοστιέρες (ανοίγουν)'];
+    L.forEach((s, i) => txt(s, 1150, 110 + i * 26, 13, '#cfe3ff', { font: TVFONT, weight: 700, align: 'right' }));
+    return;
+  }
+  if (t < M.turn.b) {
+    const k = prog(t, M.turn.a, M.turn.b);
+    robot(640, { yaw: k * TAU, t, pose: T800.P.idle, s: .72 }); label('ΠΕΡΙΣΤΡΟΦΗ 360°', 640, 690); return;
+  }
+  if (t < M.poses.b) {
+    const names = ['idle', 'crouch', 'guard', 'punch', 'hit', 'scan'];
+    const u = (t - M.poses.a) / (M.poses.b - M.poses.a) * names.length, i = Math.min(names.length - 1, Math.floor(u)), f = u - i;
+    const a = T800.P[names[i]], b = T800.P[names[Math.min(names.length - 1, i + 1)]];
+    const pose = R3.blend(a, b, ease(clamp((f - .6) / .4)));
+    robot(420, { yaw: -.55, t, pose: T800.open(pose, names[i] === 'punch' ? 0 : .5, names[i] === 'guard' ? 1 : 0), s: .68 });
+    robot(980, { yaw: .25, t, pose: T800.P[names[i]], s: .5 });
+    label('ΠΟΖΑ: ' + names[i].toUpperCase(), 640, 690); return;
+  }
+  if (t < M.walk.b) {
+    const ph = (t - M.walk.a) * 5.2, x = 900 - ph * T800.WALK_SPEED * .72;   // facing left, moving left at the stride speed
+    robot(x, { yaw: -Math.PI / 2, t, pose: T800.walk(ph), s: .72 }); label('ΒΑΔΙΣΜΑ (ΠΡΟΦΙΛ)', 640, 690); return;
+  }
+  const k = prog(t, M.asm.a, M.asm.b - .8);
+  robot(700, { yaw: -.5, t, pose: T800.P.idle, s: .72, asm: T800.assembly(k) });
+  // the container the parts come from
+  rect(40, 470, 240, 180, '#c9532e', { lw: 4 }); for (let i = 0; i < 9; i++) curve([[60 + i * 25, 480], [60 + i * 25, 640]], 3, '#8f3519', { w: 0 });
+  txt('JUMBO', 160, 500, 22, '#fff', { font: TVFONT, weight: 900 });
+  for (const s of T800.snapTimes(M.asm.a, M.asm.b - M.asm.a - .8)) if (t > s.t && t < s.t + .25) fxBurst(t, s.t, 700, 420, { kind: 'spark', n: 10, speed: 260, life: .3, seed: s.t * 7 });
+  label('ΣΥΝΑΡΜΟΛΟΓΗΣΗ', 640, 690);
+}
+return { id: 'scene01', title: 'T-800 lab', steps, render, fade: false };
+})());
+
+</script>
+<script>runEpisode(SCENES);</script>
+</body>
+</html>

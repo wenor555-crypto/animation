@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab · T-800 model sheet · Η Έξυπνη Σίτα</title>
+<link rel="stylesheet" href="player.css">
+</head>
+<body>
+<main>
+  <header><h1>Lab · T-800</h1><p>Model sheet · turntable · poses · walk · assembly</p></header>
+  <div class="stage" id="stage">
+    <canvas id="c" width="1280" height="720"></canvas>
+    <button id="big" aria-label="Play">▶</button>
+  </div>
+  <div class="bar">
+    <button id="play">▶ Play</button>
+    <button id="restart" title="Restart">⟲</button>
+    <input type="range" id="scrub" min="0" max="1200" step="0.01" value="0" aria-label="Timeline">
+    <span id="time">0:00</span>
+    <select id="chap" aria-label="Scene"></select>
+    <button id="vo" title="Voices">🗣</button>
+    <button id="lang" title="Subtitle language">EN</button>
+    <button id="snd" title="Sound">🔊</button>
+    <button id="fs" title="Fullscreen">⛶</button>
+  </div>
+</main>
+<script src="../episode1/engine.js"></script>
+<script src="../episode1/characters.js"></script>
+<script src="../episode1/sets.js"></script>
+<script src="../episode1/fx.js"></script>
+<script src="../episode1/robot3d.js"></script>
+<script src="../episode1/robots.js"></script>
+<script src="scenes/sheet.js"></script>
+<script>runEpisode(SCENES);</script>
+</body>
+</html>
