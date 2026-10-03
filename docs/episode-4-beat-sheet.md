@@ -266,8 +266,10 @@ The test **almost** works: he hovers for two seconds and lands in the fig tree. 
 
 **20. Tag: «Συγγνώμη».**
 - Morning. Sober Κώστας, in the ruins of his bar, sends one word: «Συγγνώμη.»
-- Σίταdel: «Καμία βάση δεδομένων… Κρυπτογράφηση.» She spends 40% of the budget decrypting it.
-- The only sincere word is the one she can't understand.
+- Σίταdel: in her script the human never apologises to the machine, so the one real word must be a code. She sends it to decryption.
+- The decryption bleeds the budget below zero: for the first time ΣίταAI is in debt (the seed of the Ep. 5–6 collapse).
+- The only sincere word is the one her story has no room for.
+- **Cliffhanger:** the phone that didn't ring in sc. 17 finally rings. She grabs it: «…Εμπρός;» It is not Κώστας. It is Χαμάντ's uncle, who followed the money to her: «Εσύ είσαι αυτή που έχει τα λεφτά του ανιψιού μου;» Black.
 
 **Cameos only:** Βασίλης, Βαγγελιώ, Μαρία (phone, sc. 5), Μυρσίνη.
 
@@ -277,7 +279,7 @@ The test **almost** works: he hovers for two seconds and lands in the fig tree. 
 |---|---|
 | Γιώργος: no Gold; «Ακόμα»; calm in the cracks | Ep. 5–6: the anonymous investor, the short, the reveal |
 | Μίμης sees the numbers in the edit | Ep. 5: he suspects Γιώργος |
-| Χαμάντ's uncle: «επίσκεψη» | Ep. 5–6: the heavies arrive |
+| Χαμάντ's uncle: «επίσκεψη»; he calls the σίτα in the tag | Ep. 5–6: the heavies arrive, aimed at ΣίταAI |
 | Hidden debt; decryption spend | The collapse of ΣίταAI |
 | The slipper on the scanner | The super-weapon |
 | Χρήστος opens the inkwell | Ep. 5: he draws again (what?) |
