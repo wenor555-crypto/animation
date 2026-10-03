@@ -3,14 +3,16 @@
    Canvas primitives with line boil, synth audio, placeholder
    narrator/voices (speechSynthesis), subtitles and the player.
    ========================================================= */
-const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const cv = document.getElementById('c');
+let ctx = cv.getContext('2d');   // `let`: graphics v2 (render2.js) points it at offscreen layers while a layer draws
 const W = 1280, H = 720, TAU = Math.PI * 2, INK = '#241d22';
 const TVFONT = '"Noto Sans", sans-serif';
 /* clean look: the scenes draw in 1280×720 units, the canvas renders them at RES× (1920×1080) for crisp lines,
    and CLEAN turns off the hand-drawn wobble and the 8 fps line boil (smooth ellipses, straight edges). */
 const RES = 1.5, CLEAN = true, OUTLINE = .8;   // OUTLINE: thinner ink around filled shapes
 cv.width = W * RES; cv.height = H * RES;
-{ const st = ctx.setTransform.bind(ctx); ctx.setTransform = (a, b, c, d, e, f) => st(a * RES, b * RES, c * RES, d * RES, e * RES, f * RES); }
+function resCtx(c, k = RES) { const st = c.setTransform.bind(c); c.setTransform = (a, b, cc, d, e, f) => st(a * k, b * k, cc * k, d * k, e * k, f * k); return c; }
+resCtx(ctx);
 ctx.setTransform(1, 0, 0, 1, 0, 0);
 
 /* ---------- math ---------- */

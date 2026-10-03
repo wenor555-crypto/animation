@@ -142,6 +142,18 @@ A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8
   - the model sheet rendered by the same code as the animation
   - foot contact on walks and hits
 - **Gate:** a test reel (~45–60 s of the Ep. 4 fight), side by side with Ep. 2's yard battle, approved by the creator before production.
+- **Render pipeline v2 (`episode1/render2.js`, `RV2.frame`):**
+  - **Layers:** scenes draw into named layers. A layer draws straight onto the frame unless it needs a depth-of-field blur (`dof`) or a 2D rim light (`rim`). A layer with a fixed look gets `cache: key` and is drawn and blurred once while the key stays the same.
+  - **One "post map" multiply per frame (half size)** carries:
+    - ambient darkness with the light pools
+    - the tint (grade)
+    - the vignette
+    - the grain
+  - **The emissive pass:** drawn sharp on the frame, and again at a quarter size for bloom, which is added only inside the bounding box of the lit pixels.
+  - **Blur:** a downsample chain, never canvas `filter: blur()`, which is ~10× slower in software rendering.
+- **Render cost budget: ≤ 2× the old frame time.** Measured in `lab/` with the night street, the T-800, a laser and the full stack:
+  - 66 ms against 37 ms (1.8×)
+  - the 2D rim light costs ~+45 ms, so it is used only on chosen shots (robots get rim light from `robot3d.js` for free)
 
 ## Music in episodes
 - **The file:** a track supplied by the creator lives in `<ep>/music/*_full.*`, which is ignored by git.
