@@ -1,1 +1,44 @@
-[]
+[
+ {
+  "scene": "scene05",
+  "kind": "DOT",
+  "fill": "#f2c21a",
+  "why": "the gold Gold-member pins on the lapels (plant 1: Γιώργος is the only one without one)"
+ },
+ {
+  "scene": "scene05",
+  "kind": "DOT",
+  "fill": "#ff3030",
+  "why": "the film camera's REC light, in front of the extra"
+ },
+ {
+  "scene": "scene07",
+  "kind": "DOT",
+  "fill": "#fff8e8",
+  "why": "the whiskey sour's foam: the glass on the counter in front of Panik"
+ },
+ {
+  "scene": "scene07",
+  "kind": "DOT",
+  "fill": "#9aa0a8",
+  "why": "the shaker / glass rim on the counter in front of Panik"
+ },
+ {
+  "scene": "scene17",
+  "kind": "DOT",
+  "fill": "#c8ccd2",
+  "why": "the viral clip: the tray on Γιάννος's chest (the cheap suit)"
+ },
+ {
+  "scene": "scene17",
+  "kind": "DOT",
+  "fill": "#9aa0a8",
+  "why": "the viral clip: the motorbike helmet on Γιάννος (the cheap suit)"
+ },
+ {
+  "scene": "scene19",
+  "kind": "DOT",
+  "fill": "#c8ccd2",
+  "why": "the dented tray of the wrecked suit, on the floor by his chair"
+ }
+]
