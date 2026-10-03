@@ -12,8 +12,8 @@ const dur = (k, el) => (window.CLIP_DUR || {})[k] ?? estDur(el);
 const SHAKE = Math.max(.4, .6 + 8.2 - (.6 + 1.2 + .3 + dur('scene01/01', L1) + .12 + .3 + dur('scene01/02', L2) + .12));
 const steps = [
   { act: 'intro', d: 1.2, cam: 'wide' },
-  { who: 'kostas', cam: 'hands', mark: 'pour', el: L1, en: 'Sixty bourbon. Thirty lemon. Twenty syrup.' },
-  { who: 'kostas', cam: 'face', mark: 'egg', el: L2, en: 'One egg white. Dry shake. No ice. For the foam.', say: 'Ένα ασπράδι. Ντράι σέικ. Χωρίς πάγο. Για τον αφρό.' },
+  { who: 'kostas', cam: 'hands', mark: 'pour', el: 'Εξήντα bourbon. Τριάντα λεμόνι. Είκοσι σιρόπι.', en: 'Sixty bourbon. Thirty lemon. Twenty syrup.', say: 'Εξήντα μπέρμπον. Τριάντα λεμόνι. Είκοσι σιρόπι.' },
+  { who: 'kostas', cam: 'face', mark: 'egg', el: 'Ένα ασπράδι. Dry shake. Χωρίς πάγο. Για τον αφρό.', en: 'One egg white. Dry shake. No ice. For the foam.', say: 'Ένα ασπράδι. Ντράι σέικ. Χωρίς πάγο. Για τον αφρό.' },
   { act: 'shake', d: SHAKE, cam: 'hands' },
   { act: 'chorus', d: 12.5, cam: 'glass' },
   { act: 'thread', d: 7.3, cam: 'sms' },
