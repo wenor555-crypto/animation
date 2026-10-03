@@ -101,11 +101,17 @@ const ARMY = (() => {
   }
   /* the emissive pass: LED glows on the living, sparks and smoke at each death (call inside the emit layer) */
   function emit(S, t) {
+    // the LEDs first, all in one additive block (one save/restore for the swarm, not one per unit)
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (const u of S.units) {
+      const st = state(S, u, t); if (!st || st.dead) continue;
+      if (S.kind === 'bulb') redGlowRaw(st.x, st.y - st.s * .1, st.s * .9, S.bulbK ? S.bulbK(u.i, t) : .8 + .2 * Math.sin(t * 9 + u.ph));
+      else redGlowRaw(st.x, st.y - st.s * .05, st.s * .16, .35 + .25 * Math.sin(t * 7 + u.ph));
+    }
+    ctx.restore();
     for (const u of S.units) {
       const st = state(S, u, t); if (!st) continue;
       if (!st.dead) {
-        if (S.kind === 'bulb') { const hue = S.bulbCol ? S.bulbCol(u.i, t) : `rgba(255,${Math.floor(60 + 60 * Math.sin(t * 9 + u.ph))},50,1)`; ctx.save(); ctx.globalCompositeOperation = 'lighter'; const g = ctx.createRadialGradient(st.x, st.y - st.s * .1, 0, st.x, st.y - st.s * .1, st.s * .9); g.addColorStop(0, hue); g.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(st.x, st.y - st.s * .1, st.s * .9, 0, TAU); ctx.fill(); ctx.restore(); }
-        else redGlow(st.x, st.y - st.s * .05, st.s * .16, .35 + .25 * Math.sin(t * 7 + u.ph));
         if (S.kind === 'racket' && Math.sin(t * 5 + u.ph * 3) > .85) {   // a short crackle across the mesh, now and then
           ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = 'rgba(150,210,255,.9)'; ctx.lineWidth = 1.4; ctx.beginPath();
           const n = 6, x0 = st.x - st.s * .25, y0 = st.y - st.s * .3, tk = Math.floor(t * 24);

@@ -21,11 +21,22 @@ const RMAT = {
 };
 
 /* the red faction glow (the σίτα's machines): a soft additive disc */
+/* drawn from one pre-rendered sprite (a gradient per call cost ~0.1 ms, and a swarm makes hundreds of them) */
+let _redGlowSprite = null;
 function redGlow(x, y, r, k = 1) {
-  ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-  g.addColorStop(0, `rgba(255,70,50,${.85 * k})`); g.addColorStop(.35, `rgba(255,40,30,${.35 * k})`); g.addColorStop(1, 'rgba(255,0,0,0)');
-  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.restore();
+  if (!_redGlowSprite) {
+    const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'), gr = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gr.addColorStop(0, 'rgba(255,70,50,.85)'); gr.addColorStop(.35, 'rgba(255,40,30,.35)'); gr.addColorStop(1, 'rgba(255,0,0,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128); _redGlowSprite = c;
+  }
+  if (k <= 0 || r <= 0) return;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; redGlowRaw(x, y, r, k); ctx.restore();
+}
+/* the same without save/restore: for batches drawn inside one 'lighter' block (a swarm's LEDs) */
+function redGlowRaw(x, y, r, k = 1) {
+  if (k <= 0 || r <= 0) return;
+  if (!_redGlowSprite) { redGlow(x, y, r, 0.0001); }
+  ctx.globalAlpha = Math.min(1, k); ctx.drawImage(_redGlowSprite, x - r, y - r, r * 2, r * 2);
 }
 
 /* ---------- decals (drawn in the plane of a face; units = model units, v points down) ---------- */
