@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 video/
+
+# Episode 4: the full track (provided by the creator) stays out of git; builds embed only the cue excerpts
+episode4/music/*_full.*

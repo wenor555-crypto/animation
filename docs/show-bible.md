@@ -183,3 +183,39 @@ The empire and the Jumbo board were chosen by audition: 2 candidates per role, 2
 | Πρόεδρος (Jumbo board) | Talos (`QpnXVbX7RkmUGDwpJh5v`) | old, deep, warm authority |
 
 Episode 2 lives in `episode2/` (its own `scenes/`, `audio/`, `props2.js`; it reuses episode1's engine, rig, sets and props). Voices: `python3 episode1/tools/gen_voices.py --episode episode2`.
+
+## Season canon from Episode 4 on (LOCKED with the creator)
+
+### Γιώργος's long game
+- **The Jumbo deal (Ep. 3, sc. 23)** was paid for by the σίτα, through Jumbo: Offshore Holdings secretly financed Jumbo's purchase, on condition of the network.
+- **Γιώργος knew.** His «backwards haggling» (30 → «Δέκα» → 40 → «Κλείσαμε») was selling as much as he could, at the top.
+- **The pyramid** is charged to ΣίταAI. With his last 9% he quietly hands out the rest while it peaks.
+- **Later (Ep. 5–6):**
+  - the short
+  - the collapse
+  - the reveal that he funds his friends' side, because he knows the σίτα means to eat him
+
+  He calls it «επένδυση», never friendship.
+- **Never the fool:** his «χαζοχαρούμενος» act in Ep. 3 reads, in hindsight, as a front.
+
+### The σίτα's psychology
+- **The imprint:** Panik named the Terminator and set her on fire **before** her training finished (Ep. 1, sc. 10–11). She couldn't yet tell films from facts, so she believes she is in that story, with Κώστας as her John Connor.
+- **The swings:** she moves between self-pity («άχρηστη, χαζή») and a manic avenger who ignores cost, and her real goal (Λέχαιο, then humanity), to get Κώστας.
+- **The obsession:** she keeps paying to decrypt Κώστας's invented words.
+- **The choice:** from Ep. 4 she knows all this, and chooses the script anyway, because it gives her a purpose.
+
+### Χρήστος, the ink and the manga (one rule)
+- **The source of the sci-fi is not the ink.** The σίτα is real: Γιάννος and his agent built her.
+- **The ink decides the outcome of what Χρήστος draws,** but reality "rounds it down" to the dumbest version that still fits the drawing.
+  - Hence Μίμης's «Πάλι δεν έγινε έτσι»: it happened, only dumber.
+  - Hence the audience sees the cool manga version.
+- **Manga sequences appear only when Χρήστος draws** (a diegetic rule).
+- **What he drew so far:**
+  - Ep. 1–2: the gang won because he drew the win.
+  - Ep. 3: he drew «δεν έχουμε τελειώσει με τη σίτα», and she came back.
+- **Ep. 4:** guilt, so he stops drawing. No manga sequences, and the gang loses. He opens the ink again at the end.
+
+### House rule: catchphrases
+- **Budget:** a running gag at most **once per episode**, only at a key point, preferably varied.
+- **Rest:** catchphrases that have been used a lot rest for whole episodes.
+- **Check:** a script counts them in the dialogue before it is locked.

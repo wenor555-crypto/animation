@@ -115,6 +115,42 @@ A small server on the node (`~/sita-site`, Python standard library, `127.0.0.1:8
   - `level: 'normal'` on a line overrides the automatic choice.
 - **Check:** `python3 tools/level_voices.py <ep>` prints each character's median before and after, and lists any clip that needs more than ±12 dB or more than 6 dB of limiting. Regenerate those clips rather than squash them. Measured in the exported Ep. 1 mix: every character's normal lines sit between -14.8 and -15.5 LUFS.
 
+## Graphics v2 (from Episode 4 on)
+- **The bar:** battles at a Final Space / Rick and Morty level:
+  - many units and weapons
+  - clear reading
+  - rich effects
+  - light that reacts to the action
+- **Determinism stays:** everything is a function of `t` (the QA's NONDET check).
+- **The parts** (plan in `docs/episode-4-beat-sheet.md`):
+  - a layered render pipeline with post-processing (bloom, depth of field, grade, grain, chromatic aberration on hits, sub-frame motion blur), one blur per layer, never per shape
+  - 2D lighting from explosions, lasers and LEDs, with rim light on characters
+  - rig v2: two-bone IK, a pose library, 3/4 and profile heads, squash and stretch, smears, on-twos timing on impacts
+  - deterministic armies and swarms: hundreds of units, faction colours, LOD
+  - FX v2
+  - choreography and camera beats
+  - an SFX library generated with ElevenLabs sound effects (cached like the voices)
+- **Robots and mechas are built, not piled:**
+  - a hierarchical skeleton first, with heroic proportions and the centre of mass over the feet
+  - visible mechanical joints
+  - the devices are armour bound to bones
+  - metal material: base, shadow, highlight, rim
+  - a **model sheet** (front, 3/4, profile, back, and the assembly sequence) is approved in the review before any animation
+- **Automated robot tests:**
+  - silhouette per pose
+  - a joint sweep: no gaps, no wrong overlaps
+  - the model sheet rendered by the same code as the animation
+  - foot contact on walks and hits
+- **Gate:** a test reel (~45–60 s of the Ep. 4 fight), side by side with Ep. 2's yard battle, approved by the creator before production.
+
+## Music in episodes
+- **The file:** a track supplied by the creator lives in `<ep>/music/*_full.*`, which is ignored by git.
+- **The cues:** `tools/music_cue.py` finds them by word timestamps (scribe), cuts the excerpts with fades and normalises them. Builds embed only the excerpts.
+- **Playback:** the engine's music bus plays the cues per scene, the same in the player and the export:
+  - «speaker» EQ for music playing inside the scene, opening to full range for dramatic moments
+  - ducking under the voices
+  - −20 LUFS when featured, −28 under dialogue
+
 ## Pending
 - **Μαρία's voice (Ep. 1–3):** the creator finds it odd in places, with nothing specific to fix. Rework it across all three episodes later: audition voices, regenerate her lines, check every line again by ear. Until then only single lines are fixed (Ep. 2 s06: «…της οικογένειας», with a pause, so it doesn't run into «τησικογένειας»).
 
