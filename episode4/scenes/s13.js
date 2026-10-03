@@ -49,7 +49,7 @@ function render(t, _M, sc) {
         lemonTree(260, GY, t);
         if (t > M.storm.a) { jumboBox(CONT, GY, ease(prog(t, M.asm.a, M.asm.a + .7))); }
         if (truckX > -800) { jumboTruck(truckX, GY, t, { moving: t > M.leave.a, dir: -1, s: .62 }); }
-        if (t < M.leave.a) person(640, GY - 150 * .55, .55, CAST.odigos, { legs: 'stand', t, talk: talk('odigos', t), dir: -1, look: [-.6, .3], brow: 'flat', mouth: 'flat', R: [50, -60], itemR: 'phone', L: [-40, -30] });
+        if (t < M.leave.a) person(640, GY + 28 - 150 * .55, .55, CAST.odigos, { legs: 'stand', t, talk: talk('odigos', t), dir: -1, look: [-.6, .3], brow: 'flat', mouth: 'flat', R: [50, -60], itemR: 'phone', L: [-40, -30] });
         if (t > M.asm.a) R3.draw(T800, o);
       }) },
     ],

@@ -41,7 +41,7 @@ function render(t, _M, sc) {
   if (!gioUp) seated.push([X.giorgos, 'giorgos', { t, talk: talk('giorgos', t), look: la('giorgos', [.6, .1]), brow: 'up', mouth: inM(t, M.stock) ? 'smile' : 'flat', R: gesture(t, talk('giorgos', t), [44, -40]), L: [-44, -40] }]);
   tableOf(t, seated, { cups: [430, 610, 830] });
   // the photos on the table
-  if (t > M.show.a) for (let i = 0; i < 4; i++) { ctx.save(); ctx.translate(880 + i * 34, 548 - (i % 2) * 6); ctx.rotate((i - 1.5) * .15); rect(-30, -20, 60, 40, '#f4f4f0', { lw: 2 }); rect(-25, -16, 50, 30, '#5a8ac8', { lw: 0 }); droneCam(0, -2, 0, { s: .5 }); ctx.restore(); }
+  if (t > M.show.a) for (let i = 0; i < 4; i++) { ctx.save(); ctx.translate(880 + i * 34, 548 - (i % 2) * 6); ctx.rotate((i - 1.5) * .15); rect(-30, -20, 60, 40, '#f4f4f0', { lw: 2 }); rect(-25, -16, 50, 30, '#5a8ac8', { lw: 0 }); rect(-8, -6, 16, 5, '#2a2c33', { lw: 0 }); curve([[-13, -8], [13, -8]], 1.5, '#2a2c33', { w: 0 }); blob(0, 0, 2, 2, '#ff3030', { lw: 0 }); ctx.restore(); }
   if (gioUp) { const x = lerp(X.giorgos, -200, ease(prog(t, M.pays.a, M.leave.b))); stand(x, 'giorgos', 1, { t, legs: x > X.giorgos - 5 ? 'stand' : 'walk', look: [-1, 0], dir: -1, talk: talk('giorgos', t), mouth: 'smile', R: [44, -40] }); }
   if (mimUp) { const x = lerp(X.mimis, -200, ease(lk)); stand(x, 'mimis', 1, { t, legs: lk > 0 && lk < 1 ? 'walk' : 'stand', look: [-1, 0], dir: -1, talk: talk('mimis', t), mouth: 'flat' }); }
   const alone = t > M.leave.b;
