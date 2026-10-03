@@ -624,11 +624,11 @@
 "held": false
 },
 "scene07/06": {
-"hash": "0f58fa7b355ff9a2",
-"lufs": -17.0,
-"peak": -2.0,
+"hash": "28cecf38477ce8ad",
+"lufs": -17.4,
+"peak": -2.2,
 "intent": "loud",
-"gain": 4.0,
+"gain": 4.4,
 "held": false
 },
 "scene07/07": {
