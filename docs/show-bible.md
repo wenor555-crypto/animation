@@ -182,6 +182,17 @@ The empire and the Jumbo board were chosen by audition: 2 candidates per role, 2
 | IQOS PRIME | Takis (`KDImLuG6RkuyuX5httC7`) | young and sharp: the snob with a touch screen |
 | Πρόεδρος (Jumbo board) | Talos (`QpnXVbX7RkmUGDwpJh5v`) | old, deep, warm authority |
 
+Episode 4 lives in `episode4/` (cast in `episode4/voices.json`). The library had no unused Greek voice for a young man or an old woman, so three roles use voices made with ElevenLabs Voice Design (3 previews each); the creator chose by ear, every take checked with speech-to-text.
+
+| Character (Ep. 4) | Voice | Why |
+|---|---|---|
+| Νέος 2 (testimonial) | Ep4 Neos A (`UK4tS3l3qiMyDCM2ak7M`), designed | young Athenian, forced ad enthusiasm |
+| Νέος 3 (testimonial) | Ep4 Neos B (`NXjs0cWum05OdMOWxuX5`), designed | a second young voice, distinct from Νέος 2 |
+| Κυρα-Τούλα | Ep4 Toula A (`T2HYtN0fQCy4ZYW8A1YY`), designed | Corinthian grandmother, loud and indignant |
+| Θείος του Χαμάντ | Ep4 Theios A (`GUXytxqi5tG5SUkgKHDn`), designed | Qatari businessman, Greek with an Arabic accent, quietly menacing (heard through a phone) |
+| Τραπεζίτης | Theon (`gFpOFEriJA3T1VbGi2Be`) | warm, natural: polite while he says no |
+| Σύμβουλος ΕΣΠΑ | Fatsis (`cuab90umcstNgL8U7orz`) | Athenian, pleasant: the consultant who keeps 20% |
+
 Episode 2 lives in `episode2/` (its own `scenes/`, `audio/`, `props2.js`; it reuses episode1's engine, rig, sets and props). Voices: `python3 episode1/tools/gen_voices.py --episode episode2`.
 
 ## Season canon from Episode 4 on (LOCKED with the creator)
