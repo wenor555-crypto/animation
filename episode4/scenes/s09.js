@@ -19,7 +19,7 @@ const steps = [
   { who: 'giannos', cam: 'ge', el: 'Και πότε παίρνω τα λεφτά;', en: 'And when do I get the money?' },
   { who: 'symvoulos', cam: 'cons', mark: 'cut', el: 'Σε δύο χρόνια. Μείον το είκοσι τοις εκατό μου.', en: 'In two years. Minus my twenty percent.' },
   { act: 'mail', d: 1.2, cam: 'mail' },
-  { who: 'giannos', cam: 'mail', mark: 'kad', el: '«Η αίτησή σας απορρίπτεται. Δεν υπάρχει ΚΑΔ για υπερήρωα.»', en: '"Your application is rejected. There is no business code for a superhero."', say: 'Η αίτησή σας απορρίπτεται. Δεν υπάρχει Κ.Α.Δ. για υπερήρωα.' },
+  { who: 'giannos', cam: 'mail', mark: 'kad', el: '«Η αίτησή σας απορρίπτεται. Δεν υπάρχει ΚΑΔ για υπερήρωα.»', en: '"Your application is rejected. There is no business code for a superhero."', say: 'Η αίτησή σας απορρίπτεται. Δεν υπάρχει Κ.Α.Δ. για υπερήρωα.', level: 'normal' },
   { act: 'edit', d: 2, cam: 'edit' },
   { act: 'frame', d: 1.4, cam: 'mon' },
   { who: 'mimis', cam: 'mim', mark: 'numbers', el: '…Αυτά δεν βγαίνουν.', en: "…These don't add up." },

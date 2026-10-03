@@ -12,7 +12,7 @@ const steps = [
   { who: 'neos', cam: 'neos', el: 'Κυρία Τούλα, τα λεφτά σας δουλεύουν.', en: 'Mrs Toula, your money is working.' },
   { who: 'toula', cam: 'toula', mark: 'work', el: 'Τα λεφτά; Ή εσύ τον κόσμο;', en: 'The money? Or you, the people?' },
   { act: 'aside', d: 1.4, cam: 'ham' },
-  { who: 'theios', label: UP, fx: 'phone', cam: 'ham', mark: 'stop', el: 'Χαμάντ. Από σήμερα, τα λεφτά σταματάνε.', en: 'Hamad. From today, the money stops.' },
+  { who: 'theios', label: UP, fx: 'phone', cam: 'ham', mark: 'stop', el: 'Χαμάντ. Από σήμερα, τα λεφτά σταματάνε.', en: 'Hamad. From today, the money stops.', say: 'Χαμάντ… Από σήμερα, τα λεφτά σταματάνε.' },
   { who: 'hamad', cam: 'ham', el: 'Θείε, είναι κίνημα!', en: "Uncle, it's a movement!" },
   { who: 'theios', label: UP, fx: 'phone', cam: 'ham', mark: 'visit', el: 'Στο Κατάρ, όταν χάνουμε λεφτά, δεν πάμε στα δικαστήρια. Πάμε… επίσκεψη.', en: "In Qatar, when we lose money, we don't go to court. We pay… a visit." },
   { who: 'hamad', cam: 'two', mark: 'men', el: 'Γιώργο, habibi… ο θείος μου θα στείλει ανθρώπους.', en: 'Giorgos, habibi… my uncle will send people.', say: 'Γιώργο, χαμπίμπι… ο θείος μου θα στείλει ανθρώπους.' },

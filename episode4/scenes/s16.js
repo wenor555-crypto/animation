@@ -29,7 +29,7 @@ const steps = [
   { who: 'giannos', cam: 'lying', el: 'Κλείσ\' την!', en: 'Turn it off!' },
   { who: 'agent', label: AG, cam: 'lying', mark: 'skip', el: 'Μπορείς να την παραλείψεις σε πέντε δευτερόλεπτα.', en: 'You can skip it in five seconds.' },
   { act: 'door', d: 2.2, cam: 'door' },
-  { who: 'panik', cam: 'pan', mark: 'wake', el: 'Η πόλη ξύπν—', en: 'The city wak—' },
+  { who: 'panik', cam: 'pan', mark: 'wake', el: 'Η πόλη ξύπν—', en: 'The city wak—', say: 'Η πόλη ξύπ—' },
   { act: 'glass', d: 2, cam: 'door' },
   { who: 'panik', cam: 'pan', mark: 'mine', el: '…Το ποτήρι μου.', en: '…My glass.' },
   { act: 'charge', d: 1.8, cam: 'punch' },

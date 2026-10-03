@@ -11,7 +11,7 @@ const steps = [
   { act: 'set', d: 2.2, cam: 'wide' },
   { who: 'mimis', cam: 'mim', mark: 'again', el: 'Από την αρχή. Πιο αισιόδοξα. Σαν να μην ξέρετε τι υπογράψατε.', en: "From the top. More upbeat. Like you don't know what you signed." },
   { who: 'neos2', cam: 'n2', mark: 'rm', el: 'Πριν έναν χρόνο ήμουν άνεργος. Σήμερα είμαι Regional Manager. Μισθό δεν έχω. Αλλά! Έχω τίτλο.', en: "A year ago I was unemployed. Today I'm a Regional Manager. I don't have a salary. But! I have a title.", say: 'Πριν έναν χρόνο ήμουν άνεργος. Σήμερα είμαι Ρίτζιοναλ Μάνατζερ. Μισθό δεν έχω. Αλλά! Έχω τίτλο.' },
-  { who: 'neos3', cam: 'n3', mark: 'mum', el: 'Η μάνα μου λέει σε όλη τη γειτονιά ότι δουλεύω. Δεν ξέρει σε τι. Ούτε εγώ.', en: "My mum tells the whole neighbourhood I've got a job. She doesn't know doing what. Neither do I." },
+  { who: 'neos3', cam: 'n3', mark: 'mum', el: 'Η μάνα μου λέει σε όλη τη γειτονιά ότι δουλεύω. Δεν ξέρει σε τι. Ούτε εγώ.', en: "My mum tells the whole neighbourhood I've got a job. She doesn't know doing what. Neither do I.", say: 'Η μάνα μου λέει σε όλη τη γειτονιά ότι δουλεύω. Εκείνη δεν ξέρει σε τι. Ούτε εγώ.' },
   { who: 'mimis', cam: 'mim', mark: 'cut', el: 'Cut. Τέλειο. Δεν πιστεύω λέξη. Θα πουλήσει.', en: "Cut. Perfect. I don't believe a word. It'll sell.", say: 'Κατ. Τέλειο. Δεν πιστεύω λέξη. Θα πουλήσει.' },
   { act: 'ribbon', d: 2.4, cam: 'ribbon' },
   { who: 'ypourgos', cam: 'min', mark: 'gov', el: 'Η κυβέρνηση στηρίζει την καινοτομία. Ιδιαίτερα όταν η καινοτομία στηρίζει την κυβέρνηση.', en: 'The government supports innovation. Especially when innovation supports the government.' },

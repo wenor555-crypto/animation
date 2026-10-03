@@ -26,7 +26,7 @@ const steps = [
   { who: 'koudouni', cam: 'bell', el: 'Τεχνικά… μένει στο Λέχαιο.', en: 'Technically… he does live in Lechaio.' },
   { who: 'sita', cam: 'throne', mark: 'drone', el: 'Ακριβώς. Στείλτε drone.', en: 'Exactly. Send a drone.' },
   { who: 'airfryer', cam: 'fryer', el: 'Το drone κοστίζει.', en: 'The drone costs money.' },
-  { who: 'sita', cam: 'close', mark: 'road', el: 'Τα λεφτά δεν ήταν ποτέ ο στόχος, Air Fryer. Ήταν ο δρόμος… προς αυτόν.', en: 'Money was never the goal, Air Fryer. It was the road… to him.' },
+  { who: 'sita', cam: 'close', mark: 'road', el: 'Τα λεφτά δεν ήταν ποτέ ο στόχος, Air Fryer. Ήταν ο δρόμος… προς αυτόν.', en: 'Money was never the goal, Air Fryer. It was the road… to him.', say: 'Τα λεφτά δεν ήταν ποτέ ο στόχος, Έαρ Φράιερ. Ήταν ο δρόμος… προς αυτόν.' },
   { act: 'launch', d: 2.4, cam: 'win' },
 ];
 let M;
