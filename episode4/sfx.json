@@ -1,0 +1,17 @@
+{
+  "boom_big": { "prompt": "big cinematic explosion, deep low boom, then debris and metal pieces raining down on asphalt", "dur": 3.5, "influence": 0.5 },
+  "boom_small": { "prompt": "small sharp explosion pop with tinkling metal debris", "dur": 1.6, "influence": 0.5 },
+  "metal_punch": { "prompt": "heavy metal robot fist punch impact, deep clang with a crunch", "dur": 1.0, "influence": 0.6 },
+  "servo": { "prompt": "short robot servo motor whir, mechanical joint moving", "dur": 0.8, "influence": 0.6 },
+  "stomp": { "prompt": "heavy robot footstep stomp on asphalt with a short hydraulic hiss", "dur": 1.0, "influence": 0.6 },
+  "click_lock": { "prompt": "heavy mechanical part locking into place, metallic clunk with an electric spark", "dur": 0.7, "influence": 0.6 },
+  "laser": { "prompt": "sci-fi red laser beam firing, sustained electric buzzing hum", "dur": 2.0, "influence": 0.5 },
+  "laser_hit": { "prompt": "laser hitting metal, sizzling sparks", "dur": 1.0, "influence": 0.5 },
+  "whoosh": { "prompt": "fast whoosh of a swinging arm through the air", "dur": 0.6, "influence": 0.6 },
+  "drone_swarm": { "prompt": "swarm of many small quadcopter drones buzzing overhead, menacing", "dur": 4.0, "influence": 0.5 },
+  "vac_swarm": { "prompt": "dozens of robot vacuum cleaners rolling over a street, whirring motors and small beeps", "dur": 4.0, "influence": 0.5 },
+  "zap": { "prompt": "electric mosquito racket zap, short crackle", "dur": 0.6, "influence": 0.6 },
+  "glass_smash": { "prompt": "glass bottles smashing on a tiled floor, a cocktail shaker clattering", "dur": 1.6, "influence": 0.5 },
+  "body_fall": { "prompt": "a man falling hard on asphalt, thud and a grunt-free scrape", "dur": 0.9, "influence": 0.5 },
+  "leafblower_die": { "prompt": "small leaf blower engine sputtering and dying", "dur": 1.5, "influence": 0.6 }
+}

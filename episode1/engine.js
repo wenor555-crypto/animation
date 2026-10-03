@@ -93,7 +93,7 @@ let AC = null, master = null, voiceBus = null, amb = null, soundOn = true, voOn 
 let AT = null;       // when set, sounds are scheduled at this time instead of "now" (offline export)
 const audioNow = () => AT ?? AC.currentTime;
 function ensureAudio() {
-  if (!AC) { AC = new (window.AudioContext || window.webkitAudioContext)(); buildAudio(); }
+  if (!AC) { AC = new (window.AudioContext || window.webkitAudioContext)(); buildAudio(); if (typeof SND2 !== 'undefined') SND2.decodeAll(AC); }
   if (AC.state === 'suspended') AC.resume();
   queueClips();
 }
@@ -445,6 +445,7 @@ function runEpisode(list, opts = {}) {
 async function exportAudio(sr = 44100) {
   const ep = EPISODE, len = Math.ceil(sr * (ep.dur + 1));
   AC = new OfflineAudioContext(1, len, sr); buildAudio(); soundOn = true;
+  if (typeof SND2 !== 'undefined') await SND2.decodeAll(AC);   // recorded effects and music cues (sound v2)
   const bufs = {};
   for (const [k, src] of Object.entries(window.CLIPS || {})) {
     const bin = atob(src.slice(src.indexOf(',') + 1)), bytes = new Uint8Array(bin.length);

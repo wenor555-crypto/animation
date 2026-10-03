@@ -60,6 +60,11 @@ for page in pages:
                 if f.suffix.lower() == '.mp3':
                     durs[key] = mp3_duration(f.read_bytes())
     head = f'<script>window.CLIP_DUR = {json.dumps(durs)};</script>\n'
+    for var, sub in (('SFXCLIPS', 'sfx'), ('MUSICCUES', 'music/cues')):   # sound v2: recorded effects and music cues
+        d = here / sub
+        found = {f.stem: f'data:audio/mpeg;base64,' + base64.b64encode(f.read_bytes()).decode() for f in sorted(d.glob('*.mp3'))} if d.is_dir() else {}
+        if found:
+            head += f'<script>window.{var} = ' + json.dumps(found) + ';</script>\n'
     if clips and LEVELS:                                    # voice levels (tools/level_voices.py): gain in dB per clip
         head += '<script>window.CLIP_GAIN = ' + json.dumps({k: LEVELS[k] for k in clips if LEVELS.get(k)}) + ';</script>\n'
     if clips:
